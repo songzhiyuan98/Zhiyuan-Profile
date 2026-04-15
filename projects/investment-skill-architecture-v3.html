@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Investment Skill 系统设计 v3.0：首席顾问主进程、Risk Officer、Market Context、八只 Ticker Analyst、yfinance 数据层、分级调度与输出契约。已实现，测试中。非投资建议。"
+    />
+    <title>投资 Skill 系统设计文档 · 架构 v3.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/investment-skill-architecture-v3.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← 返回首页</a>
+      </div>
+      <div class="doc-version-switch" aria-label="文档版本切换">
+        <a class="doc-version-switch__btn is-active" href="/projects/investment-skill-architecture-v3.html">架构 v3.0</a>
+        <a class="doc-version-switch__btn" href="/projects/investment-skill-architecture-v2.html">架构 v2.0</a>
+        <a class="doc-version-switch__btn" href="/projects/investment-skill-architecture.html">架构 v1.0</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">文档定位与阶段</a>
+            <a href="#goal">1. 系统总目标</a>
+            <a href="#not-doing">2. 系统不做什么</a>
+            <a href="#philosophy">3. 核心设计哲学</a>
+            <a href="#constitution">4. 系统宪法层</a>
+            <a href="#ux-data">5. 用户交互与数据模型</a>
+            <a href="#roles">6. 角色架构</a>
+            <a href="#framework">7. 标准分析框架</a>
+            <a href="#ticker-layer">8. Ticker 独特层</a>
+            <a href="#router">9. 调度系统</a>
+            <a href="#workflow">10. 团队协作流程</a>
+            <a href="#output-contract">11. 输出契约</a>
+            <a href="#state">12. 状态管理</a>
+            <a href="#files">13. Skill 文件结构</a>
+            <a href="#iteration">14. 学习与迭代</a>
+            <a href="#why">15. 与策略的匹配</a>
+            <a href="#mvp">16. 落地阶段</a>
+            <a href="#dev-principles">17. 开发原则</a>
+            <a href="#summary">18. 总结</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">架构 v3.0 · 总设计规范 · 已实现 · 测试使用中 · 非投资建议</p>
+            <h1 class="article-title">Investment Skill 系统设计文档</h1>
+            <div class="article-body">
+              <p>
+                本文档是运行在 <strong>Claude Code</strong> 环境中的个人投资决策多 Agent Skill 的<strong>上位规范</strong>：定义系统边界、调度原则、角色分工、状态模型、输出契约与升级 / 降级规则，而非单个
+                prompt 的堆砌。
+              </p>
+              <p>
+                <strong>当前阶段：</strong>核心能力已按本文档实现完毕，正在个人实盘流程中<strong>测试与日常使用</strong>；设计与实现仍会根据反馈迭代，但宪法层与输出契约保持稳定取向。
+              </p>
+              <p>任何后续改动都应以本文档为依据，不应随意绕开已定义的原则。</p>
+            </div>
+          </header>
+
+          <section id="goal" class="doc-section">
+            <h2>1. 系统总目标</h2>
+            <div class="article-body">
+              <p>用于：</p>
+              <ul>
+                <li>管理当前持仓与资金状态（含 settled / unsettled）</li>
+                <li>跟踪 Tracklist 股票池（初始 8 只）</li>
+                <li>分析个股逻辑、走势结构、市场环境、新闻催化与情绪</li>
+                <li>比较标的间机会成本，回答「谁最值得现在用主仓比例去重仓」</li>
+                <li>输出持仓调整、减仓、主仓切换与观察重点，帮助守纪律</li>
+                <li>在真实约束下给可执行建议（例如卖出资金次日才可用）</li>
+              </ul>
+              <h3>1.1 投资模型（固定仓位结构）</h3>
+              <p>服务<strong>正股波段轮动重仓</strong>：在 Tracklist 中寻找逻辑最强标的，主仓约 60% 吃波段；非日内、非期权、非长期 buy and hold。</p>
+              <ul>
+                <li>主仓 ~60%：当前逻辑最强的一只</li>
+                <li>观察仓 ~10%：下一主仓候选</li>
+                <li>现金子弹 ~30%：等机会或换仓</li>
+              </ul>
+              <p>核心决策问题是<strong>「几只里谁最好，值不值得我现在换过去」</strong>，而非孤立评价单票好坏。</p>
+              <h3>1.2 与 TSLA Options War Room</h3>
+              <p>二者<strong>完全独立</strong>：期权短线 Skill 与本正股波段 Skill 不共享状态、不互相调用。</p>
+            </div>
+          </section>
+
+          <section id="not-doing" class="doc-section">
+            <h2>2. 系统不做什么</h2>
+            <div class="article-body">
+              <p>本系统不是：自动交易机器人、股价神谕、自改策略的自治体、每次都跑全链路的脚本、为篇幅而堆报告的系统、期权交易系统。</p>
+              <p>不追求：永远确定、信息不足硬拍板、事事升级为组合决策、用旧观点替代当前状态分析。</p>
+            </div>
+          </section>
+
+          <section id="philosophy" class="doc-section">
+            <h2>3. 核心设计哲学</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>约束优先，路径优先次之</strong>：定义能做 / 不能做、停手、升降级与完成标准，而非死板 A→B→C。</li>
+                <li><strong>开放推理，限制角色</strong>：限制职责、输出责任与调用关系，不限制内部分析路径。</li>
+                <li><strong>记状态，不记旧观点</strong>：保存持仓、现金、关注池、待办；不长期保存过时多空立场或旧新闻结论。</li>
+                <li><strong>分析质量高于「预测正确感」</strong>：覆盖度、风险、不确定性、执行约束与行动框架。</li>
+                <li><strong>决策导向</strong>：分析须服务于仓位决策；每票须有 Decision Hook（是否适合主仓）。</li>
+                <li><strong>策略框架固定</strong>：Agent 不得自行改写核心交易原则、风控底线与现金规则。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="constitution" class="doc-section">
+            <h2>4. 系统宪法层（摘要）</h2>
+            <div class="article-body">
+              <p>允许：单票与多票分析、持仓调整建议、信息充分时的正式决策卡、不足时的情景 / 原则性建议。</p>
+              <p>
+                禁止（节选）：把旧闻当催化剂；现金不明时给精确买入方案；单票问题输出重型决策卡；伪造确认；忽略 unsettled；单票包装成组合结论；新闻摘要直接当动作；无结构依据鼓励重仓切换；不确定说成确定；Agent
+                自改核心原则；<strong>反弹与主升未区分时建议重仓入场</strong>。
+              </p>
+              <p><strong>停手条件（节选）：</strong>组合决策但持仓不全；执行级建议但不知 settled / unsettled；主仓轮换但不知当前主仓结构；Timeframe Alignment 不明确仍建议入场等。</p>
+              <p><strong>任务完成标准</strong> 按 Quick / Focused / Full 分级：Focused 须含 Decision Hook；Full 须含可执行动作、今日 / 明日、T+1、置信度与 Timeframe Alignment 结论等（详见原文档第 4、12 节）。</p>
+            </div>
+          </section>
+
+          <section id="ux-data" class="doc-section">
+            <h2>5. 用户交互与数据模型</h2>
+            <div class="article-body">
+              <p>入口层负责意图理解、复杂度分级、输出长度控制、数据不足时主动索取；不负责替代全部深度推理或固定跑全流程。</p>
+              <h3>5.1 请求类型</h3>
+              <p><strong>A</strong> 简单查询；<strong>B</strong> 专题分析；<strong>C</strong> 完整决策（组合 / 主仓轮换 / 正式决策卡）。</p>
+              <h3>5.2 数据：自动 + 用户补充</h3>
+              <ul>
+                <li><strong>自动（静默）</strong>：通过 Bash 调用 <code>scripts/fetch_market_data.py</code>，用 <code>yfinance</code> 一次拉取 Tracklist 8 只 + QQQ/SPY 约三月日线，计算涨跌幅、SMA、相对强弱与动量等。</li>
+                <li><strong>用户补充</strong>：盘中精确价位（截图）、新闻线索、持仓与 settled / unsettled 现金（写入 <code>state/portfolio.json</code>）。</li>
+              </ul>
+              <h3>5.3 UX 原则</h3>
+              <p>单一声音（不暴露内部角色名）、渐进展开、默认给可用答案而非默认长报告、顾问式短段落、缺数据就问。</p>
+            </div>
+          </section>
+
+          <section id="roles" class="doc-section">
+            <h2>6. 角色架构（v3 相对 v2 的合并）</h2>
+            <div class="article-body">
+              <p>由原先多角色收敛为：<strong>3 类功能角色 + 8 个 Ticker Analyst</strong>（各对应 <code>agents/{ticker}.md</code>）。</p>
+              <pre class="doc-pre" role="img" aria-label="架构示意">
+┌─────────────────────────────────────────────────────────────┐
+│  SKILL.md 主进程 = 首席顾问（Chief Advisor）                  │
+│  整合：Chief Strategist + Research Lead + Position Manager   │
+│  职责：调度、横向比较、仓位决策、最终裁决、单一用户出口输出    │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+       ┌─────────────┐ ┌─────────┐ ┌──────────────────┐
+       │ Risk Officer │ │ Market  │ │ Ticker Analysts  │
+       │ 风控对抗      │ │ Context │ │ tsla…hood（8 只） │
+       └─────────────┘ └─────────┘ └──────────────────┘
+              </pre>
+              <p>
+                <strong>首席顾问</strong>不是独立 agent 文件，而由 <code>SKILL.md</code> 定义主进程：融合策略裁决、研究 focus 与横向比较、可执行仓位方案与 T+1 约束。
+              </p>
+              <p><strong>Risk Officer</strong>（<code>agents/risk-officer.md</code>）：专挑风险；Full 必调；Focused 涉及仓位动作时调；Quick 不调；不否决最终裁决。</p>
+              <p><strong>Market Context</strong>（<code>agents/market-context.md</code>）：由原 Market Strategist 与 News Agent 合并 — 大环境 Risk On/Off/Neutral 与 24–48h 催化剂验证及影响映射。</p>
+              <p>
+                <strong>Ticker Analysts</strong>：每票独立文件；主进程<strong>读取</strong>其独特层与统一要求，在 Full 流程中<strong>不作为子 Agent 派发</strong>，以降低传递损耗、缩短路径。
+              </p>
+            </div>
+          </section>
+
+          <section id="framework" class="doc-section">
+            <h2>7. 标准分析框架（全票统一，写在 SKILL.md）</h2>
+            <div class="article-body">
+              <p>每只票分析须覆盖（与 v3 设计一致）：</p>
+              <ul>
+                <li>走势结构（多周期趋势、关键位、阶段）</li>
+                <li><strong>Timeframe Alignment</strong>：短期 / 中期 / 大周期 → 结论必为主升 / 反弹 / 震荡 / 下跌中继之一；不明确则系统应停手、不建议入场</li>
+                <li>大盘共振（相对 QQQ/SPY，高 beta 票权重更高）</li>
+                <li><strong>Momentum Signal</strong>：一周涨跌、相对 QQQ、量能迹象、强 / 中 / 弱评级（供横向排名）</li>
+                <li><strong>Decision Hook</strong>：适合做主仓 YES / NO / CONDITIONAL + 理由（≤3 句）+ 条件</li>
+                <li>基础状态快照与 <strong>Trigger Layer</strong>（入场 / 升级 / 降级 / 紧急触发，可验证、每类 ≤5 条）</li>
+              </ul>
+              <p>判断链：<code>Thesis → Status → Trigger Layer → Timeframe Alignment → Decision Hook</code>。</p>
+            </div>
+          </section>
+
+          <section id="ticker-layer" class="doc-section">
+            <h2>8. Ticker 独特层</h2>
+            <div class="article-body">
+              <p>各 <code>agents/{ticker}.md</code> 只写该票独有内容：Core Thesis、Thesis 判断标准（Intact/Weakening/Broken）、特有分析维度、Role、与其他票关联、特有风险、Trigger Layer。标准维度不在此重复。</p>
+              <p>Thesis 更新须用户确认后写入文件；更新记录落在 <code>state/</code>。</p>
+            </div>
+          </section>
+
+          <section id="router" class="doc-section">
+            <h2>9. 调度系统</h2>
+            <div class="article-body">
+              <p><strong>Request Router</strong>（主进程职责之一）：判定 Quick / Focused / Full、是否涉执行、是否读 Portfolio、派发哪些 Agent、是否输出决策卡；不替代分析 Agent、不长期保存市场观点。</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Level</th>
+                    <th>典型场景</th>
+                    <th>派发</th>
+                    <th>输出</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Quick</td>
+                    <td>单票、单条新闻、逻辑解释</td>
+                    <td>读对应 ticker 文件，不派发子 Agent</td>
+                    <td>Quick Answer</td>
+                  </tr>
+                  <tr>
+                    <td>Focused</td>
+                    <td>1–2 票比较、单票仓位、新闻影响</td>
+                    <td>相关 ticker + state；按需 market-context / risk-officer</td>
+                    <td>Mini Decision Note</td>
+                  </tr>
+                  <tr>
+                    <td>Full</td>
+                    <td>组合调整、主仓轮换、资金部署</td>
+                    <td>必须 risk-officer + market-context（可并行）</td>
+                    <td>Full Decision Card</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="workflow" class="doc-section">
+            <h2>10. 团队协作流程（v3 Full）</h2>
+            <div class="article-body">
+              <p>Full Level 七步（与设计文档一致）：读取上下文 → Market Context（环境 + 催化剂）→ Risk Officer 预检（可与上步并行）→ 主进程定本轮 Focus → 读取相关 Ticker 文件并做单票完整结论 → 横向比较与仓位决策 → 最终输出 Full Decision Card。</p>
+              <p>关键设计：Full 最多派发 <strong>2 个</strong>独立 agent（market-context、risk-officer）；Ticker 为<strong>文件读取 + 主进程综合</strong>，目标在约 1–2 分钟内给出结构化结论，而非冗长委员会流程。</p>
+            </div>
+          </section>
+
+          <section id="output-contract" class="doc-section">
+            <h2>11. 输出契约</h2>
+            <div class="article-body">
+              <p><strong>Quick：</strong>自然简洁；若涉方向仍须给出 Decision Hook。</p>
+              <p><strong>Mini Decision Note：</strong>结论、主要理由、风险、Decision Hook、下一步关注。</p>
+              <p>
+                <strong>Full Decision Card：</strong>须含市场环境、Tracklist 一行摘要、横向比较、Timeframe Alignment、建议动作、风控检查、今日 / 明日执行与现金状态、再评估条件，以及文末「最终决策摘要」块（动作、主仓标的、比例、区间、目标、止损、持有周期、失效条件、置信度、主要不确定性）—
+                与 v3 文档第 12 节模板对齐。
+              </p>
+            </div>
+          </section>
+
+          <section id="state" class="doc-section">
+            <h2>12. 状态管理</h2>
+            <div class="article-body">
+              <p><strong>Portfolio State</strong>（如 <code>state/portfolio.json</code>）：持仓、主仓 / 观察仓、比例、settled / unsettled、待执行计划、关注池等 — 区分「理论最优」与「今日真实可执行」。</p>
+              <p>仅用户确认交易后更新持仓文件；系统不自动改价格；分析结论可记入 <code>watchlist-notes.json</code>，只记当前状态结论、不记历史观点辩论。</p>
+            </div>
+          </section>
+
+          <section id="files" class="doc-section">
+            <h2>13. Skill 文件结构（示意）</h2>
+            <div class="article-body">
+              <pre class="doc-pre">~/.claude/skills/investment-portfolio/
+├── SKILL.md
+├── agents/
+│   ├── risk-officer.md
+│   ├── market-context.md
+│   └── tsla.md … hood.md（8 只）
+├── scripts/
+│   └── fetch_market_data.py
+├── state/
+│   ├── portfolio.json
+│   └── watchlist-notes.json
+├── schemas/
+└── docs/
+    └── system-design-v3.md</pre>
+            </div>
+          </section>
+
+          <section id="iteration" class="doc-section">
+            <h2>14. 学习与迭代</h2>
+            <div class="article-body">
+              <p>非 self-modifying：由主进程每轮 Focus 迭代 + 用户指定关注点增强；禁止 Agent 自改核心原则、风险底线或未经确认的 Core Thesis。</p>
+            </div>
+          </section>
+
+          <section id="why" class="doc-section">
+            <h2>15. 与策略的匹配</h2>
+            <div class="article-body">
+              <p>小资金、集中轮动、又要纪律：架构强调机会成本比较、60/10/30 模型、Risk Officer 对抗过度乐观、新闻映射而非堆砌、Timeframe 防止错阶段重仓、宪法层停手与真实现金约束。</p>
+            </div>
+          </section>
+
+          <section id="mvp" class="doc-section">
+            <h2>16. 落地阶段</h2>
+            <div class="article-body">
+              <p>设计文档中的分阶段 MVP 已在实现上推进为：<strong>宪法 + 首席顾问主进程 + 调度分级 + Risk / Market Context + 八只 Ticker 独特层 + yfinance 脚本 + 状态文件</strong>；当前处于<strong>个人实盘流程中的测试与日常使用</strong>，并持续按市场与反馈微调权重与输出形态。</p>
+            </div>
+          </section>
+
+          <section id="dev-principles" class="doc-section">
+            <h2>17. 给 Claude Code 的开发原则（摘录）</h2>
+            <div class="article-body">
+              <ol>
+                <li>总文档高于单个 prompt。</li>
+                <li>优先边界、检查点、输出契约。</li>
+                <li>路由不写死为全流程脚本。</li>
+                <li>Ticker 文件只写独特层；状态文件只记事实。</li>
+                <li>数据不足时主动向用户索取，不硬分析。</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="summary" class="doc-section">
+            <h2>18. 总结</h2>
+            <div class="article-body">
+              <p>核心循环：用户提问 → 分级 → 读取相关 agent 与 state → 按需派发 market-context / risk-officer → 标准框架 + 独特层 → Decision Hook → 横向比较 → 输出。</p>
+              <p><strong>核心问题不变：</strong>Tracklist 里谁最值得我现在用主仓比例去重仓？所有分析服务于该问题。</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

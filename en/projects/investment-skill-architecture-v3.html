@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Investment Skill system design v3.0: Chief Advisor in SKILL.md, Risk Officer, Market Context, eight ticker agents, yfinance data layer, tiered routing and output contracts. Shipped; in personal testing."
+    />
+    <title>Investment Skill System Design · Architecture v3.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="/projects/investment-skill-architecture-v3.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Document version switch">
+        <a class="doc-version-switch__btn is-active" href="/en/projects/investment-skill-architecture-v3.html">Architecture v3.0</a>
+        <a class="doc-version-switch__btn" href="/en/projects/investment-skill-architecture-v2.html">Architecture v2.0</a>
+        <a class="doc-version-switch__btn" href="/en/projects/investment-skill-architecture.html">Architecture v1.0</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Positioning and status</a>
+            <a href="#goal">1. System goal</a>
+            <a href="#not-doing">2. What this is not</a>
+            <a href="#philosophy">3. Core philosophy</a>
+            <a href="#constitution">4. Constitution layer</a>
+            <a href="#ux-data">5. UX and data model</a>
+            <a href="#roles">6. Role architecture</a>
+            <a href="#framework">7. Standard analysis framework</a>
+            <a href="#ticker-layer">8. Ticker-specific layer</a>
+            <a href="#router">9. Scheduling</a>
+            <a href="#workflow">10. Collaboration flow</a>
+            <a href="#output-contract">11. Output contract</a>
+            <a href="#state">12. State management</a>
+            <a href="#files">13. Skill file layout</a>
+            <a href="#iteration">14. Learning and iteration</a>
+            <a href="#why">15. Fit to the strategy</a>
+            <a href="#mvp">16. Rollout stage</a>
+            <a href="#dev-principles">17. Build principles</a>
+            <a href="#summary">18. Summary</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Architecture v3.0 · Top-level spec · Shipped · In personal testing · Not financial advice</p>
+            <h1 class="article-title">Investment Skill System Design</h1>
+            <div class="article-body">
+              <p>
+                This document is the governing spec for a multi-agent Investment Skill that runs in
+                <strong>Claude Code</strong>: boundaries, routing, roles, state, output contracts, and upgrade/downgrade rules—not a pile of
+                disconnected prompts.
+              </p>
+              <p>
+                <strong>Status:</strong> the capabilities described here are <strong>implemented</strong> and in
+                <strong>day-to-day testing</strong> against a personal live workflow; details may evolve with feedback while the constitution and
+                contract stay stable in intent.
+              </p>
+              <p>Later changes should still align with these principles.</p>
+            </div>
+          </header>
+
+          <section id="goal" class="doc-section">
+            <h2>1. System goal</h2>
+            <div class="article-body">
+              <ul>
+                <li>Maintain positions and cash (settled / unsettled)</li>
+                <li>Track an 8-name Tracklist</li>
+                <li>Analyze thesis, structure, regime, catalysts, sentiment</li>
+                <li>Compare opportunity cost—“who deserves the main sleeve now”</li>
+                <li>Emit sizing, trims, rotations, and watch items with discipline</li>
+                <li>Respect real constraints (e.g., sale proceeds not reusable until settled)</li>
+              </ul>
+              <h3>1.1 Strategy model</h3>
+              <p>
+                <strong>Swing rotation in common stock</strong> with a fixed sleeve model: ~60% main, ~10% scout, ~30% cash—not intraday, not
+                options, not passive buy-and-hold forever.
+              </p>
+              <h3>1.2 Independence from TSLA Options War Room</h3>
+              <p>Fully separate skills: no shared state and no cross-calls.</p>
+            </div>
+          </section>
+
+          <section id="not-doing" class="doc-section">
+            <h2>2. What this is not</h2>
+            <div class="article-body">
+              <p>Not an auto-trader, oracle, self-rewriting strategist, “full workflow every time” script, report spammer, or options system.</p>
+              <p>Does not chase fake certainty, force portfolio-level answers on thin inputs, or recycle stale opinions as fresh state.</p>
+            </div>
+          </section>
+
+          <section id="philosophy" class="doc-section">
+            <h2>3. Core philosophy</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>Constraints before rigid paths</strong></li>
+                <li><strong>Open reasoning, bounded roles</strong></li>
+                <li><strong>State yes, stale narratives no</strong></li>
+                <li><strong>Analysis quality over “feeling right”</strong></li>
+                <li><strong>Decision-first</strong>: every name needs a Decision Hook for main-sleeve fit</li>
+                <li><strong>Fixed strategy frame</strong>: agents cannot rewrite core rules</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="constitution" class="doc-section">
+            <h2>4. Constitution layer (summary)</h2>
+            <div class="article-body">
+              <p>Allows single- and multi-name work, portfolio suggestions, formal cards when inputs suffice, principled downgrade otherwise.</p>
+              <p>
+                Forbids (samples): stale news as catalyst; precise buy plans without cash clarity; heavy cards on single-name questions; fake
+                confirmations; ignoring unsettled; headline-only actions; heavy rotation without structure; false certainty; agents rewriting core
+                policy; <strong>main-sleeve entries when timeframe alignment is unclear</strong>.
+              </p>
+              <p>Hand-off/stop rules and Quick/Focused/Full completion bars follow the v3 spec (sections 4 and 12 in the source doc).</p>
+            </div>
+          </section>
+
+          <section id="ux-data" class="doc-section">
+            <h2>5. UX and data model</h2>
+            <div class="article-body">
+              <p>The surface layer classifies intent, picks depth, shapes length, and asks for missing inputs.</p>
+              <h3>5.1 Request classes</h3>
+              <p><strong>A</strong> quick lookup; <strong>B</strong> themed analysis; <strong>C</strong> full portfolio / rotation / formal card.</p>
+              <h3>5.2 Data: automated + user</h3>
+              <ul>
+                <li>
+                  <strong>Silent automation:</strong> <code>scripts/fetch_market_data.py</code> via Bash + <code>yfinance</code>, one batch for Tracklist + QQQ/SPY (~3M
+                  dailies), derived stats.
+                </li>
+                <li><strong>User-supplied:</strong> intraday screenshots, news leads, portfolio and settled/unsettled updates in <code>state/portfolio.json</code>.</li>
+              </ul>
+              <h3>5.3 UX tenets</h3>
+              <p>Single voice, progressive depth, useful default brevity, advisor tone, ask when blind.</p>
+            </div>
+          </section>
+
+          <section id="roles" class="doc-section">
+            <h2>6. Role architecture (v3 vs v2)</h2>
+            <div class="article-body">
+              <p>Collapsed to <strong>three functional roles + eight ticker analysts</strong> (<code>agents/{ticker}.md</code>).</p>
+              <pre class="doc-pre" role="img" aria-label="Architecture sketch">
+┌─────────────────────────────────────────────────────────────┐
+│  SKILL.md main process = Chief Advisor                      │
+│  Merges Chief Strategist + Research Lead + Position Manager │
+│  Scheduling, cross-name compare, sizing, final voice      │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+       ┌─────────────┐ ┌─────────┐ ┌──────────────────┐
+       │ Risk Officer │ │ Market  │ │ Ticker Analysts  │
+       │              │ │ Context │ │ eight names      │
+       └─────────────┘ └─────────┘ └──────────────────┘
+              </pre>
+              <p><strong>Chief Advisor</strong> lives in <code>SKILL.md</code>, not a separate agent file.</p>
+              <p><strong>Risk Officer:</strong> required on Full; on Focused when trades are in play; skipped on Quick.</p>
+              <p><strong>Market Context:</strong> merged macro regime + 24–48h catalyst vetting and mapping.</p>
+              <p><strong>Ticker analysts:</strong> read as files; in Full flow they are <strong>not</strong> spawned as sub-agents—chief synthesizes.</p>
+            </div>
+          </section>
+
+          <section id="framework" class="doc-section">
+            <h2>7. Standard analysis framework</h2>
+            <div class="article-body">
+              <ul>
+                <li>Structure across horizons and key levels</li>
+                <li><strong>Timeframe alignment</strong> → must label uptrend vs bounce vs chop vs bearish continuation; if unclear, no aggressive entry</li>
+                <li>Breadth vs QQQ/SPY; higher weight for high-beta names</li>
+                <li><strong>Momentum signal</strong> for cross-name ranking</li>
+                <li><strong>Decision Hook</strong> YES/NO/CONDITIONAL with ≤3-sentence rationale</li>
+                <li>Snapshot fields + <strong>trigger layer</strong> (entry/upgrade/downgrade/emergency, verifiable, ≤5 each)</li>
+              </ul>
+              <p>Chain: <code>Thesis → Status → Triggers → Timeframe alignment → Decision Hook</code>.</p>
+            </div>
+          </section>
+
+          <section id="ticker-layer" class="doc-section">
+            <h2>8. Ticker-specific layer</h2>
+            <div class="article-body">
+              <p>Each <code>agents/{ticker}.md</code> holds Core Thesis, thesis gates, unique angles, role, correlations, idiosyncratic risks, triggers. Shared dimensions stay in <code>SKILL.md</code>.</p>
+              <p>Core thesis changes require explicit user confirmation; logs under <code>state/</code>.</p>
+            </div>
+          </section>
+
+          <section id="router" class="doc-section">
+            <h2>9. Scheduling</h2>
+            <div class="article-body">
+              <p>The router (part of the chief process) picks Quick/Focused/Full, execution sensitivity, portfolio reads, dispatched agents, and card type.</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Level</th>
+                    <th>Typical use</th>
+                    <th>Dispatch</th>
+                    <th>Output</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Quick</td>
+                    <td>Single name/news/thesis</td>
+                    <td>Read ticker file; no sub-agent fan-out</td>
+                    <td>Quick answer</td>
+                  </tr>
+                  <tr>
+                    <td>Focused</td>
+                    <td>1–2 names, partial sizing, catalyst impact</td>
+                    <td>Ticker files + state; optional context/risk</td>
+                    <td>Mini decision note</td>
+                  </tr>
+                  <tr>
+                    <td>Full</td>
+                    <td>Book-level moves, rotations, deployment</td>
+                    <td>Always risk + market context (parallel OK)</td>
+                    <td>Full decision card</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="workflow" class="doc-section">
+            <h2>10. Collaboration flow (Full)</h2>
+            <div class="article-body">
+              <p>Seven steps: load context → market context → risk pre-check (can parallelize) → set focus → read tickers and complete per-name views → cross-name sizing → final card.</p>
+              <p>Design point: at most <strong>two</strong> delegated agents; tickers are <strong>file-backed synthesis</strong> for ~1–2 minute turnaround instead of a long committee chain.</p>
+            </div>
+          </section>
+
+          <section id="output-contract" class="doc-section">
+            <h2>11. Output contract</h2>
+            <div class="article-body">
+              <p><strong>Quick:</strong> concise; still emits a Decision Hook when direction is implied.</p>
+              <p><strong>Mini note:</strong> verdict, reasons, risk, Decision Hook, what to watch next.</p>
+              <p>
+                <strong>Full card:</strong> regime, one-line tracklist digest, cross-name view, timeframe alignment, actions, risk warnings, today vs tomorrow execution with cash state, re-check triggers, plus the closing executive summary block per the v3 template.
+              </p>
+            </div>
+          </section>
+
+          <section id="state" class="doc-section">
+            <h2>12. State management</h2>
+            <div class="article-body">
+              <p><code>portfolio.json</code> (example path) tracks sleeves, cash buckets, pending actions—separating theoretical optima from what is executable today.</p>
+              <p>Positions update only on user-confirmed trades; prices are user-fed; watchlist notes capture current conclusions, not a debate history.</p>
+            </div>
+          </section>
+
+          <section id="files" class="doc-section">
+            <h2>13. Skill file layout</h2>
+            <div class="article-body">
+              <pre class="doc-pre">~/.claude/skills/investment-portfolio/
+├── SKILL.md
+├── agents/ …
+├── scripts/fetch_market_data.py
+├── state/
+├── schemas/
+└── docs/system-design-v3.md</pre>
+            </div>
+          </section>
+
+          <section id="iteration" class="doc-section">
+            <h2>14. Learning and iteration</h2>
+            <div class="article-body">
+              <p>No autonomous strategy edits: chief-led focus plus user nudges; forbidden self-rewrites of constitution, risk floor, or thesis without confirmation.</p>
+            </div>
+          </section>
+
+          <section id="why" class="doc-section">
+            <h2>15. Fit to the strategy</h2>
+            <div class="article-body">
+              <p>Built for concentrated rotation with guardrails: opportunity-cost framing, sleeve model, dedicated skeptic, catalyst mapping, timeframe gating, constitution stops, real settlement math.</p>
+            </div>
+          </section>
+
+          <section id="mvp" class="doc-section">
+            <h2>16. Rollout stage</h2>
+            <div class="article-body">
+              <p>
+                The staged MVP in the source doc has matured into an implemented stack—constitution, chief process, routing, risk and market context, eight ticker files, yfetch script, and state files—with ongoing tuning while already in
+                <strong>personal live testing</strong>.
+              </p>
+            </div>
+          </section>
+
+          <section id="dev-principles" class="doc-section">
+            <h2>17. Build principles (excerpt)</h2>
+            <div class="article-body">
+              <ol>
+                <li>This spec outranks single prompts.</li>
+                <li>Ship boundaries, checkpoints, contracts first.</li>
+                <li>Keep routing from becoming a brittle full script.</li>
+                <li>Ticker files = unique layer only; state = facts.</li>
+                <li>Ask for missing data; do not hallucinate completeness.</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="summary" class="doc-section">
+            <h2>18. Summary</h2>
+            <div class="article-body">
+              <p>Loop: classify → read agents + state → dispatch context/risk when required → standard + unique analysis → Decision Hooks → rank → respond.</p>
+              <p><strong>North star:</strong> which Tracklist name deserves the main sleeve right now—everything else serves that question.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>
