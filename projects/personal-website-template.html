@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Personal Website Template：Next.js + TypeScript + Tailwind，求职者与研究者双模板、可配置版块与 Vercel 部署；MIT 开源，GitHub 公开。"
+    />
+    <title>个人网站模板 · 项目文档</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/personal-website-template.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← 返回首页</a>
+      </div>
+
+      <div class="doc-layout">
+        <!-- 目录 id 与正文 section 对应 -->
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">概述</a>
+            <a href="#links">仓库与演示</a>
+            <a href="#features">特性</a>
+            <a href="#tech">技术栈</a>
+            <a href="#metrics">采用与反馈</a>
+            <a href="#quickstart">快速开始</a>
+            <a href="#contributing">贡献与许可</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              开源 · Next.js · TypeScript · Tailwind CSS · MIT · 自 2025-01
+            </p>
+            <h1 class="article-title">个人网站模板</h1>
+            <p class="article-meta" style="margin-bottom: 12px">
+              Personal Website Template System · 可定制的作品集与学术主页模板
+            </p>
+            <div class="article-body">
+              <p>
+                面向<strong>求职者</strong>与<strong>研究者</strong>两套叙事：前者侧重项目与经历，后者侧重论文与教学；通过可配置版块、导航与视觉（如渐变背景）、技能
+                SVG 与时间线等模块，在尽量少的代码改动下搭出独立站。配套 README 与入门说明，支持<strong>Vercel</strong>一键部署。
+              </p>
+              <p>
+                仓库长期公开维护；具体目录与配置字段以
+                <a href="https://github.com/songzhiyuan98/personal-website-template" target="_blank" rel="noopener noreferrer">GitHub</a>
+                当前代码为准（README 中旧克隆地址 <code>personal-website-temp</code> 已废弃，请使用下方正确仓库名）。
+              </p>
+            </div>
+          </header>
+
+          <section id="links" class="doc-section">
+            <h2>仓库与演示</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  仓库：<a href="https://github.com/songzhiyuan98/personal-website-template" target="_blank" rel="noopener noreferrer">https://github.com/songzhiyuan98/personal-website-template</a>
+                </li>
+                <li>
+                  展示站（若与模板同步）：<a href="https://www.zhiyuansong.dev" target="_blank" rel="noopener noreferrer">www.zhiyuansong.dev</a>（以仓库 / Vercel 配置为准）
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="features" class="doc-section">
+            <h2>核心特性</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>双模板版本：</strong>求职者版（经历 + 项目）、研究者版（研究 + 教学）</li>
+                <li><strong>入门引导：</strong>交互式说明与文档，降低首次配置成本</li>
+                <li><strong>关于我：</strong>背景与职业目标可配置</li>
+                <li><strong>技能展示：</strong>SVG 图标 + 名称栅格</li>
+                <li><strong>教育时间线：</strong>学历或重要课程</li>
+                <li><strong>图集版块：</strong>照片与高光时刻</li>
+                <li><strong>高可定制：</strong>增删改版块顺序、导航栏与主题色</li>
+                <li><strong>部署：</strong>Vercel 流程与命令行说明</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="tech" class="doc-section">
+            <h2>技术栈</h2>
+            <div class="article-body">
+              <ul>
+                <li>Next.js、React、TypeScript、Tailwind CSS</li>
+                <li>部署：Vercel</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="metrics" class="doc-section">
+            <h2>采用与反馈（README 口径）</h2>
+            <div class="article-body">
+              <ul>
+                <li>模板下载量 100+（自述，非 GitHub API 硬计数）</li>
+                <li>部署成功率约 95%（自述）</li>
+                <li>用户满意度约 4.9/5（自述）</li>
+              </ul>
+              <p class="muted">GitHub 上可见约 10 star、7 fork（随时间变化，以仓库页面为准）。</p>
+            </div>
+          </section>
+
+          <section id="quickstart" class="doc-section">
+            <h2>快速开始</h2>
+            <div class="article-body">
+              <pre class="doc-pre">git clone https://github.com/songzhiyuan98/personal-website-template.git
+cd personal-website-template
+npm install</pre>
+              <ol>
+                <li>在 <code>app</code> 下打开主要页面（如 <code>page.tsx</code>，以仓库实际路径为准）浏览结构</li>
+                <li>选择求职者或研究者模板思路，改版块 id、标题与文案</li>
+                <li>填入个人信息、技能与项目 / 论文亮点</li>
+                <li>本地预览：<code>npm run dev</code> → <code>http://localhost:3000</code></li>
+                <li>生产部署：安装 Vercel CLI 后执行 <code>vercel</code>，或连接 GitHub 仓库到 Vercel 面板</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="contributing" class="doc-section">
+            <h2>贡献与许可</h2>
+            <div class="article-body">
+              <p>欢迎 Pull Request 与 Issue；建议与反馈可直接在仓库讨论。</p>
+              <p><strong>License：</strong>MIT。</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98/personal-website-template" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

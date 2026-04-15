@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# 编辑器 / 本地工具（不上传）
+.cursor/

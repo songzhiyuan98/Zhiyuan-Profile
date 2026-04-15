@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Zhiyuan Song</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="#work">项目</a>
+          <a href="#research">研究</a>
+          <a href="#writing">随笔</a>
+          <a class="lang-switch" href="/en/" hreflang="en">English</a>
+          <a class="btn-dark" href="mailto:songzhiyuan98@gmail.com">联系我</a>
+        </div>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1>Zhiyuan Song</h1>
+      <p class="hero__sub">
+        收录近期工作、进度、研究与笔记里的感悟等。
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="work">
+      <div class="section__head">
+        <h2>项目</h2>
+        <span class="section__kicker">Projects</span>
+      </div>
+      <!--
+        首页区块顺序：项目（求职）→ 研究（背书）→ 随笔（观点与品牌）。
+        年份分组：2026 → 2025 → 2024，组内自新到旧。CTA：项目区「阅读项目文档」；研究区「阅读摘要」；随笔区「阅读全文」。
+        卡片描述：定位一句 + 技术/形态一句，与 kicker 少重复；卡片标题（h3）统一为英文。
+      -->
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2026">2026</h3>
+        <div class="card-grid">
+          <a class="card" href="projects/investment-skill-architecture-v2.html">
+            <span class="card__kicker">Skill · Multi-agent · 组合与纪律</span>
+            <h3>Investment Skill Architecture</h3>
+            <p>
+              面向个人股票账户的决策类 Skill 设想：像一支小型投研团队一样，帮你看清持仓与关注池、新闻与风险、机会成本，并在真实资金约束（例如卖出资金次日才可用）下整理思路、减少情绪化操作；内文是角色分工与调用方式的架构说明，非投资建议。
+            </p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+          <a class="card" href="projects/tsla-options-war-room.html">
+            <span class="card__kicker">Skill · 期权 · 2026-04</span>
+            <h3>TSLA Options War Room</h3>
+            <p>
+              Claude Code Skill，面向 TSLA 短期期权：本地行情快照与交易日志，多角色投委会式复盘但对用户单一出口。规则化
+              DTE、时间框架与仓位纪律（含 QQQ 语境）。
+            </p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+          <a class="card" href="projects/vpct-vpip-controller.html">
+            <span class="card__kicker">iOS · SwiftUI · 2026 · App Store 审核中</span>
+            <h3>VPCT – VPIP Controller</h3>
+            <p>
+              iOS 牌局辅助：实时 VPIP / tilt、多层检测器与「仅 danger 进冷静期」策略。SwiftUI + SwiftData，Guest
+              可开局，登录后同步统计与生涯数据。
+            </p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+          <a class="card" href="projects/klinelens.html">
+            <span class="card__kicker">开源 · Docker · 自 2026-01</span>
+            <h3>KLineLens</h3>
+            <p>
+              开源 K 线结构终端：多周期市场结构、可插拔数据源与策略、内置 0DTE 状态机。MIT；Next.js + FastAPI
+              + Python Core，Docker 自托管。
+            </p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+          <a class="card" href="projects/novel-studio.html">
+            <span class="card__kicker">Multi-agent · MVP · hybrid RAG · 2026-01</span>
+            <h3>Novel Studio</h3>
+            <p>
+              网文连载多 Agent 工作台：确定性编排、多模型 Worker、正典与蓝图闭环。Hybrid RAG：MVP 以 L0
+              场景卡为主，L1 语义检索在门禁通过后叠加。
+            </p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+        </div>
+      </div>
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2025">2025</h3>
+        <div class="card-grid">
+          <a class="card" href="projects/study-assistant.html">
+            <span class="card__kicker">Monorepo · Next.js · pgvector · 2025-09</span>
+            <h3>AI Study Assistant</h3>
+            <p>
+              教材向 Monorepo：文档解析与分段、pgvector 语义检索、OpenAI 生成总结与闪卡等。Fastify API + BullMQ
+              Worker；模拟考试与审计合规在路线图中，MIT。
+            </p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+          <a class="card" href="projects/talentsync.html">
+            <span class="card__kicker">Fullstack · AI application · 2025-03</span>
+            <h3>TalentSync</h3>
+            <p>
+              全栈 AI 求职流：简历–JD 匹配、求职信与 PDF、职位与投递状态。React + Express + MongoDB；Stripe
+              订阅与 Google OAuth，线上可跑通主流程。
+            </p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+          <a class="card" href="projects/personal-website-template.html">
+            <span class="card__kicker">Next.js · Portfolio · MIT · 2025-01</span>
+            <h3>Portfolio Website Template</h3>
+            <p>
+              Next.js 开源个人站模板：求职者版与学者版，模块化版块、技能图标与时间线。TypeScript + Tailwind，MIT，Vercel
+              部署；仓库公开维护。
+            </p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+        </div>
+      </div>
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2024">2024</h3>
+        <div class="card-grid">
+          <a class="card" href="projects/animehub.html">
+            <span class="card__kicker">React · Express · MongoDB · 2024</span>
+            <h3>AnimeHub</h3>
+            <p>
+              首个全栈番剧社区：Jikan 拉取与缓存、评分评论、帖子富文本与标签、Socket
+              通知与个人中心。React 18 + Redux + MUI；Express + MongoDB + JWT，MIT。
+            </p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="research">
+      <div class="section__head">
+        <h2>研究</h2>
+        <span class="section__kicker">Research</span>
+      </div>
+      <!-- 研究卡片：kicker 与描述中文；标题（h3）英文，与项目区一致 -->
+      <div class="card-grid">
+        <a class="card" href="projects/research-sleep-charts.html">
+          <span class="card__kicker">已被 Nature 接收 · 预印本 2025-08</span>
+          <h3>Sleep chart · multi-organ aging clocks</h3>
+          <p>
+            UK Biobank / MULTI：睡眠时长与 23 个器官–组学衰老钟、遗传与生存、晚年抑郁路径；Sleep Chart
+            交互门户与 PMC 全文。
+          </p>
+          <span class="card__cta">阅读摘要 →</span>
+        </a>
+        <a class="card" href="projects/research-mribag.html">
+          <span class="card__kicker">Nature Medicine · 开放获取 · 2025-10</span>
+          <h3>MRI multi-organ biological age (MRIBAG)</h3>
+          <p>
+            七类 MRI 器官年龄差：蛋白组、代谢组、GWAS、可成药靶点、疾病与死亡风险及 A4 试验认知分层；正文见
+            Nature Medicine 开放获取链接。
+          </p>
+          <span class="card__cta">阅读摘要 →</span>
+        </a>
+        <div class="card card--placeholder">
+          <span class="card__kicker">Placeholder</span>
+          <h3>Next paper note</h3>
+          <p>下一篇合作或方法学笔记将放在此处。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="writing">
+      <div class="section__head">
+        <h2>随笔</h2>
+        <span class="section__kicker">Notes</span>
+      </div>
+      <div class="card-grid">
+        <a class="card" href="projects/writing-agent-skill-constraints.html">
+          <span class="card__kicker">Agent · Skill · Engineering · 2026-04</span>
+          <h3>Agent skills: constraints over scripted workflows</h3>
+          <p>
+            更看好用<strong>约束与边界</strong>（安全、工具权限、输出形状、何时必须停手）去塑形 Agent
+            Skill，而不是把「规定路径 + 固定工作流」写死；后者容易在真实需求变化时整体失效。
+          </p>
+          <span class="card__cta">阅读全文 →</span>
+        </a>
+        <div class="card card--placeholder">
+          <span class="card__kicker">Placeholder</span>
+          <h3>Next note</h3>
+          <p>后续文章将接在此处。</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a class="lang-switch" href="/en/" hreflang="en">English</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a
+            href="https://scholar.google.com/citations?user=wh3s5WkAAAAJ&amp;hl=zh-CN"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Scholar</a>
+          <a href="mailto:songzhiyuan98@gmail.com">Email</a>
+        </nav>
+      </div>
+    </footer>
+
+  </body>
+</html>

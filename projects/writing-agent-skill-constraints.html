@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Agent Skill 与工程实践：用约束与边界塑形智能体，优于把固定工作流写死；涉及工具权限、输出契约、停机条件与可演进性。"
+    />
+    <title>Agent skills: constraints over scripted workflows · 随笔</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/writing-agent-skill-constraints.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <!-- 返回首页随笔区 -->
+        <a href="../index.html#writing">← 返回首页</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">缘起</a>
+            <a href="#problem">规定路径的问题</a>
+            <a href="#constraints">约束与边界</a>
+            <a href="#practice">怎么落到 Skill</a>
+            <a href="#closing">收束</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">随笔 · Agent · Skill · 工程判断 · 2026-04</p>
+            <h1 class="article-title">Agent skills: constraints over scripted workflows</h1>
+            <p class="article-meta" style="margin-bottom: 12px">中文正文 · 个人经验与观点，非产品文档</p>
+            <div class="article-body">
+              <p>
+                最近在搭 Claude Code Skill、看多 Agent 应用时，有一个判断越来越清晰：<strong>把智能体放进清晰可验证的约束与边界里，往往比写死一条「规定路径 + 固定工作流」更稳、更好演进。</strong>后者在 demo
+                里很爽，一旦真实需求分叉，就容易整段作废或越补越乱。
+              </p>
+            </div>
+          </header>
+
+          <section id="problem" class="doc-section">
+            <h2>规定路径什么时候会吃亏</h2>
+            <div class="article-body">
+              <p>
+                「先 A 再 B 再 C」的脚本式流程，本质是假设<strong>世界状态可枚举、用户意图可预测</strong>。但工程里常见的是：工具返回值脏、用户半路改目标、上下文被截断、模型偶发抽风。流程写得越细，分支爆炸越快；每个新 corner case
+                都要改主流程，维护成本指数上升。
+              </p>
+              <p>
+                更麻烦的是：<strong>工作流把「怎么做」绑死了</strong>，却把「什么绝对不能做」「什么算完成任务」讲得不清楚。结果是模型在不该调用工具时调用、该停手时继续编、该拒答时硬答——这些都不是多塞两个
+                if 能根治的，需要<strong>边界语义</strong>前置。
+              </p>
+            </div>
+          </section>
+
+          <section id="constraints" class="doc-section">
+            <h2>我更愿意投资在「约束与边界」上</h2>
+            <div class="article-body">
+              <p>几条对我自己最有用的轴（彼此叠加，而不是二选一）：</p>
+              <ul>
+                <li>
+                  <strong>安全与权限：</strong>哪些 MCP / 子进程永远不可达、哪些目录只读、敏感字段不进日志——比「第 3
+                  步必须调用某某工具」优先。
+                </li>
+                <li>
+                  <strong>输出形状与契约：</strong>给用户什么粒度（一句结论 vs 可执行 checklist）、何时必须声明不确定性、引用与代码块规则——减少「看似专业其实幻觉」的损害面。
+                </li>
+                <li>
+                  <strong>停机与升级条件：</strong>什么情况下必须停手问人、什么信号触发降级（例如只读检索不写盘）、何时把整个回答退回重试——比把 happy path 写满更有性价比。
+                </li>
+                <li>
+                  <strong>可观测与可回放：</strong>边界触发时留下最小必要轨迹，方便事后对照 prompt / 工具版本——这是「约束」能持续迭代的燃料。
+                </li>
+              </ul>
+              <p>
+                直觉上，<strong>约束是「护栏」</strong>，允许模型在护栏内用自身推理补全路径；<strong>工作流是「轨道」</strong>，一旦出轨就要全局改轨。前沿
+                AI 工程里，模型能力在变、工具在变，轨道老化得比护栏快。
+              </p>
+            </div>
+          </section>
+
+          <section id="practice" class="doc-section">
+            <h2>落到 Agent Skill 时我会怎么想</h2>
+            <div class="article-body">
+              <p>
+                Skill 的 <code>description</code>、触发词、规则文件，我会优先写清：<strong>何时启用、何时必须拒绝、工具与数据的边界、对用户可见的输出策略</strong>。具体「第几步调用哪个子
+                agent」反而倾向保持松散，用检查点（checkpoint）而不是细粒度脚本去串——除非领域真的强监管（金融清算、医疗处方等），那本来就该偏轨道。
+              </p>
+              <p>
+                和「规定路径」相比，<strong>约束优先</strong>更像在写小型「宪法」：条文少、可辩论、可版本化；工作流更像行政法规——条越多，越容易与现场脱节。
+              </p>
+            </div>
+          </section>
+
+          <section id="closing" class="doc-section">
+            <h2>收束</h2>
+            <div class="article-body">
+              <p>
+                不是反对工作流——反对的是<strong>用工作流替代边界思考</strong>。Agent / Skill
+                真正难的是：在开放环境里做可靠决策；这件事上，边界比路径更长寿。后面若实践有变，会再写一篇把这条判断推翻或细化。
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚">
+          <a href="../index.html">首页</a>
+          <a href="../index.html#writing">随笔</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

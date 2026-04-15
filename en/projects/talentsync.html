@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="TalentSync: full-stack AI career assistant—resume and job matching, smart cover letters, Stripe subscriptions, and a live demo."
+    />
+    <title>TalentSync · Project documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/talentsync.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview</a>
+            <a href="#links">Demo &amp; repository</a>
+            <a href="#features">Core features</a>
+            <a href="#subscription">Stripe plans</a>
+            <a href="#tech">Tech stack</a>
+            <a href="#structure">Directory layout</a>
+            <a href="#quickstart">Quick start</a>
+            <a href="#api">API summary</a>
+            <a href="#security">Security</a>
+            <a href="#contributing">Contributing &amp; license</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              Full stack · MIT · since Mar 2025 · last maintenance ~three months ago
+            </p>
+            <h1 class="article-title">TalentSync</h1>
+            <p class="article-meta" style="margin-bottom: 12px">
+              AI-Powered Career Assistant
+            </p>
+            <div class="article-body">
+              <p>
+                TalentSync is a full-stack AI career assistant built with React, Express, and MongoDB. It integrates OpenAI and Google Gemini for multi-angle resume–job matching (ATS, ranking, HR lens, technical lens), personalized cover letters with
+                PDF export, job tracking with application states, and Stripe subscriptions (Free / Premium / Enterprise) plus Google OAuth sign-in.
+              </p>
+              <p>
+                Demo link, open repository, and feature details are below; environment variables, REST API, and deployment notes follow the GitHub README.
+              </p>
+            </div>
+          </header>
+
+          <section id="links" class="doc-section">
+            <h2>Demo &amp; repository</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  Repository:
+                  <a href="https://github.com/songzhiyuan98/TalentSync" target="_blank" rel="noopener noreferrer">https://github.com/songzhiyuan98/TalentSync</a>
+                </li>
+                <li>
+                  Live demo:
+                  <a href="https://talentsync-green.vercel.app" target="_blank" rel="noopener noreferrer">https://talentsync-green.vercel.app</a>
+                </li>
+                <li>
+                  Contact:
+                  <a href="mailto:songzhiyuan98@gmail.com">songzhiyuan98@gmail.com</a>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="features" class="doc-section">
+            <h2>Core features</h2>
+            <div class="article-body">
+              <h3>Resume–job matching</h3>
+              <ul>
+                <li>
+                  <strong>ATS view:</strong> keyword fit, format checks, pass-probability style scoring
+                </li>
+                <li>
+                  <strong>Ranking view:</strong> predicted percentile vs top candidates
+                </li>
+                <li>
+                  <strong>HR lens:</strong> first impression, interview tips, communication gaps
+                </li>
+                <li>
+                  <strong>Technical lens:</strong> credibility, risk flags, likely interview topics
+                </li>
+              </ul>
+              <h3>Smart cover letters</h3>
+              <ul>
+                <li>Generate tailored letters from resume + target role</li>
+                <li>Highlight experience-to-requirement fit</li>
+                <li>Multiple languages and tones; PDF export</li>
+              </ul>
+              <h3>Job tracking</h3>
+              <ul>
+                <li>Parse JDs into structured records</li>
+                <li>Statuses: saved, applied, interviewing, offer, rejected, etc.</li>
+              </ul>
+              <h3>Accounts</h3>
+              <ul>
+                <li>Email registration / sign-in</li>
+                <li>Google OAuth 2.0</li>
+                <li>JWT; plan tiers with Stripe billing</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="subscription" class="doc-section">
+            <h2>Stripe subscriptions</h2>
+            <div class="article-body">
+              <p>
+                Full commercial path: <strong>Stripe</strong>
+                checkout, webhooks, differentiated entitlements per tier.
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Capability</th>
+                    <th>Free</th>
+                    <th>Premium</th>
+                    <th>Enterprise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Gemini models</td>
+                    <td>Unlimited</td>
+                    <td>Unlimited</td>
+                    <td>Unlimited</td>
+                  </tr>
+                  <tr>
+                    <td>GPT-4o analysis</td>
+                    <td>~1/day</td>
+                    <td>Unlimited</td>
+                    <td>Unlimited</td>
+                  </tr>
+                  <tr>
+                    <td>GPT-o1 analysis</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td>Unlimited</td>
+                  </tr>
+                  <tr>
+                    <td>Cover letter generation</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="muted">
+                Exact quotas and pricing follow <code>README.md</code> and your Stripe Dashboard configuration.
+              </p>
+            </div>
+          </section>
+
+          <section id="tech" class="doc-section">
+            <h2>Tech stack</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Frontend</th>
+                    <th>Version / notes (from README)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Framework</td>
+                    <td>React 18.2</td>
+                  </tr>
+                  <tr>
+                    <td>Routing</td>
+                    <td>react-router-dom v6.30</td>
+                  </tr>
+                  <tr>
+                    <td>State</td>
+                    <td>Redux Toolkit v2.6</td>
+                  </tr>
+                  <tr>
+                    <td>Styling</td>
+                    <td>Tailwind CSS + Material-UI v7</td>
+                  </tr>
+                  <tr>
+                    <td>Motion / PDF / charts</td>
+                    <td>Framer Motion; jspdf, html2pdf.js; ECharts v5.6</td>
+                  </tr>
+                </tbody>
+              </table>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Backend &amp; deploy</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Runtime / framework</td>
+                    <td>Node.js + Express.js v4.21</td>
+                  </tr>
+                  <tr>
+                    <td>Database</td>
+                    <td>MongoDB + Mongoose v8.13</td>
+                  </tr>
+                  <tr>
+                    <td>Auth</td>
+                    <td>JWT + Google OAuth + bcryptjs</td>
+                  </tr>
+                  <tr>
+                    <td>AI</td>
+                    <td>OpenAI (GPT-4o, GPT-o1) + Google Gemini</td>
+                  </tr>
+                  <tr>
+                    <td>Payments</td>
+                    <td>Stripe v18</td>
+                  </tr>
+                  <tr>
+                    <td>Files</td>
+                    <td>multer, pdf-parse, pdfkit, etc.</td>
+                  </tr>
+                  <tr>
+                    <td>Deploy</td>
+                    <td>Frontend Vercel; backend Railway; database MongoDB Atlas</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="structure" class="doc-section">
+            <h2>Repository layout (summary)</h2>
+            <div class="article-body">
+              <pre class="doc-pre">TalentSync/
+├── backend/           # Express: models, controllers, routes, services
+├── frontend/          # React: pages, components, store, services
+├── README.md
+├── PROJECT_DOCUMENTATION.md
+├── CONTRIBUTING.md
+└── LICENSE</pre>
+            </div>
+          </section>
+
+          <section id="quickstart" class="doc-section">
+            <h2>Quick start</h2>
+            <div class="article-body">
+              <p>Prereqs: Node.js ≥ 16, MongoDB (local or Atlas), npm or yarn.</p>
+              <pre class="doc-pre">git clone https://github.com/songzhiyuan98/TalentSync.git
+cd TalentSync   # or your local folder name
+
+cd backend && npm install
+cd ../frontend && npm install
+
+# Configure backend/.env and frontend/.env:
+# MONGO_URI, OPENAI_API_KEY, GEMINI_API_KEY, JWT_SECRET,
+# Google OAuth, Stripe, API_URL, etc. — see README
+
+cd backend && npm start    # default :3001
+cd frontend && npm start   # default :3000</pre>
+              <p>Open <code>http://localhost:3000</code>.</p>
+            </div>
+          </section>
+
+          <section id="api" class="doc-section">
+            <h2>API summary</h2>
+            <div class="article-body">
+              <p>
+                Base prefix <code>/api/</code>. Full list in
+                <code>PROJECT_DOCUMENTATION.md</code>.
+              </p>
+              <ul>
+                <li>
+                  <strong>Auth:</strong>
+                  <code>POST /api/auth/register</code>, <code>login</code>, <code>GET /api/auth/google</code>, <code>/me</code>, <code>logout</code>
+                </li>
+                <li>
+                  <strong>Resumes:</strong>
+                  upload, list, active, set-active, delete
+                </li>
+                <li><strong>Jobs:</strong> parse, save, user list, detail</li>
+                <li><strong>Analysis:</strong> create, detail, list</li>
+                <li><strong>Cover letters:</strong> generate, detail, PDF download</li>
+                <li>
+                  <strong>Billing:</strong> checkout session, subscription status, cancel subscription
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="security" class="doc-section">
+            <h2>Security</h2>
+            <div class="article-body">
+              <ul>
+                <li>JWT; bcrypt for passwords</li>
+                <li>Google OAuth 2.0</li>
+                <li>Stripe payment flow</li>
+                <li>Upload size limits (e.g. 10MB), CORS, Helmet, etc.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="contributing" class="doc-section">
+            <h2>Contributing &amp; license</h2>
+            <div class="article-body">
+              <p>Pull requests welcome; process in <code>CONTRIBUTING.md</code>.</p>
+              <p><strong>License:</strong> MIT.</p>
+              <p class="muted">
+                Credits and third-party services are listed in the GitHub README (OpenAI, Google Gemini, Stripe, Vercel, Railway, etc.).
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98/TalentSync" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://talentsync-green.vercel.app" target="_blank" rel="noopener noreferrer">Demo</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

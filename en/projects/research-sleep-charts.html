@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Sleep and multi-organ, multi-omic biological aging clocks: 23 BAGs, GAMs, genetics and survival, late-life depression mediation. medRxiv; PMC full text; accepted by Nature (publication pending)."
+    />
+    <title>Sleep charts · Multi-organ multi-omic aging clocks · Research notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/research-sleep-charts.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview</a>
+            <a href="#numbers">Key numbers</a>
+            <a href="#abstract">Abstract</a>
+            <a href="#background">Background</a>
+            <a href="#methods">Methods (summary)</a>
+            <a href="#results-bag">Results · Sleep &amp; BAG</a>
+            <a href="#results-genetics">Results · Genetics &amp; survival</a>
+            <a href="#results-lld">Results · Late-life depression</a>
+            <a href="#discussion">Discussion &amp; limitations</a>
+            <a href="#resources">Data &amp; code</a>
+            <a href="#citation">Citation</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              Preprint · medRxiv · Aug 2025 · indexed on PMC / PubMed ·
+              <strong>Accepted by Nature</strong> (final publication pending)
+            </p>
+            <h1 class="article-title">
+              Sleep chart of biological aging clocks across organs and omics
+            </h1>
+            <p class="article-meta" style="margin-bottom: 12px">
+              The MULTI study, Cliodhna Kate O&rsquo;Toole, <strong>Zhiyuan Song</strong>, Filippos
+              Anagnostakis, Zhijian Yang, Ye Ella Tian, Michael R Duggan, Chunrui Zou, Yue Leng, Yi
+              Cai, Wenjia Bai, Cynthia HY Fu, Michael S Rafii, Paul Aisen, Gao Wang, Philip L De
+              Jager, Jian Zeng, Hamilton Se-Hwee Oh, Xia Zhou, Keenan A Walker, Daniel W Belsky, Andrew
+              Zalesky, Eleanor M Simonsick, Susan M Resnick, Luigi Ferrucci, Christos Davatzikos, and
+              <strong>Junhao Wen</strong> (corresponding author)
+            </p>
+            <div class="article-body">
+              <p>
+                <strong>Full preprint (PMC):</strong>
+                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12363694/" target="_blank" rel="noopener noreferrer">https://pmc.ncbi.nlm.nih.gov/articles/PMC12363694/</a>
+                ·
+                <a href="https://doi.org/10.1101/2025.08.08.25333313" target="_blank" rel="noopener noreferrer">medRxiv DOI</a>
+                ·
+                <a href="https://pubmed.ncbi.nlm.nih.gov/40832429/" target="_blank" rel="noopener noreferrer">PubMed PMID 40832429</a>
+              </p>
+              <p class="muted">
+                Personal reading notes; for authoritative wording use the forthcoming <em>Nature</em> PDF once published.
+              </p>
+            </div>
+          </header>
+
+          <section id="numbers" class="doc-section">
+            <h2>Key numbers</h2>
+            <div class="stat-strip">
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">23</div>
+                <div class="stat-strip__label">BAGs (protein / metabolic / MRI)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">9</div>
+                <div class="stat-strip__label">Significant U-shapes (P &lt; 0.05/23)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">720</div>
+                <div class="stat-strip__label">Imaging phenotypes (IDPs, GAM)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">~500k</div>
+                <div class="stat-strip__label">UK Biobank sleep duration (field 1160)</div>
+              </div>
+            </div>
+            <div class="stat-strip" style="margin-top: 16px">
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">5</div>
+                <div class="stat-strip__label">GWAS loci (abnormal vs normal sleep)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">153</div>
+                <div class="stat-strip__label">Genetic correlations (P &lt; 0.05/527)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">153</div>
+                <div class="stat-strip__label">Cox disease links (P &lt; 0.05/726)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">1.50 / 1.40</div>
+                <div class="stat-strip__label">All-cause mortality HR (short / long sleep vs [6–8] h)</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="abstract" class="doc-section">
+            <h2>Abstract (aligned with the preprint)</h2>
+            <div class="article-body">
+              <p>
+                Adequate, regular sleep supports healthy aging and longevity. This work introduces a “Sleep Chart” mapping self-reported sleep duration to
+                <strong>23 biological aging clocks</strong> spanning 17 organ systems or tissues across three omics layers (imaging, plasma proteomics, plasma metabolomics). Across nine brain and somatic systems and all three omics, both short sleep (&lt;6 h) and long sleep (&gt;8 h) associate with higher biological age gaps (BAGs) in a systemic
+                <strong>U-shaped</strong> pattern; optimal sleep differs by organ and sex (roughly 6.4–7.8 h). Relative to normal sleep ([6–8] h), short and long sleep also align with higher risks of extracerebral diseases and <strong>all-cause mortality</strong>, supported by genetic correlation and time-to-event analyses (e.g., migraine, depression, diabetes). Short vs long sleep relate to <strong>late-life depression</strong> through different pathways: long sleep is more plausibly mediated by biological aging, whereas short sleep links more directly to outcomes. Mendelian randomization does not support pervasive causal effects of disease on sleep disturbance, yet sleep may still partly reflect latent disease burden. Overall, the U-shape is more consistent with <strong>modifiable sleep issues</strong> than pure genetic susceptibility, suggesting sleep optimization may support healthier aging, lower disease risk, and longer life. Interactive portal:
+                <a href="https://labs-laboratory.com/sleepchart" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/sleepchart</a>.
+              </p>
+            </div>
+          </section>
+
+          <section id="background" class="doc-section">
+            <h2>Background</h2>
+            <div class="article-body">
+              <p>
+                Multi-organ, multi-omic biological age gaps (MRIBAG, ProtBAG, MetBAG, etc.) capture aging beyond calendar age. Prior work hints at U-shaped sleep–clock relationships; here, in UK Biobank, we test whether the pattern generalizes across organs, omics layers, and sex, integrating FinnGen, PGC, TriNetX, MESA, and more under the
+                <strong>MULTI</strong> framework to connect sleep disturbance with genetics, incidence, mortality, and late-life depression pathways.
+              </p>
+            </div>
+          </section>
+
+          <section id="methods" class="doc-section">
+            <h2>Methods (summary)</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <strong>Sleep vs BAG:</strong> self-reported duration (field 1160), window 4–10 h; GAMs (<code>mgcv</code>, cubic splines) for 23 BAGs, 720 IDPs, 2,923 plasma proteins (342 organ-enriched), 327 metabolites (107 organ-related); covariates include demographics, anthropometrics, blood pressure, assessment center, disease indicators, and (some models) 40 genetic PCs; Bonferroni within analysis families.
+                </li>
+                <li>
+                  <strong>Genetics:</strong> European-ancestry UKBB; REGENIE GWAS for short vs [6–8] h and long vs [6–8] h; FUMA loci, MAGMA (GTEx v8), LDSC genetic correlation with 527 FinnGen/PGC traits; extended data on BAG polygenic scores vs sleep.
+                </li>
+                <li>
+                  <strong>Survival:</strong> Cox models for 726 de-novo ICD-10 endpoints and all-cause mortality; TriNetX validation using insomnia/hypersomnia as proxies for short/long sleep.
+                </li>
+                <li>
+                  <strong>Mediation:</strong> structural equation models (<code>lavaan</code>, bootstrap) for sleep → MRIBAG → LLD1/LLD2; reverse specifications and disease→sleep MR sensitivity analyses.
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="results-bag" class="doc-section">
+            <h2>Results · Sleep &amp; biological aging clocks</h2>
+            <div class="article-body">
+              <p>
+                Nine of 23 BAGs show significant nonlinear (U-shaped) associations with sleep (P &lt; 0.05/23), spanning brain, lung, liver, immune, and skin ProtBAGs, endocrine MetBAGs, and brain, adipose, and pancreatic MRIBAGs; optimal sleep is roughly 6.4–7.8 h (women) and 6.4–7.7 h (men). The pattern extends across 720 IDPs, 342 organ-enriched proteins, and 107 organ-related metabolites. Downstream analyses bin sleep as short (&lt;6 h), normal [6–8] h, long (&gt;8 h), with sensitivity analyses using [7–9] h as “normal.”
+              </p>
+            </div>
+          </section>
+
+          <section id="results-genetics" class="doc-section">
+            <h2>Results · Genetics &amp; survival</h2>
+            <div class="article-body">
+              <p>
+                GWAS for abnormal vs normal sleep yields five genome-wide significant loci; MAGMA shows short-sleep genetics enriched in multiple brain regions. BAG PRS–sleep relationships largely lose the U-shape, suggesting environmental drivers with partial genetic overlap for some endocrine/metabolic clocks. LDSC links abnormal sleep to 153 disease traits (short sleep more systemic; long sleep more neuropsychiatric). Cox models surface 153 significant disease associations (short sleep dominant; HRs ~1.2–7.0); all-cause mortality HRs vs [6–8] h are ~1.50 (short) and ~1.40 (long). TriNetX aligns with UK Biobank conclusions.
+              </p>
+            </div>
+          </section>
+
+          <section id="results-lld" class="doc-section">
+            <h2>Results · Late-life depression pathways</h2>
+            <div class="article-body">
+              <p>
+                Structural equations from baseline sleep → follow-up MRIBAG → LLD subtypes suggest <strong>short sleep</strong> acts more through <strong>direct paths</strong> toward LLD, with adipose MRIBAG among mediators; <strong>long sleep</strong> leans more on organ mediators (especially brain MRIBAG). Reverse MR does not support broad causal disease→sleep effects; bidirectional confounding cannot be fully excluded.
+              </p>
+            </div>
+          </section>
+
+          <section id="discussion" class="doc-section">
+            <h2>Discussion &amp; limitations (compressed)</h2>
+            <div class="article-body">
+              <p>
+                The Sleep Chart situates sleep duration alongside multi-organ, multi-omic aging burden and systemic outcomes as a plausibly modifiable exposure. Limitations include self-reported sleep, predominantly European GWAS, residual confounding (long sleep may flag subclinical illness), and the need for wearables and independent cohorts. Full methods, figures, and interactives are on the Sleep Chart portal and in the PMC full text.
+              </p>
+            </div>
+          </section>
+
+          <section id="resources" class="doc-section">
+            <h2>Data &amp; code</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <a href="https://labs-laboratory.com/sleepchart" target="_blank" rel="noopener noreferrer">Sleep Chart portal</a>
+                  — summary statistics, plots, interactive browsing
+                </li>
+                <li>
+                  Genetic correlation browser
+                  <a href="https://labs-laboratory.com/sleepchart/sleep_gc.html" target="_blank" rel="noopener noreferrer">sleep_gc.html</a>
+                  · Cox visualization
+                  <a href="https://labs-laboratory.com/sleepchart/sleep_cox.html" target="_blank" rel="noopener noreferrer">sleep_cox.html</a>
+                </li>
+                <li>
+                  <a href="https://labs-laboratory.com/medicine/" target="_blank" rel="noopener noreferrer">MEDICINE</a>
+                  — GWAS for 23 BAGs
+                </li>
+                <li>
+                  Synapse:
+                  <a href="https://www.synapse.org/Synapse:syn64923248/wiki/63099289" target="_blank" rel="noopener noreferrer">syn64923248</a>,
+                  <a href="https://www.synapse.org/Synapse:syn68602065/wiki/63332990" target="_blank" rel="noopener noreferrer">syn68602065</a>
+                </li>
+                <li>
+                  Software stack per paper and PMC supplements (MLNI, mgcv, GAMLSS, lifelines, lavaan, STRING, MetaboAnalyst, REGENIE, LDSC, FUMA, etc.).
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="citation" class="doc-section">
+            <h2>Citation (provisional)</h2>
+            <div class="article-body">
+              <p class="muted">
+                After <em>Nature</em> publication, cite the journal version. Until then, medRxiv + PMC:
+              </p>
+              <p>
+                The MULTI study <em>et al.</em> Sleep chart of biological aging clocks across
+                organs and omics. <em>medRxiv</em> (2025).
+                <a href="https://doi.org/10.1101/2025.08.08.25333313" target="_blank" rel="noopener noreferrer">10.1101/2025.08.08.25333313</a>;
+                PMID
+                <a href="https://pubmed.ncbi.nlm.nih.gov/40832429/" target="_blank" rel="noopener noreferrer">40832429</a>;
+                full text
+                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12363694/" target="_blank" rel="noopener noreferrer">PMC12363694</a>.
+                <strong>Accepted by Nature</strong> (in press).
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="https://labs-laboratory.com/sleepchart" target="_blank" rel="noopener noreferrer">Sleep Chart</a>
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12363694/" target="_blank" rel="noopener noreferrer">Preprint (PMC)</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Investment Skill full system design v2.0: constitution layer, routing levels, role boundaries, state model, output contracts, upgrade/downgrade rules."
+    />
+    <title>Investment Skill Full System Design · Architecture v2.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <!-- EN mirror for architecture v2.0 with same visual shell -->
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="/projects/investment-skill-architecture-v2.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Document version switch">
+        <a class="doc-version-switch__btn is-active" href="/en/projects/investment-skill-architecture-v2.html">Architecture v2.0</a>
+        <a class="doc-version-switch__btn" href="/en/projects/investment-skill-architecture.html">Architecture v1.0</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Positioning</a>
+            <a href="#goal">1. System goal</a>
+            <a href="#not-doing">2. What this is not</a>
+            <a href="#philosophy">3. Core philosophy</a>
+            <a href="#constitution">4. Constitution layer</a>
+            <a href="#outer-skill">5. Outer Skill layer</a>
+            <a href="#router">6. Router and levels</a>
+            <a href="#internal-team">7. Internal team</a>
+            <a href="#chief">8. Chief layer</a>
+            <a href="#market-risk">9. Market and risk layer</a>
+            <a href="#research">10. Research layer</a>
+            <a href="#execution-state">11. Execution and state</a>
+            <a href="#iteration">12. Iteration model</a>
+            <a href="#workflow">13. Collaboration checkpoints</a>
+            <a href="#output-contract">14. Output contract</a>
+            <a href="#mvp">15. Minimum viable scope</a>
+            <a href="#dev-principles">16. Build rules for Codex</a>
+            <a href="#summary">17. Summary</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Architecture v2.0 · Top-level specification · Not financial advice</p>
+            <h1 class="article-title">Investment Skill Full System Design</h1>
+            <div class="article-body">
+              <p>
+                This is the system-level spec above individual prompts. It defines boundaries, routing principles,
+                role permissions, state model, output contracts, and upgrade/downgrade behavior.
+              </p>
+            </div>
+          </header>
+
+          <section id="goal" class="doc-section">
+            <h2>1. System goal</h2>
+            <div class="article-body">
+              <p>The multi-agent Skill supports personal investment decisions by tracking positions/watchlist, analyzing thesis + structure + market + news, comparing opportunity cost, and producing executable advice under real constraints (including settlement latency).</p>
+            </div>
+          </section>
+
+          <section id="not-doing" class="doc-section">
+            <h2>2. What this is not</h2>
+            <div class="article-body">
+              <ul>
+                <li>Not an auto-trading bot</li>
+                <li>Not a price oracle</li>
+                <li>Not a self-rewriting strategy engine</li>
+                <li>Not a “run full workflow every time” script</li>
+                <li>Not a long-report generator for its own sake</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="philosophy" class="doc-section">
+            <h2>3. Core philosophy</h2>
+            <div class="article-body">
+              <ul>
+                <li>Constraints first, paths second</li>
+                <li>Open reasoning, bounded roles</li>
+                <li>Remember state, not stale opinions</li>
+                <li>Quality of analysis over “guessing right” feeling</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="constitution" class="doc-section">
+            <h2>4. Constitution layer</h2>
+            <div class="article-body">
+              <h3>Allowed</h3>
+              <ul>
+                <li>Single-name analysis, cross-name comparison, portfolio adjustments</li>
+                <li>Formal decision card only when information is sufficient</li>
+                <li>Downgrade to scenario/principle mode when information is missing</li>
+              </ul>
+              <h3>Forbidden</h3>
+              <ul>
+                <li>Treat stale news as fresh catalyst</li>
+                <li>Execution-grade sizing without cash-state certainty</li>
+                <li>Heavy decision cards for single-name casual questions</li>
+                <li>Ignoring unsettled cash for same-day redeploy guidance</li>
+              </ul>
+              <h3>Stop / downgrade / upgrade</h3>
+              <p>Stop when key state is missing; downgrade on low-confidence/news timing gaps; upgrade when user explicitly asks for formal portfolio decision.</p>
+            </div>
+          </section>
+
+          <section id="outer-skill" class="doc-section">
+            <h2>5. Outer Skill layer</h2>
+            <div class="article-body">
+              <p>The outer layer receives the user question, classifies request type, chooses analysis depth, and controls output shape. It should not replace deep specialist analysis.</p>
+            </div>
+          </section>
+
+          <section id="router" class="doc-section">
+            <h2>6. Router and levels</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr><th>Level</th><th>Use case</th><th>Output</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Quick</td><td>Single-name explanation, no execution</td><td>Short direct answer</td></tr>
+                  <tr><td>Focused</td><td>1–2 names / partial position question</td><td>Mini Decision Note</td></tr>
+                  <tr><td>Full</td><td>Portfolio, rotation, capital deployment</td><td>Full Decision Card</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="internal-team" class="doc-section">
+            <h2>7. Internal team</h2>
+            <div class="article-body">
+              <div class="stat-strip">
+                <div class="stat-strip__item"><div class="stat-strip__value">1</div><div class="stat-strip__label">Chief coordination</div></div>
+                <div class="stat-strip__item"><div class="stat-strip__value">2</div><div class="stat-strip__label">Market and risk</div></div>
+                <div class="stat-strip__item"><div class="stat-strip__value">3</div><div class="stat-strip__label">Research</div></div>
+                <div class="stat-strip__item"><div class="stat-strip__value">4</div><div class="stat-strip__label">Execution and state</div></div>
+              </div>
+            </div>
+          </section>
+
+          <section id="chief" class="doc-section">
+            <h2>8. Chief layer</h2>
+            <div class="article-body">
+              <p>Chief Strategist is the final arbiter only in Full level. Must resolve conflicts and explain why one evidence class is weighted higher, without faking certainty.</p>
+            </div>
+          </section>
+
+          <section id="market-risk" class="doc-section">
+            <h2>9. Market and risk layer</h2>
+            <div class="article-body">
+              <p>Market Strategist labels environment; Risk Officer stress-tests fragility; News Agent extracts 24–48h catalysts and maps impact to macro, sector, names, and holdings.</p>
+            </div>
+          </section>
+
+          <section id="research" class="doc-section">
+            <h2>10. Research layer</h2>
+            <div class="article-body">
+              <p>Research Lead dispatches tasks, sets round focus, compares opportunity cost, and gives quality nudges. Ticker analysts (TSLA/NVDA/AMD/MU/SNDK/PLTR/COIN/HOOD) answer thesis-status-structure-risk-recheck consistently.</p>
+            </div>
+          </section>
+
+          <section id="execution-state" class="doc-section">
+            <h2>11. Execution and state</h2>
+            <div class="article-body">
+              <p>Position Manager converts conclusions into staged actions and must respect settled/unsettled cash and T+1 practicality. Portfolio State Tracker stores executable reality, not stale opinions.</p>
+            </div>
+          </section>
+
+          <section id="iteration" class="doc-section">
+            <h2>12. Iteration model</h2>
+            <div class="article-body">
+              <p>No self-modifying strategy. Allowed iteration is per-round focus updates by Research Lead and user-specified emphasis signals.</p>
+            </div>
+          </section>
+
+          <section id="workflow" class="doc-section">
+            <h2>13. Collaboration checkpoints</h2>
+            <div class="article-body">
+              <p>Default checkpoint flow: route level → state sufficiency → environment/risk/news → research focus → specialist outputs → execution layer → final synthesis (Full only).</p>
+            </div>
+          </section>
+
+          <section id="output-contract" class="doc-section">
+            <h2>14. Output contract</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>Quick:</strong> short, direct, no fake portfolio framing</li>
+                <li><strong>Mini Decision Note:</strong> conclusion, rationale, risks, next watchpoint</li>
+                <li><strong>Full Decision Card:</strong> action, driver, thesis status, risk, range, triggers, plan, settlement constraints, confidence</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="mvp" class="doc-section">
+            <h2>15. Minimum viable scope</h2>
+            <div class="article-body">
+              <p>Core first: Router, State Tracker, Chief, Position Manager, Research Lead, News, Market, Risk. Initial ticker set: TSLA, AMD, PLTR, COIN. Expand with SNDK/MU/NVDA/HOOD next.</p>
+            </div>
+          </section>
+
+          <section id="dev-principles" class="doc-section">
+            <h2>16. Build rules for Codex</h2>
+            <div class="article-body">
+              <ol>
+                <li>This document is above any single prompt</li>
+                <li>Implement boundaries/checkpoints/contracts first</li>
+                <li>No rigid “always full flow” router scripting</li>
+                <li>Define role/input/output/forbidden-scope for any new agent before adding</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="summary" class="doc-section">
+            <h2>17. Summary</h2>
+            <div class="article-body">
+              <p>The system is flexible for users, layered for teams, strict for execution, boundary-sensitive, and state-realistic.</p>
+              <p><strong>Essence:</strong> a constraint-first, checkpoint-driven, on-demand orchestrated investment multi-agent Skill.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

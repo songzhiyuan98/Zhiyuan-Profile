@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="动漫中心 AnimeHub：2024 全栈动漫社区；Jikan 检索与缓存、评分评论、帖子与 Socket 通知；React、Express、MongoDB，MIT。"
+    />
+    <!-- 页面标题：中文产品名 + 英文名 -->
+    <title>动漫中心（AnimeHub）· 项目文档</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/animehub.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← 返回首页</a>
+      </div>
+
+      <div class="doc-layout">
+        <!-- 侧栏锚点与 section id 对齐 -->
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">概述</a>
+            <a href="#links">仓库</a>
+            <a href="#features">功能特性</a>
+            <a href="#tech">技术栈</a>
+            <a href="#impl">实现要点</a>
+            <a href="#quickstart">快速开始</a>
+            <a href="#structure">目录结构</a>
+            <a href="#contributing">贡献与许可</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              全栈 · React · Express · MongoDB · MIT · 2024（首个全栈项目）
+            </p>
+            <h1 class="article-title">动漫中心（AnimeHub）</h1>
+            <p class="article-meta" style="margin-bottom: 12px">
+              面向动漫爱好者的检索、评分、评论与社区互动
+            </p>
+            <div class="article-body">
+              <p>
+                综合型<strong>动漫论坛</strong>：基于 <a href="https://jikan.moe" target="_blank" rel="noopener noreferrer">Jikan</a>（MyAnimeList
+                非官方 API）拉取番剧元数据与详情，配合服务端缓存降低延迟；站内提供用户评分、多级评论、帖子与标签、收藏夹、个性化推荐与<strong>WebSocket
+                实时通知</strong>（评论、回复等）。支持中 / 英 / 日多语言（i18next）。
+              </p>
+              <p>
+                前后端分仓于 monorepo 式目录（<code>animehub-backend</code> / <code>animehub-frontend</code>）；曾配置
+                Heroku（后端）与 Netlify（前端静态与路由）等部署实验，具体以仓库内说明为准。
+              </p>
+            </div>
+          </header>
+
+          <section id="links" class="doc-section">
+            <h2>仓库</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  GitHub：<a href="https://github.com/songzhiyuan98/Animehub" target="_blank" rel="noopener noreferrer">https://github.com/songzhiyuan98/Animehub</a>
+                </li>
+              </ul>
+              <p class="muted">
+                子目录仍为 <code>animehub-backend</code> / <code>animehub-frontend</code>；克隆后本地文件夹名多为 <code>Animehub</code>（与仓库名大小写一致）。
+              </p>
+            </div>
+          </section>
+
+          <section id="features" class="doc-section">
+            <h2>功能特性</h2>
+            <div class="article-body">
+              <h3>检索与内容</h3>
+              <ul>
+                <li>番剧搜索与多条件筛选（类型、状态、评分等）</li>
+                <li>详情页：简介、评分、预告片等；中英检索与自动翻译查询</li>
+                <li>服务端缓存热点番剧数据（如 NodeCache + TTL）</li>
+              </ul>
+              <h3>社区与互动</h3>
+              <ul>
+                <li>用户评分；多级嵌套评论与点赞</li>
+                <li>帖子：富文本（React Quill）、标签、分页与无限滚动</li>
+                <li>收藏动漫与帖子；个人中心汇总帖子、评论与收藏</li>
+              </ul>
+              <h3>推荐与通知</h3>
+              <ul>
+                <li>基于浏览与收藏历史的推荐、每日推荐</li>
+                <li>Socket.io 推送；通知中心持久化</li>
+              </ul>
+              <h3>体验</h3>
+              <ul>
+                <li>响应式布局（桌面与移动）</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="tech" class="doc-section">
+            <h2>技术栈</h2>
+            <div class="article-body">
+              <h3>前端</h3>
+              <ul>
+                <li>React 18、React Router 6</li>
+                <li>Redux Toolkit</li>
+                <li>MUI（Material UI）5</li>
+                <li>Axios、Socket.io-client、React Quill、无限滚动组件</li>
+                <li>i18next（含 http-backend、浏览器语言探测）</li>
+              </ul>
+              <h3>后端</h3>
+              <ul>
+                <li>Node.js、Express</li>
+                <li>MongoDB、Mongoose</li>
+                <li>JWT 访问令牌 + 刷新令牌、bcrypt</li>
+                <li>Socket.io、Multer、Nodemailer（邮件）、node-cache</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="impl" class="doc-section">
+            <h2>实现要点（摘要）</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>认证：</strong>登录签发短期 access token 与长期 refresh token；密码哈希入库</li>
+                <li><strong>番剧详情：</strong>按 id 请求 Jikan v4，命中内存缓存则直接返回</li>
+                <li><strong>帖子：</strong>FormData 提交标题、富文本内容与标签 id；新标签可先创建再关联</li>
+                <li><strong>通知：</strong>写库后向 recipient 房间 emit，前端拉取列表时 populate 发送者与关联评论</li>
+              </ul>
+              <p class="muted">具体接口与代码片段见仓库 README 与源码；本页不嵌长代码块以免与仓库脱节。</p>
+            </div>
+          </section>
+
+          <section id="quickstart" class="doc-section">
+            <h2>快速开始</h2>
+            <div class="article-body">
+              <pre class="doc-pre">git clone https://github.com/songzhiyuan98/Animehub.git
+cd Animehub</pre>
+              <pre class="doc-pre">cd animehub-backend && npm install
+cd ../animehub-frontend && npm install</pre>
+              <p>在 <code>animehub-backend</code> 创建 <code>.env</code>，示例字段：</p>
+              <pre class="doc-pre">MONGO_URI=mongodb://localhost:27017/animehub
+JWT_SECRET=...
+JWT_REFRESH_SECRET=...
+PORT=5000
+# 邮件（Mailjet 等）按 README 填写</pre>
+              <pre class="doc-pre">cd animehub-backend && npm start
+cd ../animehub-frontend && npm start</pre>
+              <p class="muted">README 写前端默认端口与后端端口可能与常见 Create React App（3000）不同，以本地 <code>package.json</code> 脚本为准。</p>
+            </div>
+          </section>
+
+          <section id="structure" class="doc-section">
+            <h2>目录结构（摘要）</h2>
+            <div class="article-body">
+              <pre class="doc-pre">AnimeHub/
+├── animehub-backend/     # Express：config、controllers、models、routes、utils、server.js
+├── animehub-frontend/    # React：public、src/components、redux、…
+├── package.json          # 根 workspace / 脚本（若有）
+└── README.md</pre>
+            </div>
+          </section>
+
+          <section id="contributing" class="doc-section">
+            <h2>贡献与许可</h2>
+            <div class="article-body">
+              <p>欢迎 Fork 后提 PR；分支与提交信息建议与 README 贡献指南一致。</p>
+              <p><strong>License：</strong>MIT。</p>
+              <p><strong>联系：</strong><a href="mailto:songzhiyuan98@gmail.com">songzhiyuan98@gmail.com</a></p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98/Animehub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>KLineLens · 开源项目文档</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/klinelens.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← 返回首页</a>
+      </div>
+
+      <div class="doc-layout">
+        <!-- 目录锚点与下方 section id 对应 -->
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">概述</a>
+            <a href="#value">开源定位</a>
+            <a href="#why">Why KLineLens</a>
+            <a href="#features">核心功能</a>
+            <a href="#odte">0DTE 模块</a>
+            <a href="#providers">数据源</a>
+            <a href="#architecture">架构</a>
+            <a href="#dataflow">数据流与缓存</a>
+            <a href="#milestones">里程碑与验收</a>
+            <a href="#strategies">可插拔策略</a>
+            <a href="#quickstart">快速开始</a>
+            <a href="#docs">文档索引</a>
+            <a href="#contributing">参与贡献</a>
+            <a href="#roadmap">Roadmap</a>
+            <a href="#license">许可与声明</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              开源 · Monorepo · Next.js + FastAPI · Python Core · MIT · 自 2026-01-13
+            </p>
+            <h1 class="article-title">KLineLens</h1>
+            <div class="article-body">
+              <p>
+                <strong>KLineLens</strong> 是一款开源的<strong>K 线结构分析终端</strong>，面向<strong>日内与波段</strong>交易：多周期市场结构、自动压力/支撑、突破质量评分、盘前盘后语境，并内置<strong>0DTE
+                期权交易计划</strong>状态机与<strong>可插拔策略框架</strong>。支持 GPT-4 / Gemini 做中英市场叙事（可选）。
+              </p>
+              <p>
+                仓库：<a href="https://github.com/songzhiyuan98/KLineLens" target="_blank" rel="noopener noreferrer">github.com/songzhiyuan98/KLineLens</a>
+              </p>
+            </div>
+          </header>
+
+          <section id="value" class="doc-section">
+            <h2>开源定位（为什么这样设计）</h2>
+            <div class="article-body">
+              <p>
+                对终端用户与开发者而言，KLineLens 强调两件事：<strong>数据自主权</strong>与<strong>策略可扩展性</strong>。
+              </p>
+              <ul>
+                <li>
+                  <strong>自选行情 API：</strong>通过环境变量切换 Yahoo Finance、TwelveData、Alpaca、Alpha Vantage
+                  等 Provider；免费层可起步，需要更可靠成交量时再接入付费/限额更高的 key——不绑定单一vendor。
+                </li>
+                <li>
+                  <strong>编码自己的策略：</strong>在统一策略接口上实现模块，注册后即可进入终端 UI 与 API
+                  流程；内置 Playbook 与 0DTE 仅作参考实现，社区可贡献新策略与数据源（见
+                  <code>CUSTOM_STRATEGY.md</code>、<code>CONTRIBUTING.md</code>）。
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="why" class="doc-section">
+            <h2>Why KLineLens</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>全周期结构：</strong>1m/5m 日内到 15m/1h/1d 波段；趋势/震荡/区间与置信度。</li>
+                <li>
+                  <strong>内置 0DTE：</strong>状态机驱动标的层交易计划，输出 underlying 级别计划，<strong>不依赖期权链报价</strong>。
+                </li>
+                <li><strong>可插拔策略：</strong>开发者以模块形式扩展，接入同一套分析与 UI。</li>
+                <li>
+                  <strong>突破确认：</strong>三因子降低假突破——收盘确认、RVOL ≥ 1.8、结果相对 ATR 阈值（详见引擎规范）。
+                </li>
+                <li><strong>AI 解读（可选）：</strong>OpenAI / Google API 生成中英叙事。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="features" class="doc-section">
+            <h2>核心功能摘要</h2>
+            <div class="article-body">
+              <h3>市场结构</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>能力</th>
+                    <th>说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Trend Detection</td>
+                    <td>上涨 / 下跌 / 区间 + 置信度</td>
+                  </tr>
+                  <tr>
+                    <td>Auto S/R Zones</td>
+                    <td>基于 ATR 的支撑阻力与强度</td>
+                  </tr>
+                  <tr>
+                    <td>Breakout Quality</td>
+                    <td>多因子确认突破质量</td>
+                  </tr>
+                  <tr>
+                    <td>Behavior Inference</td>
+                    <td>Wyckoff 风格：吸筹、派发、Markup 等概率与证据</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>盘前盘后（Extended Hours）</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>能力</th>
+                    <th>说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Premarket Regime</td>
+                    <td>Gap &amp; Go、回补、趋势延续、区间日等</td>
+                  </tr>
+                  <tr>
+                    <td>Key Levels</td>
+                    <td>YC、盘前高/低（PMH/PML）等</td>
+                  </tr>
+                  <tr>
+                    <td>Session Awareness</td>
+                    <td>按交易时段调整分析语境</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>多语言</h3>
+              <p>完整中文界面与 AI 解读；英文界面与解读；可通过 i18n 扩展更多语言。</p>
+            </div>
+          </section>
+
+          <section id="odte" class="doc-section">
+            <h2>0DTE 策略模块（状态机）</h2>
+            <div class="article-body">
+              <p>同一日极短周期期权计划，由状态机驱动，典型路径：</p>
+              <pre class="doc-pre">WAIT → WATCH → ARMED → ENTER → HOLD → TRIM → EXIT</pre>
+              <p>输出为<strong>标的层</strong>交易计划（价位、目标、止损、阶段），无需接入期权链实时报价即可在 MVP 内使用。</p>
+            </div>
+          </section>
+
+          <section id="providers" class="doc-section">
+            <h2>热插拔数据源（Provider）</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Provider</th>
+                    <th>免费层</th>
+                    <th>成交量</th>
+                    <th>配置</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Yahoo Finance</td>
+                    <td>较宽松</td>
+                    <td>部分/不完整</td>
+                    <td>默认可无 API key</td>
+                  </tr>
+                  <tr>
+                    <td>TwelveData</td>
+                    <td>约 800 次/天</td>
+                    <td>较可靠</td>
+                    <td>免费 API key</td>
+                  </tr>
+                  <tr>
+                    <td>Alpaca</td>
+                    <td>额度友好</td>
+                    <td>完整</td>
+                    <td>免费 key</td>
+                  </tr>
+                  <tr>
+                    <td>Alpha Vantage</td>
+                    <td>约 25 次/天</td>
+                    <td>完整</td>
+                    <td>免费 key</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="muted">建议：先用 Yahoo 跑通，再换 TwelveData 等改善 volume 相关指标。</p>
+            </div>
+          </section>
+
+          <section id="architecture" class="doc-section">
+            <h2>系统架构</h2>
+            <div class="article-body">
+              <p>MVP 采用 <strong>Monorepo + 三层</strong>：Web（Next.js）↔ API（FastAPI）↔ Core（纯 Python 分析包）。</p>
+              <pre class="doc-pre">┌─────────────────────────────────────────────┐
+│              Next.js Frontend                │
+│  Chart · Zones · Strategy · Timeline · AI  │
+│  i18n · Settings · Watchlist                 │
+└────────────────────┬────────────────────────┘
+                     │ REST API + SSE
+┌────────────────────▼────────────────────────┐
+│              FastAPI Backend                │
+│  Analysis Engine (Pure Python call)        │
+│  Strategy Layer: Playbook | 0DTE | Custom   │
+│  Provider Layer: Yahoo | TwelveData | …    │
+└─────────────────────────────────────────────┘</pre>
+              <h3>目录结构（摘要）</h3>
+              <pre class="doc-pre">KLineLens/
+├── apps/web/          # Next.js
+├── apps/api/          # FastAPI，routes / providers / cache
+├── packages/core/     # 纯 Python：features, structure, behavior, …
+├── docs/
+├── infra/             # Docker 等
+├── MASTER_SPEC.md
+└── README.md</pre>
+            </div>
+          </section>
+
+          <section id="dataflow" class="doc-section">
+            <h2>数据流、缓存与状态（MVP）</h2>
+            <div class="article-body">
+              <h3>详情页典型请求</h3>
+              <ol>
+                <li><code>GET /v1/bars</code>：经 TTL 缓存命中则不下游；未命中则 Provider 拉取 K 线。</li>
+                <li><code>POST /v1/analyze</code>：Core <code>analyze()</code> 产出结构/行为/时间线/Playbook 等报告，前端渲染面板。</li>
+              </ol>
+              <h3>自动刷新</h3>
+              <p>前端约每 60s 再次 <code>POST /analyze</code>；K 线可走缓存，时间线状态在 API 进程内对比前后报告决定是否 emit 事件。</p>
+              <h3>存储要点（摘自架构说明）</h3>
+              <ul>
+                <li>Bars：API 内存 TTL 缓存（如 60s）。</li>
+                <li>Timeline state：MVP 内存字典（重启丢失）；远期可 Redis/DB。</li>
+                <li>Signal evaluations：<code>apps/api/data/klinelens.db</code> SQLite 持久化。</li>
+                <li>前端 Evidence/Timeline：localStorage 按日 key 缓存。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="milestones" class="doc-section">
+            <h2>里程碑与 MVP 验收</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>阶段</th>
+                    <th>内容</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>M0</td>
+                    <td>仓库与基建、web/api/core 骨架、环境变量</td>
+                  </tr>
+                  <tr>
+                    <td>M1</td>
+                    <td>Provider、GET /v1/bars、缓存与错误处理</td>
+                  </tr>
+                  <tr>
+                    <td>M2</td>
+                    <td>Swing、Zones、Regime、突破状态机</td>
+                  </tr>
+                  <tr>
+                    <td>M3</td>
+                    <td>行为概率、证据包、有状态 Timeline、Playbook 模板</td>
+                  </tr>
+                  <tr>
+                    <td>M4</td>
+                    <td>终端 UI、大搜索进 <code>/t/{ticker}</code>、设置语言、60s 刷新</td>
+                  </tr>
+                  <tr>
+                    <td>M5</td>
+                    <td>盘前盘后语境、0DTE 模块、策略类型选择（Playbook / 0DTE）</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>MVP 验收要点</h3>
+              <ul>
+                <li>首页输入标的跳转详情页。</li>
+                <li>1m K 线 + 区域/信号展示。</li>
+                <li>行为概率、证据、时间线、Playbook 等面板可见。</li>
+                <li>设置语言全站生效。</li>
+                <li><code>docker compose up</code> 一键启动可用。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="strategies" class="doc-section">
+            <h2>可插拔策略与扩展</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>策略类型</th>
+                    <th>说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Playbook</td>
+                    <td>基于结构的条件化入场/目标/止损/R:R</td>
+                  </tr>
+                  <tr>
+                    <td>0DTE</td>
+                    <td>同日状态机计划</td>
+                  </tr>
+                  <tr>
+                    <td>Custom</td>
+                    <td>继承 BaseStrategy，实现 <code>analyze(snapshot) → StrategySignal</code>，注册进设置即可进 UI</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>
+                详细接口、状态机模式、前端接入与测试见仓库
+                <code>CUSTOM_STRATEGY.md</code> 与 <code>ENGINE_SPEC.md</code>。
+              </p>
+            </div>
+          </section>
+
+          <section id="quickstart" class="doc-section">
+            <h2>快速开始（Docker）</h2>
+            <div class="article-body">
+              <p>前置：<strong>Docker Desktop</strong> 已安装并运行。</p>
+              <pre class="doc-pre">git clone https://github.com/songzhiyuan98/KLineLens.git
+cd KLineLens
+cp .env.example .env
+# 编辑 .env：PROVIDER、各 API Key、CACHE_TTL、API_PORT、WEB_PORT 等
+
+docker compose up -d --build
+docker compose ps</pre>
+              <p>浏览器打开 <code>http://localhost:3000</code>，输入标的（如 TSLA、QQQ、SPY）即可。</p>
+              <pre class="doc-pre">docker compose down          # 停止
+git pull && docker compose up -d --build   # 更新</pre>
+              <h3>本地开发（无 Docker）</h3>
+              <pre class="doc-pre"># 终端 1
+cd apps/api && pip install -r requirements.txt
+uvicorn src.main:app --reload --port 8000
+
+# 终端 2
+cd apps/web && npm install && npm run dev</pre>
+              <p>环境变量全量说明见仓库 <code>docs/CONFIG.md</code>；部署细节见 <code>docs/DEPLOYMENT.md</code>。</p>
+            </div>
+          </section>
+
+          <section id="docs" class="doc-section">
+            <h2>文档索引（仓库内）</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>文档</th>
+                    <th>内容</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>ENGINE_SPEC.md</code></td>
+                    <td>核心算法说明</td>
+                  </tr>
+                  <tr>
+                    <td><code>CUSTOM_STRATEGY.md</code></td>
+                    <td>自定义策略开发</td>
+                  </tr>
+                  <tr>
+                    <td><code>API.md</code></td>
+                    <td>REST API</td>
+                  </tr>
+                  <tr>
+                    <td><code>PROVIDER.md</code></td>
+                    <td>新增数据源</td>
+                  </tr>
+                  <tr>
+                    <td><code>LLM_SPEC.md</code></td>
+                    <td>AI 接入</td>
+                  </tr>
+                  <tr>
+                    <td><code>SIM_TRADER_SPEC.md</code></td>
+                    <td>0DTE 状态机规范</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="contributing" class="doc-section">
+            <h2>参与贡献</h2>
+            <div class="article-body">
+              <p>欢迎 PR：Bug、功能、Provider、文档、测试、UI、<strong>自定义策略</strong>等。建议先查 Issues，较大改动先开 issue 讨论。</p>
+              <ul>
+                <li>分支命名：<code>feature/…</code>、<code>fix/…</code>、<code>docs/…</code></li>
+                <li>提交信息：Conventional Commits（<code>feat:</code>、<code>fix:</code> 等）</li>
+                <li>新增 Provider：实现 <code>MarketDataProvider</code>、注册 factory、更新 <code>.env.example</code> 与 <code>docs/PROVIDER.md</code>、补测试</li>
+                <li>规范：Python type hints 与 docstring；TS 显式类型；避免魔法数字；错误处理与测试覆盖</li>
+              </ul>
+              <p>全文见仓库 <code>CONTRIBUTING.md</code> 与 <code>CLAUDE.md</code>。</p>
+            </div>
+          </section>
+
+          <section id="roadmap" class="doc-section">
+            <h2>Roadmap（仓库公开路线）</h2>
+            <div class="article-body">
+              <ul>
+                <li>v0.8 — 盘前盘后、0DTE、自定义策略</li>
+                <li>v0.7 — 响应式、多语言</li>
+                <li>v0.6 — 终端风 UI、AI 解读</li>
+                <li>v1.0 — WebSocket 流式、信号回测</li>
+                <li>v1.1 — 深色模式、移动端</li>
+                <li>v2.0 — 多周期联动、期权链整合</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="license" class="doc-section">
+            <h2>许可与免责声明</h2>
+            <div class="article-body">
+              <p><strong>License：</strong>MIT — 个人或商业使用均可，需保留许可证声明。</p>
+              <blockquote>
+                <p style="margin: 0">
+                  仅供教育与信息参考。工具基于价量做技术分析，<strong>不构成投资建议</strong>。历史表现不代表未来。请自行研究并自担交易风险。
+                </p>
+              </blockquote>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98/KLineLens" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

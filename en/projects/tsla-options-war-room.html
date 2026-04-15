@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="TSLA Options War Room: Claude Code skill for 7–10 DTE TSLA options—multi-agent debate, market snapshots, trade journal, risk rules. Not investment advice."
+    />
+    <title>TSLA Options War Room · Project documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/tsla-options-war-room.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview &amp; positioning</a>
+            <a href="#meta">Skill metadata</a>
+            <a href="#why-novelty">Motivation &amp; novelty</a>
+            <a href="#design-ideas">Design stance</a>
+            <a href="#vs-bot">Vs. typical trading bots</a>
+            <a href="#architecture">System architecture</a>
+            <a href="#agents">Agent committee</a>
+            <a href="#interaction">Interaction &amp; outputs</a>
+            <a href="#reasoning">Direction &amp; tape rules</a>
+            <a href="#data-policy">Data policy</a>
+            <a href="#discipline">Discipline &amp; risk</a>
+            <a href="#memory-tracking">Lifecycle &amp; performance</a>
+            <a href="#usage">Install &amp; usage</a>
+            <a href="#disclaimer">Disclaimer</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Claude Code skill · TSLA 7–10 DTE · not investment advice</p>
+            <h1 class="article-title">TSLA Options War Room</h1>
+            <div class="article-body">
+              <p>
+                An <strong>AI-backed TSLA short-dated options decision stack</strong>: not a single mega-prompt, not a classic
+                trading bot. Users see one <strong>senior trading advisor</strong>; behind the scenes are adversarial multi-role debates, local market snapshots, trade logs, and performance tracking—complexity stays invisible.
+              </p>
+              <p>
+                Primary underlier <strong>TSLA</strong> with <strong>QQQ / SPY</strong> for beta context; horizon <strong>7–10 DTE</strong>; user-facing output is <strong>Chinese in the skill defaults</strong> (this English page describes behavior); no emoji in the skill output spec.
+              </p>
+            </div>
+          </header>
+
+          <section id="meta" class="doc-section">
+            <h2>Skill metadata</h2>
+            <ul class="info-list article-body">
+              <li>
+                <strong>name</strong>
+                <span><code>tsla-options-war-room</code></span>
+              </li>
+              <li>
+                <strong>description (English, matches SKILL)</strong>
+                <span>Use when user asks about TSLA options trading, position management, entry/exit decisions, strike selection, or any question about their TSLA put/call positions. Also triggers on questions about QQQ/SPY context for TSLA trades, option simulation needs, or colloquial risk prompts (exact multilingual trigger strings are listed verbatim in the repository <code>SKILL.md</code>).</span>
+              </li>
+              <li>
+                <strong>description (plain-language summary)</strong>
+                <span>TSLA options: positions, entries/exits, strikes; QQQ/SPY context; simulations; plus spoken triggers such as “should I do it?”, “sell or hold?”, “add size?”, “take profit?”, “stop loss?”, “what’s the bias now?” (including common Chinese phrasing preserved in the SKILL trigger list).</span>
+              </li>
+            </ul>
+          </section>
+
+          <section id="why-novelty" class="doc-section">
+            <h2>Motivation &amp; novelty</h2>
+            <div class="article-body">
+              <h3>What is actually hard in short-dated options</h3>
+              <p>
+                Not only “calling direction,” but <strong>entering at sensible prices</strong> (chasing is a major loss source), <strong>hand discipline</strong> (size creep and bag-holding), and <strong>fast intraday judgment</strong> (windows are short; no 30-minute essays). This system productizes three threads: adversarial direction checks, hard-coded sizing and TP/SL rules, and on-demand snapshots (seconds, not minutes).
+              </p>
+              <h3>Where it is novel</h3>
+              <ul>
+                <li><strong>Committee metaphor + single voice:</strong> parallel roles backstage, but the user always reads one advisor tone—no agents, steps, or tool logs exposed.</li>
+                <li><strong>Progressive depth:</strong> default “good enough” medium depth; the full seven-part report only when the user explicitly asks to expand / full analysis / plan—avoid “one question, three thousand words.”</li>
+                <li><strong>Rules decoupled from the model:</strong> max size, second-contract purpose, time review, structure vs contract stops are document-level hard rules to keep emotion from overriding math.</li>
+                <li><strong>Data trust tiers:</strong> volume/RVOL conclusions only on full Robinhood prints; REST / KLineLens for price/structure—no pseudo-RVOL from broken volume feeds.</li>
+                <li><strong>Auditable loop:</strong> entries log prediction fields; exits capture actual fills and reasons; journals support “forecast vs outcome” for win-rate and directional accuracy later.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="design-ideas" class="doc-section">
+            <h2>Engineering stance</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>Product over theater:</strong> LLMs narrate well, but directional calls must survive a bear case; adversarial flow is baked in, not bolted on.</li>
+                <li><strong>Timeframe discipline:</strong> live lessons (e.g., fading only short-term signals against a bullish daily) become “daily sets bias, hourly sets structure, intraday sets entries; conflicts resolve to daily,” to stop repeating the same mistake.</li>
+                <li><strong>Honest data boundaries:</strong> if an API cannot supply trustworthy volume, skip volume narratives—no fake precision.</li>
+                <li><strong>Streaming with perceived progress:</strong> full analyses stream token-by-token in the main process; if sub-agents must run, add a natural-language bridge so users know “what the desk is calculating.”</li>
+                <li><strong>Conversation as state machine:</strong> <code>trade_state</code> and journals bind “do I have size? why did I enter? what did I predict? how did I exit?”—inspectable lifecycle, not one-off chat.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="vs-bot" class="doc-section">
+            <h2>Compared with typical trading bots</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Dimension</th>
+                    <th>Common trading bot</th>
+                    <th>War Room</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Direction</td>
+                    <td>Often single-model, one-sided</td>
+                    <td>Bear/bull debate before a view; deeper modes surface the debate more explicitly</td>
+                  </tr>
+                  <tr>
+                    <td>Interaction</td>
+                    <td>Fixed templates</td>
+                    <td>Natural language; light → medium → full report progression</td>
+                  </tr>
+                  <tr>
+                    <td>Risk</td>
+                    <td>Simple stop lines</td>
+                    <td>Structure stops + contract drawdown + time review + hard sizing rules</td>
+                  </tr>
+                  <tr>
+                    <td>Context</td>
+                    <td>Often stateless</td>
+                    <td>Positions, logs, historical EXIT stats queryable</td>
+                  </tr>
+                  <tr>
+                    <td>Voice</td>
+                    <td>Research-report tone</td>
+                    <td>Reads like an experienced trader: conclusion first, short paragraphs, high information density</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="architecture" class="doc-section">
+            <h2>System architecture</h2>
+            <div class="article-body">
+              <p>Logical topology: natural language → Claude Code loads the skill → read/refresh market + memory on demand → lead advisor integrates.</p>
+              <pre class="doc-pre">You ask
+   |
+   v
++---------------------------+
+| Claude Code Skill         |  10 role agents: structure / macro /
+| (War Room)                |  bear-bull debate / execution / options / risk … (hidden)
++---------------------------+
+   |
+   +-----------+-------------+
+   |                       |
+   v                       v
++-------------+    +----------------+
+| Market      |    | Trade Memory   |
+| Service     |    | positions + log|
+| REST snap   |    +----------------+
++-------------+
+   |
+   v
++-------------+
+| Twelve Data |  TSLA / QQQ / SPY (API key required)
++-------------+</pre>
+              <p>
+                <strong>On-demand pulls, no daemon:</strong> check
+                <code>latest_snapshot.json</code> timestamp; if fresh, reuse; if stale, silently run
+                <code>python3 fetch_now.py</code> (~3–5s). Without API keys, rely on user screenshots for structure reads.
+              </p>
+            </div>
+          </section>
+
+          <section id="agents" class="doc-section">
+            <h2>Agent committee (backstage)</h2>
+            <div class="article-body">
+              <p>Each agent’s full brief lives in <code>agents/*.md</code>; scheduling is invisible. The lead advisor merges into a single voice.</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Role</th>
+                    <th>File</th>
+                    <th>Typical use</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Market scout</td>
+                    <td><code>market-monitor.md</code></td>
+                    <td>Medium depth+: fast tape facts</td>
+                  </tr>
+                  <tr>
+                    <td>Research coordinator</td>
+                    <td><code>clarifier.md</code></td>
+                    <td>Information gaps: ask for screenshots or data in natural language</td>
+                  </tr>
+                  <tr>
+                    <td>Structure analyst</td>
+                    <td><code>market-structure.md</code></td>
+                    <td>Trend, pressure/support, chase risk</td>
+                  </tr>
+                  <tr>
+                    <td>Beta risk advisor</td>
+                    <td><code>macro-context.md</code></td>
+                    <td>When QQQ data exists: does the tape support the trade direction</td>
+                  </tr>
+                  <tr>
+                    <td>Bear lead</td>
+                    <td><code>bear-continuation.md</code></td>
+                    <td>Full analysis / entry: argue for PUTs</td>
+                  </tr>
+                  <tr>
+                    <td>Bull reversal trader</td>
+                    <td><code>bull-reversal.md</code></td>
+                    <td>Full analysis / entry: argue for CALLs</td>
+                  </tr>
+                  <tr>
+                    <td>Execution planner</td>
+                    <td><code>pullback-entry.md</code></td>
+                    <td>Full analysis: translate bias into entry zones and conditions</td>
+                  </tr>
+                  <tr>
+                    <td>Options structure advisor</td>
+                    <td><code>options-strategy.md</code></td>
+                    <td>Strikes, cost bands, theta/gamma/IV narrative</td>
+                  </tr>
+                  <tr>
+                    <td>Risk lead</td>
+                    <td><code>risk-manager.md</code></td>
+                    <td>Full analysis + position management: enforce hard rules</td>
+                  </tr>
+                  <tr>
+                    <td>Lead advisor</td>
+                    <td>(main process integration, not a standalone md)</td>
+                    <td>Merge role outputs; single advisor voice and final conclusion box</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="muted">In full-analysis mode, Bear/Bull may run in parallel; prompts must embed full role briefs, market context, prior analysis, and separate facts / inference / advice / uncertainty.</p>
+            </div>
+          </section>
+
+          <section id="interaction" class="doc-section">
+            <h2>Interaction &amp; output shapes</h2>
+            <div class="article-body">
+              <h3>User experience (first principle)</h3>
+              <ul>
+                <li>Never show mode names, dispatched agents, step numbers, <code>Read(...)</code> tool traces, or terminal-style logs in user-visible text.</li>
+                <li><strong>Single voice:</strong> do not say “Agent X thinks”; summarize internal disagreement as “we see mixed evidence.”</li>
+                <li><strong>Progressive depth:</strong> fast bias and confidence first; expand only if the user asks for “expand / full plan.”</li>
+                <li><strong>Self-contained:</strong> each reply stands alone—no “as above” shortcuts.</li>
+                <li><strong>Voice:</strong> conclusion first, reasons second; short paragraphs with breathing room; avoid filler like “structurally it is very clear.”</li>
+              </ul>
+              <h3>Three depth levels</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Depth</th>
+                    <th>Trigger</th>
+                    <th>Output shape</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Light</td>
+                    <td>Short asks like “what’s the bias?” “can I buy puts?”</td>
+                    <td>~5–8 lines: view, reasons, confidence, offer to expand</td>
+                  </tr>
+                  <tr>
+                    <td>Medium (default)</td>
+                    <td>Has screenshots/data, asks how to trade, next open, etc.</td>
+                    <td>~15–25 lines: bias, core thesis, counter risks, entry zone + stop, invite full plan</td>
+                  </tr>
+                  <tr>
+                    <td>Full analysis</td>
+                    <td>User explicitly asks for full analysis / expand / confirms after invite / final entry confirmation</td>
+                    <td>Seven-part committee report + ASCII conclusion box (below)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Streaming rules for full analysis</h3>
+              <p>
+                Stream the full report <strong>directly in the main process</strong> to avoid “dispatch one giant agent then silence for two minutes.” If a segment truly needs a heavy sub-agent, stream completed sections first and add one bridging sentence about what is still computing.
+              </p>
+              <h3>Full-report skeleton (section titles excerpt)</h3>
+              <pre class="doc-pre">============ TSLA Options Advisory Committee Report ============
+1. Today&apos;s tape
+2. Technical structure
+3. Macro backdrop
+4. Bull vs bear synthesis
+5. Trade plan
+6. Positioning &amp; risk
+7. Uncertainties
+====================================================
++---------------------------------------------+
+|           Committee final view               |
++---------------------------------------------+
+| Action / bias / entry zone / strikes / cost |
+| Targets / stops / takes / time / confidence |
++---------------------------------------------+</pre>
+              <h3>Options P&amp;L narrative (verbal standard)</h3>
+              <p>
+                Ban naive linear “delta × move = profit.” Discuss gamma-driven delta nonlinearity, theta bleed, IV shifts that squeeze or expand ranges, and give <strong>bands</strong> not point estimates—contrast “fast flush to target” vs “slow grind through.”
+              </p>
+              <h3>When to steer users toward Simulation</h3>
+              <ul>
+                <li>Questions about when profit appears, where to take profit, latest time to sell</li>
+                <li>Adding a second contract, near expiry (~≤3 days left), “is it worth holding?”</li>
+                <li>When theta decay needs fine-grained judgment</li>
+              </ul>
+              <h3>Trader mindset (when appropriate)</h3>
+              <ul>
+                <li>Emphasize trend continuation, not betting the exact next print</li>
+                <li>Emphasize “no good spot, no trade”—gap-down flush may mean poor PUT entries</li>
+                <li>End recommendations with one veteran-style closing line</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="reasoning" class="doc-section">
+            <h2>Direction rules &amp; tape heuristics</h2>
+            <div class="article-body">
+              <h3>Bull/bear debate (hard rule)</h3>
+              <p>For any PUT/CALL direction question, internally weigh bear and bull cases before a call. Light replies may omit both essays, but the conclusion must survive that tension; if evidence is split, flag high uncertainty.</p>
+              <h3>Multi-timeframe stack (internal order, natural language outward)</h3>
+              <ol>
+                <li>Daily sets major bias</li>
+                <li>Hourly sets where you are inside the trend</li>
+                <li>Intraday candles set timing and prices</li>
+              </ol>
+              <p>If intraday conflicts with daily, <strong>defer to daily</strong>; if daily is unclear, say plainly “not set up yet—wait.”</p>
+              <h3>QQQ when fading TSLA with PUTs</h3>
+              <ul>
+                <li>QQQ up &lt; 0.3% or red → supportive for shorts</li>
+                <li>QQQ still +0.5% or more → broad tape bullish; shorting TSLA is headwind</li>
+                <li>QQQ not cooperating but TSLA sells alone → warn it may be intraday noise, not a confirmed trend</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="data-policy" class="doc-section">
+            <h2>Data policy &amp; paths</h2>
+            <div class="article-body">
+              <h3>Primary vs fallback paths</h3>
+              <ul>
+                <li>Snapshot: <code>~/tsla-options-war-room-skill/market_service/data/latest_snapshot.json</code></li>
+                <li>Fallback: <code>~/Zhiyuan/trading-system/market_service/data/latest_snapshot.json</code></li>
+                <li>Events: <code>latest_event.json</code>; positions: <code>trade_memory/trade_state.json</code>; journal: <code>trade_memory/trade_journal.jsonl</code> (tail strategy per SKILL)</li>
+              </ul>
+              <h3>Freshness</h3>
+              <p>Use directly if timestamp is within 5 minutes; otherwise silently run <code>fetch_now.py</code>; after the US close, last prints may be treated as non-stale.</p>
+              <h3>Context priority (non-price)</h3>
+              <p>If the user already stated positions in-thread, avoid re-reading <code>trade_state</code> unnecessarily; for price, prefer latest screenshots or refreshed snapshots.</p>
+              <h3>Volume data priority (hard rule)</h3>
+              <ul>
+                <li>Volume, RVOL, expansion/contraction: <strong>Robinhood screenshots only</strong>.</li>
+                <li>REST / KLineLens: price path, trend, shape, support/resistance; <strong>not standalone evidence for volume conclusions</strong>.</li>
+                <li>Without Robinhood volume: skip volume narratives without apologizing in-user-face; structure-only guidance still allowed.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="discipline" class="doc-section">
+            <h2>Sizing, exits, and discipline</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rule</th>
+                    <th>Content</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Default size</td>
+                    <td>1 core contract</td>
+                  </tr>
+                  <tr>
+                    <td>Max size</td>
+                    <td>2 contracts; second leg only for cost optimization—no emotional adds</td>
+                  </tr>
+                  <tr>
+                    <td>Trim</td>
+                    <td>If one of two legs is green, prefer selling one back to single-lot</td>
+                  </tr>
+                  <tr>
+                    <td>Time review</td>
+                    <td>If 2–3 sessions show no follow-through, reassess</td>
+                  </tr>
+                  <tr>
+                    <td>Forced exit</td>
+                    <td>Price structure confirms thesis broken</td>
+                  </tr>
+                  <tr>
+                    <td>Banned</td>
+                    <td>Emotional adds, size without a thesis</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Take-profit (summary)</h3>
+              <ul>
+                <li>Single core lot: ~20%–35%</li>
+                <li>Two-lot: sell one after one leg wins or total +15%–+25%</li>
+                <li>Strong trend (TSLA + QQQ aligned): stretch remaining ~40%–70% as warranted</li>
+              </ul>
+              <h3>Stop-loss (summary)</h3>
+              <ul>
+                <li>Structure stop: PUT invalidated on reclaim/confirm of key resistance; CALL on confirmed loss of key support</li>
+                <li>Contract risk stop: ~25%–35% drawdown with no structural improvement</li>
+                <li>Time: aim for resolution in ~1–3 sessions; near expiry, bias to exit</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="memory-tracking" class="doc-section">
+            <h2>Trade lifecycle &amp; performance</h2>
+            <div class="article-body">
+              <p>After explicit user confirmation, update <code>trade_state.json</code> and append <code>trade_journal.jsonl</code>. Action types include ENTER_1, ADD_SECOND, TRIM_TO_1, EXIT, etc.</p>
+              <p>On exit, ask for fill price, P&amp;L, and reason; EXIT rows classify thesis outcome (correct / partial / incorrect / stopped_out). ENTER_1 logs predictions (direction, targets, stops, confidence) for post-hoc comparison.</p>
+              <p>When users ask “how is the system doing,” aggregate all EXIT rows: count, win rate, mean/total P&amp;L, best/worst trades, directional buckets, PUT/CALL splits—optionally with <code>performance_tracker.py</code>.</p>
+            </div>
+          </section>
+
+          <section id="usage" class="doc-section">
+            <h2>Install &amp; usage</h2>
+            <div class="article-body">
+              <h3>1. Clone</h3>
+              <pre class="doc-pre">cd ~
+git clone https://github.com/songzhiyuan98/tsla-options-war-room-skill.git
+cd tsla-options-war-room-skill</pre>
+              <h3>2. Install the skill for Claude</h3>
+              <pre class="doc-pre">mkdir -p ~/.claude/skills/tsla-options-war-room
+cp SKILL.md ~/.claude/skills/tsla-options-war-room/
+cp -r agents/ ~/.claude/skills/tsla-options-war-room/</pre>
+              <h3>3. Optional: data service</h3>
+              <pre class="doc-pre">pip3 install -r requirements.txt
+cp .env.example .env
+# Add Twelve Data API key (free tier ~800 calls/day is usually enough)</pre>
+              <h3>4. Invoke in chat</h3>
+              <p>Use <code>/tsla-options-war-room</code> in Claude Code or natural-language triggers from the SKILL description. With a key, the skill refreshes snapshots automatically; without a key, lean on screenshots.</p>
+              <h3>Two directories</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Path</th>
+                    <th>Contents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>~/tsla-options-war-room-skill/</code></td>
+                    <td>Python, <code>fetch_now.py</code>, runtime data folders</td>
+                  </tr>
+                  <tr>
+                    <td><code>~/.claude/skills/tsla-options-war-room/</code></td>
+                    <td><code>SKILL.md</code> + <code>agents/</code> for loading</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Repo tree (summary)</h3>
+              <pre class="doc-pre">tsla-options-war-room-skill/
+├── SKILL.md
+├── agents/
+├── market_service/    # config, rest_client, snapshot_builder, data/
+├── trade_memory/      # state_manager, performance_tracker
+├── fetch_now.py
+├── run.py             # optional daemon
+└── schemas/</pre>
+              <h3>Trading parameters cheat sheet</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Parameter</th>
+                    <th>Setting</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Underlying</td>
+                    <td>TSLA (context: QQQ, SPY)</td>
+                  </tr>
+                  <tr>
+                    <td>Option horizon</td>
+                    <td>7–10 DTE</td>
+                  </tr>
+                  <tr>
+                    <td>Positioning</td>
+                    <td>Default 1 lot, max 2 lots</td>
+                  </tr>
+                  <tr>
+                    <td>Baseline take-profit</td>
+                    <td>~20%–35%</td>
+                  </tr>
+                  <tr>
+                    <td>Strong-trend take-profit</td>
+                    <td>~40%–70% when tape aligns</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Dialog example (compressed)</h3>
+              <blockquote>
+                <p style="margin: 0 0 0.75rem"><strong>User:</strong> Can I buy TSLA puts here?</p>
+                <p style="margin: 0 0 0.75rem"><strong>Advisor (medium depth sketch):</strong> Bias bearish, but price is poor for chasing; give levels and a “wait for bounce” band, offer to fold in QQQ for entry timing.</p>
+                <p style="margin: 0"><strong>User:</strong> Give the full plan → seven-part report + conclusion box.</p>
+              </blockquote>
+              <h3>Notes</h3>
+              <ul>
+                <li>For education and research only—not investment advice; options risk is extreme.</li>
+                <li>Analysis defaults to technicals; surprise fundamentals are out of scope unless you supply them.</li>
+                <li>Paper-trade before live capital.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="disclaimer" class="doc-section">
+            <h2>Disclaimer</h2>
+            <blockquote>
+              <p style="margin: 0" class="article-body">
+                This page excerpts a personal project document; it is not investment advice. You alone bear trading decisions and outcomes.
+              </p>
+            </blockquote>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98/tsla-options-war-room-skill" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

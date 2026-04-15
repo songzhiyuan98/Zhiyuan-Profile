@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="VPCT – VPIP Controller: real-time poker behavior analysis for live play, tilt detection, cooldown mode, and session or lifetime stats. Project documentation."
+    />
+    <title>VPCT – VPIP Controller · Project documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/vpct-vpip-controller.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+
+      <div class="doc-layout">
+        <!-- TOC anchors match section ids for article-toc.js -->
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview &amp; status</a>
+            <a href="#tabs-nav">Tabs &amp; navigation</a>
+            <a href="#tech-stack">Tech stack</a>
+            <a href="#account">Account model</a>
+            <a href="#data-models">Data models</a>
+            <a href="#hand-recording">Hand entry</a>
+            <a href="#data-management">Data management</a>
+            <a href="#realtime-stats">Live session stats UI</a>
+            <a href="#player-type">Player types</a>
+            <a href="#tilt-system">Tilt detection</a>
+            <a href="#cooldown">Cooldown</a>
+            <a href="#settings">Settings &amp; toggles</a>
+            <a href="#localization">Localization</a>
+            <a href="#stats-page">Stats tab</a>
+            <a href="#implementation">Implementation status</a>
+            <a href="#hand-reference">Strong / weak hands</a>
+            <a href="#doc-meta">Document version</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">iOS · SwiftUI · MVP · App Store review in progress</p>
+            <h1 class="article-title">VPCT – VPIP Controller</h1>
+            <div class="article-body">
+              <p>
+                A <strong>real-time poker behavior analysis</strong> app: during a live session it tracks
+                <strong>VPIP</strong> (Voluntarily Put $ In Pot) and uses <strong>event-driven</strong> behavior analysis to detect
+                <strong>tilt patterns</strong>. If behavior does not self-correct, it escalates to <strong>Cooldown mode</strong>. It also provides session and lifetime statistics to help you understand your playing style.
+              </p>
+              <p>
+                This page summarizes the MVP <strong>architecture and implementation</strong>. For tilt subsystem details, see
+                <code>TILT_DETECTION.md</code> in the repository.
+              </p>
+            </div>
+          </header>
+
+          <section id="tabs-nav" class="doc-section">
+            <h2>Pages &amp; navigation (4 tabs)</h2>
+            <div class="article-body">
+              <pre class="doc-pre">├── VT (Home)       — Home: VPIP overview + recent sessions
+├── Live (Session)  — In session: live logging + tilt detection
+├── Stats           — Analytics (signed-in users only)
+└── Me (Settings)   — Settings, account, language, appearance</pre>
+            </div>
+          </section>
+
+          <section id="tech-stack" class="doc-section">
+            <h2>Tech stack</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Layer</th>
+                    <th>Technology</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>UI</td>
+                    <td>SwiftUI</td>
+                  </tr>
+                  <tr>
+                    <td>Architecture</td>
+                    <td><code>@Observable</code> + DataService (centralized data service)</td>
+                  </tr>
+                  <tr>
+                    <td>Local storage</td>
+                    <td>SwiftData</td>
+                  </tr>
+                  <tr>
+                    <td>Auth</td>
+                    <td>Sign in with Apple (planned)</td>
+                  </tr>
+                  <tr>
+                    <td>State</td>
+                    <td><code>@Observable</code></td>
+                  </tr>
+                  <tr>
+                    <td>Localization</td>
+                    <td>In-app L10n enum (not system .strings)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="account" class="doc-section">
+            <h2>Account model</h2>
+            <div class="article-body">
+              <h3>Guest mode (current default)</h3>
+              <ul>
+                <li>All session-related features work without signing in.</li>
+                <li>Guest data is <strong>not persisted</strong>: ended sessions are cleared after an app restart.</li>
+                <li>Guest mode does <strong>not</strong> accumulate lifetime statistics.</li>
+                <li>Prompts to sign in at key moments (session end, home banner, etc.).</li>
+              </ul>
+              <h3>Signed-in mode (planned)</h3>
+              <ul>
+                <li>Sign in with Apple.</li>
+                <li>Persisted data; lifetime stats accumulate.</li>
+                <li>Full Stats tab access.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="data-models" class="doc-section">
+            <h2>Data models</h2>
+            <div class="article-body">
+              <h3>PlayerData</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>UUID</td>
+                    <td>Unique identifier</td>
+                  </tr>
+                  <tr>
+                    <td>createdAt</td>
+                    <td>Date</td>
+                    <td>Account creation time</td>
+                  </tr>
+                  <tr>
+                    <td>lifetimeHands</td>
+                    <td>Int</td>
+                    <td>Total hands</td>
+                  </tr>
+                  <tr>
+                    <td>lifetimeVPIPHands</td>
+                    <td>Int</td>
+                    <td>Total VPIP hands</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>SessionData</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>UUID</td>
+                    <td>Unique identifier</td>
+                  </tr>
+                  <tr>
+                    <td>startTime</td>
+                    <td>Date</td>
+                    <td>Start time</td>
+                  </tr>
+                  <tr>
+                    <td>endTime</td>
+                    <td>Date?</td>
+                    <td>End time (nil = in progress)</td>
+                  </tr>
+                  <tr>
+                    <td>totalHands</td>
+                    <td>Int</td>
+                    <td>Hands in this session</td>
+                  </tr>
+                  <tr>
+                    <td>vpipHands</td>
+                    <td>Int</td>
+                    <td>VPIP hands in this session</td>
+                  </tr>
+                  <tr>
+                    <td>totalBBResult</td>
+                    <td>Double?</td>
+                    <td>BB P&amp;L (optional)</td>
+                  </tr>
+                  <tr>
+                    <td>handRecords</td>
+                    <td>[HandRecordData]</td>
+                    <td>Cascade delete</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>HandRecordData</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>UUID</td>
+                    <td>Unique identifier</td>
+                  </tr>
+                  <tr>
+                    <td>timestamp</td>
+                    <td>Date</td>
+                    <td>Hand timestamp</td>
+                  </tr>
+                  <tr>
+                    <td>didVPIP</td>
+                    <td>Bool</td>
+                    <td>Whether hero put money in voluntarily (VPIP)</td>
+                  </tr>
+                  <tr>
+                    <td>card1Rank / card2Rank</td>
+                    <td>String?</td>
+                    <td>Card ranks A–2</td>
+                  </tr>
+                  <tr>
+                    <td>isSuited</td>
+                    <td>Bool?</td>
+                    <td>Suited / offsuit</td>
+                  </tr>
+                  <tr>
+                    <td>resultRaw</td>
+                    <td>String?</td>
+                    <td>WIN / NOT_WIN</td>
+                  </tr>
+                  <tr>
+                    <td>bbResult</td>
+                    <td>Double?</td>
+                    <td>BB result (optional)</td>
+                  </tr>
+                  <tr>
+                    <td>positionRaw / actionTypeRaw</td>
+                    <td>String?</td>
+                    <td>Reserved for Pro</td>
+                  </tr>
+                  <tr>
+                    <td>session</td>
+                    <td>SessionData?</td>
+                    <td>Parent session</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="hand-recording" class="doc-section">
+            <h2>Hand entry flow</h2>
+            <div class="article-body">
+              <h3>VPIP hands (≤ 4 taps target)</h3>
+              <ol>
+                <li>Tap first card rank (A–2)</li>
+                <li>Tap second card rank (same rank = pocket pair)</li>
+                <li>(Optional) Toggle suited / offsuit (disabled for pocket pairs)</li>
+                <li>(Optional) Enter BB amount</li>
+                <li>Tap WIN or LOSS → auto collapse</li>
+              </ol>
+              <h3>Fold</h3>
+              <p>Single tap FOLD: medium haptic + stat bar flash; <code>totalHands += 1</code>, no further input.</p>
+            </div>
+          </section>
+
+          <section id="data-management" class="doc-section">
+            <h2>Data management</h2>
+            <div class="article-body">
+              <ul>
+                <li>Hands in a session: long-press delete (context menu).</li>
+                <li>Home and all-sessions list: long-press delete entire session.</li>
+                <li>When deleting a session: <strong>subtract back</strong> from lifetime stats and <strong>recompute</strong> related aggregates.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="realtime-stats" class="doc-section">
+            <h2>Live session screen</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>State</th>
+                    <th>UI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Warm-up (&lt; 10 hands)</td>
+                    <td>Progress ring countdown + hand count</td>
+                  </tr>
+                  <tr>
+                    <td>Normal</td>
+                    <td>Session VPIP (hero) + 30min / lifetime / hands strips</td>
+                  </tr>
+                  <tr>
+                    <td>Warning</td>
+                    <td>30min VPIP (hero, amber) + session / lifetime strips</td>
+                  </tr>
+                  <tr>
+                    <td>Danger</td>
+                    <td>30min VPIP (hero, red) + shake animation</td>
+                  </tr>
+                  <tr>
+                    <td>Observing</td>
+                    <td>Amber progress ring (X/5 hands) + observe behavior</td>
+                  </tr>
+                  <tr>
+                    <td>Cooldown</td>
+                    <td>Red countdown ring (remaining / total) + tighten range</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="player-type" class="doc-section">
+            <h2>Player types (VPIP bands)</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>VPIP</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>&lt; 15%</td>
+                    <td>Nit</td>
+                    <td>Extremely tight range only</td>
+                  </tr>
+                  <tr>
+                    <td>15–19%</td>
+                    <td>Tight</td>
+                    <td>Selective pots</td>
+                  </tr>
+                  <tr>
+                    <td>20–24%</td>
+                    <td>Standard</td>
+                    <td>Balanced</td>
+                  </tr>
+                  <tr>
+                    <td>25–29%</td>
+                    <td>Loose</td>
+                    <td>On the wide side</td>
+                  </tr>
+                  <tr>
+                    <td>≥ 30%</td>
+                    <td>Very Loose</td>
+                    <td>Too many pots</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="tilt-system" class="doc-section">
+            <h2>Tilt detection (core)</h2>
+            <div class="article-body">
+              <p>Five independent detectors arranged in three priority layers.</p>
+              <h3>Three layers</h3>
+              <pre class="doc-pre">Layer 1 Emotion-driven (highest)
+  Loss Chase danger → Style Drift danger
+
+Layer 2 Events + emotion
+  Big Pot danger → Loss Chase warning → Win Tilt → Big Pot warning
+
+Layer 3 Behavioral drift (lowest)
+  Style Drift warning → VPIP Drift danger → VPIP Drift warning</pre>
+              <h3>Design principles</h3>
+              <ul>
+                <li><strong>Danger is conservative:</strong> high bar, rare fires; when it fires, it is serious.</li>
+                <li><strong>Warning is sensitive:</strong> early nudge; <strong>does not enter cooldown</strong>.</li>
+                <li><strong>Only danger enters cooldown</strong>; warnings surface messages only.</li>
+                <li><strong>VPIP Drift:</strong> quantity drift (overall higher VPIP).</li>
+                <li><strong>Style Drift:</strong> quality drift (hand strength profile worsens).</li>
+              </ul>
+              <h3>Five detectors</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Detector</th>
+                    <th>Layer</th>
+                    <th>Trigger (summary)</th>
+                    <th>Level</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Loss Chase</td>
+                    <td>Emotion</td>
+                    <td>Loss rate ≥ 60% and VPIP spike ≥ 8%</td>
+                    <td>warning / danger</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Style Drift</td>
+                    <td>Behavior</td>
+                    <td>≥ 2 of last 4 hands are abnormal hand types</td>
+                    <td>warning / danger</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>Big Pot</td>
+                    <td>Event</td>
+                    <td>Single-hand |BB| ≥ 100; four scenarios by strength and outcome</td>
+                    <td>warning / danger</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Win Tilt</td>
+                    <td>Emotion</td>
+                    <td>Win rate ≥ 60% and VPIP widens ≥ 8%</td>
+                    <td>warning only</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>VPIP Drift</td>
+                    <td>Behavior</td>
+                    <td>30min VPIP ≥ lifetime + 10% / 18% (tiered)</td>
+                    <td>warning / danger</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Severity levels</h3>
+              <ul>
+                <li><strong>Normal:</strong> no alert</li>
+                <li><strong>Warning:</strong> coach card (flat border)</li>
+                <li><strong>Danger:</strong> coach card + shake animation</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="cooldown" class="doc-section">
+            <h2>Cooldown escalation</h2>
+            <div class="article-body">
+              <p><strong>Core rule:</strong> only danger triggers cooldown; warnings do not escalate.</p>
+              <h3>State machine</h3>
+              <pre class="doc-pre">normal
+  → danger fires → observing (5 hands)
+       → no improvement → cooldown (10 hands) → normal
+       → improvement   → normal</pre>
+              <h3>Cooldown type by detector</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Detector</th>
+                    <th>Level</th>
+                    <th>Cooldown type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Loss Chase</td>
+                    <td>danger</td>
+                    <td>lossBased (+5 hands extension)</td>
+                  </tr>
+                  <tr>
+                    <td>Style Drift</td>
+                    <td>danger</td>
+                    <td>driftBased (+5 hands extension)</td>
+                  </tr>
+                  <tr>
+                    <td>Big Pot (weak hand lost)</td>
+                    <td>danger</td>
+                    <td>lossBased (+5 hands extension)</td>
+                  </tr>
+                  <tr>
+                    <td>VPIP Drift</td>
+                    <td>danger</td>
+                    <td>driftBased (+5 hands extension)</td>
+                  </tr>
+                  <tr>
+                    <td>Win Tilt</td>
+                    <td>warning</td>
+                    <td>Does not trigger</td>
+                  </tr>
+                  <tr>
+                    <td>Big Pot (other)</td>
+                    <td>warning</td>
+                    <td>Does not trigger</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Deviation check (<code>isStillDeviating</code>)</h3>
+              <ul>
+                <li><strong>Signal A:</strong> last-5-hand VPIP rate still ≥ baseline + 10%</li>
+                <li><strong>Signal B:</strong> ≥ 2 weak hands / GTO deviation in last 5 hands</li>
+                <li><strong>Signal C:</strong> (lossBased / driftBased only) ≥ 2 losing outcomes and ≥ 3 VPIP entries</li>
+              </ul>
+              <p>If any signal holds → still deviating → extend cooldown (max 25 hands).</p>
+              <h3>UI copy notes</h3>
+              <ul>
+                <li>Observing: amber ring X/5, “Observing”</li>
+                <li>Cooldown: red countdown ring, “Cooldown mode” + “Tighten range” badge</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="settings" class="doc-section">
+            <h2>Settings &amp; feature toggles</h2>
+            <div class="article-body">
+              <h3>Notifications / tilt master</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Toggle</th>
+                    <th>Key</th>
+                    <th>Default</th>
+                    <th>Effect</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Tilt Alert</td>
+                    <td><code>vt_tilt_enabled</code></td>
+                    <td>ON</td>
+                    <td>Master switch; OFF disables all detectors</td>
+                  </tr>
+                  <tr>
+                    <td>Cooldown Mode</td>
+                    <td><code>vt_cooldown_enabled</code></td>
+                    <td>ON</td>
+                    <td>Cooldown escalation system</td>
+                  </tr>
+                  <tr>
+                    <td>GTO Advice</td>
+                    <td><code>vt_gto_advice_enabled</code></td>
+                    <td>ON</td>
+                    <td>Preflop strategy hints while picking cards</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Per-detector toggles (shown only when Tilt Alert is ON)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Toggle</th>
+                    <th>Key</th>
+                    <th>Default</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Big Pot</td>
+                    <td><code>vt_bigpot_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                  <tr>
+                    <td>Loss Chase</td>
+                    <td><code>vt_losschase_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                  <tr>
+                    <td>Win Tilt</td>
+                    <td><code>vt_wintilt_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                  <tr>
+                    <td>Style Drift</td>
+                    <td><code>vt_styledrift_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                  <tr>
+                    <td>VPIP Drift</td>
+                    <td><code>vt_vpipdrift_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Other</h3>
+              <ul>
+                <li>Appearance: System / Light / Dark</li>
+                <li>Language: English (default) / Chinese</li>
+                <li>About: version, privacy policy, terms of use</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="localization" class="doc-section">
+            <h2>Localization</h2>
+            <div class="article-body">
+              <ul>
+                <li>In-app <strong>L10n enum</strong>, not iOS <code>.strings</code> files.</li>
+                <li><code>LanguageManager</code> (<code>@Observable</code>) stores language preference in UserDefaults.</li>
+                <li>All views use <code>L10n.s(.key, lang)</code>; <strong>80+</strong> keys (docs cite 90+).</li>
+                <li>App name <strong>“VPCT” / “VPIP CONTROLLER” is not translated</strong>.</li>
+              </ul>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Language</th>
+                    <th>Code</th>
+                    <th>Label</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>English</td>
+                    <td><code>.english</code></td>
+                    <td>English</td>
+                  </tr>
+                  <tr>
+                    <td>Chinese</td>
+                    <td><code>.chinese</code></td>
+                    <td>Chinese</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="stats-page" class="doc-section">
+            <h2>Stats tab</h2>
+            <div class="article-body">
+              <h3>Access control</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>User state</th>
+                    <th>Stats</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Guest</td>
+                    <td>Locked; sign-in prompt</td>
+                  </tr>
+                  <tr>
+                    <td>Signed in, &lt; 10 hands</td>
+                    <td>Empty state: “Play more hands”</td>
+                  </tr>
+                  <tr>
+                    <td>Signed in, ≥ 10 hands</td>
+                    <td>Full analytics</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Signed-in content (summary)</h3>
+              <ul>
+                <li>Header: player-type badge, lifetime VPIP, total hands</li>
+                <li>BB: total BB, BB/100</li>
+                <li>GTO compliance: in-range share, common deviations, suggestions</li>
+                <li>Tilt: tilt session count, share, average duration</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="implementation" class="doc-section">
+            <h2>Implementation status</h2>
+            <div class="article-body">
+              <h3>Done</h3>
+              <ul>
+                <li>SwiftData models (Player / Session / HandRecord)</li>
+                <li>Session system (start, end, in-progress tracking)</li>
+                <li>Hand logging (Fold + VPIP picker)</li>
+                <li>VPIP math (session, 30-minute rolling, lifetime)</li>
+                <li>Player-type classification</li>
+                <li>Five-detector tilt stack (three layers) + danger-only cooldown and trigger types</li>
+                <li>Big Pot (single hand ≥ 100BB, four scenarios)</li>
+                <li>Per-detector toggles in Settings</li>
+                <li>In-app EN/ZH localization (90+ keys)</li>
+                <li>Guest architecture, welcome / onboarding, Sign in with Apple UI</li>
+                <li>Custom flat TabBar (4 tabs), iOS 18 flat visuals</li>
+                <li>Appearance, language, feature switches; session/hand delete with stat recompute</li>
+                <li>Haptics system</li>
+              </ul>
+              <h3>Backlog</h3>
+              <ul>
+                <li>Sign in with Apple backend auth</li>
+                <li>Cloud data sync</li>
+                <li>Privacy policy &amp; terms (store copy)</li>
+                <li>App Store submission (current: <strong>in review</strong>)</li>
+                <li>TestFlight public beta</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="hand-reference" class="doc-section">
+            <h2>Strong / weak hand reference (tilt / Big Pot)</h2>
+            <div class="article-body">
+              <h3>Weak hands (Style Drift tracking)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Examples</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Weak Broadway</td>
+                    <td>KTo, QTo, JTo</td>
+                  </tr>
+                  <tr>
+                    <td>Weak Suited</td>
+                    <td>K9s, Q9s, J8s</td>
+                  </tr>
+                  <tr>
+                    <td>Gap Hands</td>
+                    <td>K7s, Q8s, J7s</td>
+                  </tr>
+                  <tr>
+                    <td>Marginal</td>
+                    <td>A9o, K8o, Q7o</td>
+                  </tr>
+                  <tr>
+                    <td>Connectors</td>
+                    <td>T9o, 98o, 87o</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>If a weak hand is historically profitable (≥ 2 records and total BB &gt; 0), it is <strong>not</strong> treated as weak.</p>
+              <h3>Strong hands (Big Pot alert)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Examples</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Premium Pairs</td>
+                    <td>AA–99</td>
+                  </tr>
+                  <tr>
+                    <td>Premium Suited</td>
+                    <td>AKs, AQs, AJs, ATs, KQs, KJs</td>
+                  </tr>
+                  <tr>
+                    <td>Premium Offsuit</td>
+                    <td>AKo, AQo</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="doc-meta" class="doc-section">
+            <h2>Document version</h2>
+            <p class="article-body muted">Site digest from MVP spec v3.0 · source note updated 2026-03-22</p>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Personal Website Template: Next.js + TypeScript + Tailwind, job-seeker and researcher variants, configurable sections, MIT on GitHub."
+    />
+    <title>Portfolio Website Template · Project documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/personal-website-template.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+
+      <div class="doc-layout">
+        <!-- TOC anchors align with section ids -->
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview</a>
+            <a href="#links">Repository &amp; demo</a>
+            <a href="#features">Features</a>
+            <a href="#tech">Tech stack</a>
+            <a href="#metrics">Adoption &amp; feedback</a>
+            <a href="#quickstart">Quick start</a>
+            <a href="#contributing">Contributing &amp; license</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              Open source · Next.js · TypeScript · Tailwind CSS · MIT · since 2025-01
+            </p>
+            <h1 class="article-title">Portfolio Website Template</h1>
+            <p class="article-meta" style="margin-bottom: 12px">
+              Personal Website Template System · configurable portfolio and academic home layouts
+            </p>
+            <div class="article-body">
+              <p>
+                Two narrative tracks—<strong>job seeker</strong> vs <strong>researcher</strong>: the first
+                foregrounds projects and experience; the second foregrounds publications and teaching. Swap
+                sections, navigation, and visuals (e.g. gradient backdrops), skill SVGs, and timelines with
+                minimal code churn. README plus onboarding copy; <strong>Vercel</strong> one-click deploy.
+              </p>
+              <p>
+                The repository is maintained in public; directory layout and config keys follow the current
+                <a href="https://github.com/songzhiyuan98/personal-website-template" target="_blank" rel="noopener noreferrer">GitHub</a>
+                tree (the old clone name <code>personal-website-temp</code> in README is deprecated—use the
+                repository name below).
+              </p>
+            </div>
+          </header>
+
+          <section id="links" class="doc-section">
+            <h2>Repository &amp; demo</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  Repository:
+                  <a href="https://github.com/songzhiyuan98/personal-website-template" target="_blank" rel="noopener noreferrer">https://github.com/songzhiyuan98/personal-website-template</a>
+                </li>
+                <li>
+                  Demo site (if in sync with the template):
+                  <a href="https://www.zhiyuansong.dev" target="_blank" rel="noopener noreferrer">www.zhiyuansong.dev</a>
+                  (subject to repo / Vercel settings)
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="features" class="doc-section">
+            <h2>Core features</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>Dual templates:</strong> job seeker (experience + projects) vs researcher (research + teaching)</li>
+                <li><strong>Guided onboarding:</strong> interactive notes and docs to lower first-time setup cost</li>
+                <li><strong>About:</strong> configurable background and goals</li>
+                <li><strong>Skills grid:</strong> SVG icons + labels</li>
+                <li><strong>Education timeline:</strong> degrees or notable coursework</li>
+                <li><strong>Gallery block:</strong> photos and highlights</li>
+                <li><strong>Highly customizable:</strong> reorder sections, nav, theme colors</li>
+                <li><strong>Deploy:</strong> Vercel flow and CLI notes</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="tech" class="doc-section">
+            <h2>Tech stack</h2>
+            <div class="article-body">
+              <ul>
+                <li>Next.js, React, TypeScript, Tailwind CSS</li>
+                <li>Hosting: Vercel</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="metrics" class="doc-section">
+            <h2>Adoption &amp; feedback (README figures)</h2>
+            <div class="article-body">
+              <ul>
+                <li>100+ template downloads (self-reported, not a hard GitHub API count)</li>
+                <li>~95% deploy success (self-reported)</li>
+                <li>~4.9 / 5 satisfaction (self-reported)</li>
+              </ul>
+              <p class="muted">GitHub shows ~10 stars and ~7 forks (changes over time—see the repo page).</p>
+            </div>
+          </section>
+
+          <section id="quickstart" class="doc-section">
+            <h2>Quick start</h2>
+            <div class="article-body">
+              <pre class="doc-pre">git clone https://github.com/songzhiyuan98/personal-website-template.git
+cd personal-website-template
+npm install</pre>
+              <ol>
+                <li>Open primary pages under <code>app</code> (e.g. <code>page.tsx</code>, follow the repo) to skim structure</li>
+                <li>Pick job seeker vs researcher direction; adjust section ids, titles, and copy</li>
+                <li>Fill in profile, skills, and project / paper highlights</li>
+                <li>Local preview: <code>npm run dev</code> → <code>http://localhost:3000</code></li>
+                <li>Production: install Vercel CLI then <code>vercel</code>, or connect the GitHub repo in the Vercel dashboard</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="contributing" class="doc-section">
+            <h2>Contributing &amp; license</h2>
+            <div class="article-body">
+              <p>Pull requests and issues are welcome; suggestions can also live in repo discussions.</p>
+              <p><strong>License:</strong> MIT.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98/personal-website-template" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

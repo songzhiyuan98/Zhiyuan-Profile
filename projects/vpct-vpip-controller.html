@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>VPCT – VPIP Controller · 项目文档</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/vpct-vpip-controller.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← 返回首页</a>
+      </div>
+
+      <div class="doc-layout">
+        <!-- 目录与各 section id 对应 -->
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">概述与状态</a>
+            <a href="#tabs-nav">Tab 与导航</a>
+            <a href="#tech-stack">技术栈</a>
+            <a href="#account">账户体系</a>
+            <a href="#data-models">数据模型</a>
+            <a href="#hand-recording">手牌录入</a>
+            <a href="#data-management">数据管理</a>
+            <a href="#realtime-stats">实时统计 UI</a>
+            <a href="#player-type">玩家类型</a>
+            <a href="#tilt-system">Tilt 检测</a>
+            <a href="#cooldown">冷静期</a>
+            <a href="#settings">设置与开关</a>
+            <a href="#localization">本地化</a>
+            <a href="#stats-page">Stats 页</a>
+            <a href="#implementation">实现进度</a>
+            <a href="#hand-reference">强弱牌参考</a>
+            <a href="#doc-meta">文档版本</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">iOS · SwiftUI · MVP · App Store 审核中</p>
+            <h1 class="article-title">VPCT – VPIP Controller</h1>
+            <div class="article-body">
+              <p>
+                一款<strong>实时扑克行为分析</strong>应用：在 live session 中追踪
+                <strong>VPIP</strong>（Voluntarily Put $ In Pot），并通过<strong>事件驱动</strong>的行为分析检测
+                <strong>tilt（情绪失控）模式</strong>；在行为未自我纠正时升级到<strong>冷静模式（Cooldown）</strong>。同时提供 session 与生涯统计，帮助理解自己的打法风格。
+              </p>
+              <p>
+                本文为 MVP 的<strong>架构与实现方案</strong>整理；tilt 子系统细则以仓库内
+                <code>TILT_DETECTION.md</code> 为准。
+              </p>
+            </div>
+          </header>
+
+          <section id="tabs-nav" class="doc-section">
+            <h2>页面与导航（4 Tab）</h2>
+            <div class="article-body">
+              <pre class="doc-pre">├── VT (Home)       — 首页：VPIP 概览 + 最近 session
+├── Live (Session)  — 牌局中：实时记录 + tilt 检测
+├── Stats           — 统计分析（仅登录用户）
+└── Me (Settings)   — 设置、账户、语言、外观</pre>
+            </div>
+          </section>
+
+          <section id="tech-stack" class="doc-section">
+            <h2>技术栈</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>层级</th>
+                    <th>技术</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>UI</td>
+                    <td>SwiftUI</td>
+                  </tr>
+                  <tr>
+                    <td>架构</td>
+                    <td><code>@Observable</code> + DataService（集中式数据服务）</td>
+                  </tr>
+                  <tr>
+                    <td>本地存储</td>
+                    <td>SwiftData</td>
+                  </tr>
+                  <tr>
+                    <td>认证</td>
+                    <td>Sign in with Apple（计划中）</td>
+                  </tr>
+                  <tr>
+                    <td>状态</td>
+                    <td><code>@Observable</code></td>
+                  </tr>
+                  <tr>
+                    <td>本地化</td>
+                    <td>应用内 L10n 枚举（非系统 .strings）</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="account" class="doc-section">
+            <h2>账户体系</h2>
+            <div class="article-body">
+              <h3>Guest 模式（当前默认）</h3>
+              <ul>
+                <li>无需登录即可使用全部 session 相关功能。</li>
+                <li>Guest 数据<strong>不持久化</strong>：app 重启后清除已结束 session。</li>
+                <li>Guest 下<strong>不累积</strong> lifetime 统计。</li>
+                <li>在 session 结束、首页 banner 等关键时刻提示登录。</li>
+              </ul>
+              <h3>Logged-in 模式（计划中）</h3>
+              <ul>
+                <li>Sign in with Apple。</li>
+                <li>数据持久化，lifetime 统计累积。</li>
+                <li>Stats Tab 完整开放。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="data-models" class="doc-section">
+            <h2>数据模型</h2>
+            <div class="article-body">
+              <h3>PlayerData</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>字段</th>
+                    <th>类型</th>
+                    <th>说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>UUID</td>
+                    <td>唯一标识</td>
+                  </tr>
+                  <tr>
+                    <td>createdAt</td>
+                    <td>Date</td>
+                    <td>账户创建时间</td>
+                  </tr>
+                  <tr>
+                    <td>lifetimeHands</td>
+                    <td>Int</td>
+                    <td>总手数</td>
+                  </tr>
+                  <tr>
+                    <td>lifetimeVPIPHands</td>
+                    <td>Int</td>
+                    <td>总 VPIP 手数</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>SessionData</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>字段</th>
+                    <th>类型</th>
+                    <th>说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>UUID</td>
+                    <td>唯一标识</td>
+                  </tr>
+                  <tr>
+                    <td>startTime</td>
+                    <td>Date</td>
+                    <td>开始时间</td>
+                  </tr>
+                  <tr>
+                    <td>endTime</td>
+                    <td>Date?</td>
+                    <td>结束时间（nil = 进行中）</td>
+                  </tr>
+                  <tr>
+                    <td>totalHands</td>
+                    <td>Int</td>
+                    <td>本 session 手数</td>
+                  </tr>
+                  <tr>
+                    <td>vpipHands</td>
+                    <td>Int</td>
+                    <td>本 session VPIP 手数</td>
+                  </tr>
+                  <tr>
+                    <td>totalBBResult</td>
+                    <td>Double?</td>
+                    <td>BB 盈亏（可选）</td>
+                  </tr>
+                  <tr>
+                    <td>handRecords</td>
+                    <td>[HandRecordData]</td>
+                    <td>级联删除</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>HandRecordData</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>字段</th>
+                    <th>类型</th>
+                    <th>说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>id</td>
+                    <td>UUID</td>
+                    <td>唯一标识</td>
+                  </tr>
+                  <tr>
+                    <td>timestamp</td>
+                    <td>Date</td>
+                    <td>手牌时间</td>
+                  </tr>
+                  <tr>
+                    <td>didVPIP</td>
+                    <td>Bool</td>
+                    <td>是否入池（VPIP）</td>
+                  </tr>
+                  <tr>
+                    <td>card1Rank / card2Rank</td>
+                    <td>String?</td>
+                    <td>牌面点数 A–2</td>
+                  </tr>
+                  <tr>
+                    <td>isSuited</td>
+                    <td>Bool?</td>
+                    <td>同花 / 非同花</td>
+                  </tr>
+                  <tr>
+                    <td>resultRaw</td>
+                    <td>String?</td>
+                    <td>WIN / NOT_WIN</td>
+                  </tr>
+                  <tr>
+                    <td>bbResult</td>
+                    <td>Double?</td>
+                    <td>BB 结果（可选）</td>
+                  </tr>
+                  <tr>
+                    <td>positionRaw / actionTypeRaw</td>
+                    <td>String?</td>
+                    <td>预留 Pro</td>
+                  </tr>
+                  <tr>
+                    <td>session</td>
+                    <td>SessionData?</td>
+                    <td>父 session</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="hand-recording" class="doc-section">
+            <h2>手牌录入流程</h2>
+            <div class="article-body">
+              <h3>VPIP 手牌（≤ 4 次点击目标）</h3>
+              <ol>
+                <li>点选第一张牌（rank A–2）</li>
+                <li>点选第二张牌（同点数 = 口袋对）</li>
+                <li>（可选）切换同花 / 非同花（口袋对时自动禁用）</li>
+                <li>（可选）输入 BB 数量</li>
+                <li>点 WIN 或 LOSS → 自动收起</li>
+              </ol>
+              <h3>Fold</h3>
+              <p>单次点击 FOLD：中等强度触觉 + 统计条视觉闪烁；<code>totalHands += 1</code>，无需进一步输入。</p>
+            </div>
+          </section>
+
+          <section id="data-management" class="doc-section">
+            <h2>数据管理</h2>
+            <div class="article-body">
+              <ul>
+                <li>Session 内手牌：支持长按删除（context menu）。</li>
+                <li>首页与全部 session 列表：支持长按删除整个 session。</li>
+                <li>删除 session 时：<strong>反向扣减</strong> lifetime 统计并<strong>重新计算</strong>相关聚合。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="realtime-stats" class="doc-section">
+            <h2>Session 屏实时统计展示</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>状态</th>
+                    <th>界面</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Warm-up（&lt; 10 手）</td>
+                    <td>进度环倒计时 + 手数</td>
+                  </tr>
+                  <tr>
+                    <td>Normal</td>
+                    <td>Session VPIP（hero）+ 30min / lifetime / hands 条带</td>
+                  </tr>
+                  <tr>
+                    <td>Warning</td>
+                    <td>30min VPIP（hero，琥珀色）+ session / lifetime 条带</td>
+                  </tr>
+                  <tr>
+                    <td>Danger</td>
+                    <td>30min VPIP（hero，红色）+ 抖动动画</td>
+                  </tr>
+                  <tr>
+                    <td>Observing</td>
+                    <td>琥珀进度环（X/5 手）+ 观察行为</td>
+                  </tr>
+                  <tr>
+                    <td>Cooldown</td>
+                    <td>红色倒计时环（剩余/总）+ 收紧范围</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="player-type" class="doc-section">
+            <h2>玩家类型（VPIP 区间）</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>VPIP</th>
+                    <th>类型</th>
+                    <th>描述</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>&lt; 15%</td>
+                    <td>Nit</td>
+                    <td>仅极窄范围</td>
+                  </tr>
+                  <tr>
+                    <td>15–19%</td>
+                    <td>Tight</td>
+                    <td>选择性入池</td>
+                  </tr>
+                  <tr>
+                    <td>20–24%</td>
+                    <td>Standard</td>
+                    <td>平衡</td>
+                  </tr>
+                  <tr>
+                    <td>25–29%</td>
+                    <td>Loose</td>
+                    <td>偏宽</td>
+                  </tr>
+                  <tr>
+                    <td>≥ 30%</td>
+                    <td>Very Loose</td>
+                    <td>入池过多</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="tilt-system" class="doc-section">
+            <h2>Tilt 检测系统（核心）</h2>
+            <div class="article-body">
+              <p>5 个独立检测器，分三层按优先级排列。</p>
+              <h3>三层架构</h3>
+              <pre class="doc-pre">Layer 1 情绪驱动（最高）
+  Loss Chase danger → Style Drift danger
+
+Layer 2 事件 + 情绪
+  Big Pot danger → Loss Chase warning → Win Tilt → Big Pot warning
+
+Layer 3 行为偏移（最低）
+  Style Drift warning → VPIP Drift danger → VPIP Drift warning</pre>
+              <h3>设计原则</h3>
+              <ul>
+                <li><strong>danger 保守</strong>：门槛高，不易触发，触发即严重。</li>
+                <li><strong>warning 敏感</strong>：早期提醒，<strong>不进入冷静期</strong>。</li>
+                <li><strong>仅 danger 进入冷静期</strong>；warning 只展示消息。</li>
+                <li><strong>VPIP Drift</strong>：数量偏移（入池率整体变高）。</li>
+                <li><strong>Style Drift</strong>：质量偏移（牌型质量变差）。</li>
+              </ul>
+              <h3>五个检测器</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>检测器</th>
+                    <th>层级</th>
+                    <th>触发条件（摘要）</th>
+                    <th>级别</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Loss Chase（追损）</td>
+                    <td>情绪</td>
+                    <td>输率 ≥ 60% 且 VPIP 飙升 ≥ 8%</td>
+                    <td>warning / danger</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Style Drift（风格失真）</td>
+                    <td>行为</td>
+                    <td>近期 ≥ 2/4 手异常牌型</td>
+                    <td>warning / danger</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>Big Pot（大底池）</td>
+                    <td>事件</td>
+                    <td>单手 BB 绝对值 ≥ 100，按强弱牌与输赢分 4 场景</td>
+                    <td>warning / danger</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Win Tilt（顺风膨胀）</td>
+                    <td>情绪</td>
+                    <td>胜率 ≥ 60% 且 VPIP 扩大 ≥ 8%</td>
+                    <td>warning only</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>VPIP Drift（入池漂移）</td>
+                    <td>行为</td>
+                    <td>30min VPIP 比生涯高 ≥ 10% / 18%（分档）</td>
+                    <td>warning / danger</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>状态等级</h3>
+              <ul>
+                <li><strong>Normal</strong>：无警报</li>
+                <li><strong>Warning</strong>：教练消息卡片（flat border）</li>
+                <li><strong>Danger</strong>：教练卡片 + 抖动动画</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="cooldown" class="doc-section">
+            <h2>冷静期升级（Cooldown）</h2>
+            <div class="article-body">
+              <p><strong>核心规则：</strong>仅 danger 触发冷静期；warning 不升级。</p>
+              <h3>状态机</h3>
+              <pre class="doc-pre">normal
+  → danger 触发 → observing（5 手）
+       → 未改善 → cooldown（10 手）→ normal
+       → 改善   → normal</pre>
+              <h3>冷静期触发类型映射</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>检测器</th>
+                    <th>级别</th>
+                    <th>冷静期类型</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Loss Chase</td>
+                    <td>danger</td>
+                    <td>lossBased（+5 手延长）</td>
+                  </tr>
+                  <tr>
+                    <td>Style Drift</td>
+                    <td>danger</td>
+                    <td>driftBased（+5 手延长）</td>
+                  </tr>
+                  <tr>
+                    <td>Big Pot（弱牌输）</td>
+                    <td>danger</td>
+                    <td>lossBased（+5 手延长）</td>
+                  </tr>
+                  <tr>
+                    <td>VPIP Drift</td>
+                    <td>danger</td>
+                    <td>driftBased（+5 手延长）</td>
+                  </tr>
+                  <tr>
+                    <td>Win Tilt</td>
+                    <td>warning</td>
+                    <td>不触发</td>
+                  </tr>
+                  <tr>
+                    <td>Big Pot（其他）</td>
+                    <td>warning</td>
+                    <td>不触发</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Deviation Check（isStillDeviating）</h3>
+              <ul>
+                <li><strong>Signal A：</strong>最近 5 手 VPIP 率仍 ≥ baseline + 10%</li>
+                <li><strong>Signal B：</strong>最近 5 手内 ≥ 2 手弱牌 / GTO 偏离</li>
+                <li><strong>Signal C：</strong>（仅 lossBased / driftBased）≥ 2 次亏损 且 ≥ 3 次 VPIP 入池</li>
+              </ul>
+              <p>任一信号成立 = 仍在偏离 → 延长冷静期（最多 25 手）。</p>
+              <h3>UI 文案要点</h3>
+              <ul>
+                <li>Observing：琥珀环 X/5，「观察中」</li>
+                <li>Cooldown：红色倒计时环，「冷静模式」+「收紧范围」徽章</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="settings" class="doc-section">
+            <h2>设置与功能开关</h2>
+            <div class="article-body">
+              <h3>通知 / Tilt 总控</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>开关</th>
+                    <th>Key</th>
+                    <th>默认</th>
+                    <th>作用</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Tilt Alert</td>
+                    <td><code>vt_tilt_enabled</code></td>
+                    <td>ON</td>
+                    <td>总开关，关则所有检测器停用</td>
+                  </tr>
+                  <tr>
+                    <td>Cooldown Mode</td>
+                    <td><code>vt_cooldown_enabled</code></td>
+                    <td>ON</td>
+                    <td>冷静期升级系统</td>
+                  </tr>
+                  <tr>
+                    <td>GTO Advice</td>
+                    <td><code>vt_gto_advice_enabled</code></td>
+                    <td>ON</td>
+                    <td>选牌时翻前策略建议</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>单检测器（仅 Tilt Alert 开启时显示）</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>开关</th>
+                    <th>Key</th>
+                    <th>默认</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Big Pot</td>
+                    <td><code>vt_bigpot_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                  <tr>
+                    <td>Loss Chase</td>
+                    <td><code>vt_losschase_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                  <tr>
+                    <td>Win Tilt</td>
+                    <td><code>vt_wintilt_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                  <tr>
+                    <td>Style Drift</td>
+                    <td><code>vt_styledrift_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                  <tr>
+                    <td>VPIP Drift</td>
+                    <td><code>vt_vpipdrift_enabled</code></td>
+                    <td>ON</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>其他</h3>
+              <ul>
+                <li>外观：System / Light / Dark</li>
+                <li>语言：English（默认）/ 中文</li>
+                <li>关于：版本、隐私政策、使用条款</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="localization" class="doc-section">
+            <h2>本地化</h2>
+            <div class="article-body">
+              <ul>
+                <li>应用内 <strong>L10n 枚举</strong>，非 iOS <code>.strings</code> 文件。</li>
+                <li><code>LanguageManager</code>（<code>@Observable</code>）将语言偏好存 UserDefaults。</li>
+                <li>全视图使用 <code>L10n.s(.key, lang)</code> 模式；<strong>80+</strong> key（文档称 90+）。</li>
+                <li>应用名 <strong>「VPCT」/「VPIP CONTROLLER」不翻译</strong>。</li>
+              </ul>
+              <table>
+                <thead>
+                  <tr>
+                    <th>语言</th>
+                    <th>Code</th>
+                    <th>标签</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>English</td>
+                    <td><code>.english</code></td>
+                    <td>English</td>
+                  </tr>
+                  <tr>
+                    <td>中文</td>
+                    <td><code>.chinese</code></td>
+                    <td>中文</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="stats-page" class="doc-section">
+            <h2>Stats 页面</h2>
+            <div class="article-body">
+              <h3>访问控制</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>用户状态</th>
+                    <th>Stats</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Guest</td>
+                    <td>锁定，显示登录引导</td>
+                  </tr>
+                  <tr>
+                    <td>已登录，&lt; 10 手</td>
+                    <td>空状态：「多打一些手牌」</td>
+                  </tr>
+                  <tr>
+                    <td>已登录，≥ 10 手</td>
+                    <td>完整统计</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>已登录用户内容（摘要）</h3>
+              <ul>
+                <li>头部：玩家类型徽章、lifetime VPIP、总手数</li>
+                <li>BB：总 BB、BB/100</li>
+                <li>GTO 合规：范围内比例、常见偏离、建议</li>
+                <li>Tilt：tilt session 次数、比例、平均时长</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="implementation" class="doc-section">
+            <h2>实现进度</h2>
+            <div class="article-body">
+              <h3>已完成</h3>
+              <ul>
+                <li>SwiftData 模型（Player / Session / HandRecord）</li>
+                <li>Session 系统（开始、结束、进行中追踪）</li>
+                <li>手牌记录（Fold + VPIP 选牌）</li>
+                <li>VPIP 计算（session、30 分钟滚动、lifetime）</li>
+                <li>玩家类型分类</li>
+                <li>五检测器 tilt 系统（三层）+ danger-only 冷静期与触发类型</li>
+                <li>Big Pot（单手 ≥ 100BB，四场景）</li>
+                <li>设置中单检测器开关</li>
+                <li>应用内中英本地化（90+ keys）</li>
+                <li>Guest 架构、欢迎 / onboarding、Sign in with Apple UI</li>
+                <li>自定义扁平 TabBar（4 Tab）、iOS 18 扁平视觉</li>
+                <li>外观、语言、功能开关；session/手牌删除与统计重算</li>
+                <li>触觉反馈系统</li>
+              </ul>
+              <h3>待办</h3>
+              <ul>
+                <li>Sign in with Apple 后端认证</li>
+                <li>云端数据同步</li>
+                <li>隐私政策与使用条款（上架文案）</li>
+                <li>App Store 提审（当前：<strong>审核中</strong>）</li>
+                <li>TestFlight 公测</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="hand-reference" class="doc-section">
+            <h2>强弱牌参考（Tilt / Big Pot）</h2>
+            <div class="article-body">
+              <h3>弱牌（Style Drift 追踪）</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>类别</th>
+                    <th>示例</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Weak Broadway</td>
+                    <td>KTo, QTo, JTo</td>
+                  </tr>
+                  <tr>
+                    <td>Weak Suited</td>
+                    <td>K9s, Q9s, J8s</td>
+                  </tr>
+                  <tr>
+                    <td>Gap Hands</td>
+                    <td>K7s, Q8s, J7s</td>
+                  </tr>
+                  <tr>
+                    <td>Marginal</td>
+                    <td>A9o, K8o, Q7o</td>
+                  </tr>
+                  <tr>
+                    <td>Connectors</td>
+                    <td>T9o, 98o, 87o</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>若某弱牌历史盈利（≥ 2 次记录且总 BB &gt; 0），则<strong>不算弱牌</strong>。</p>
+              <h3>强牌（Big Pot Alert）</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>类别</th>
+                    <th>示例</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Premium Pairs</td>
+                    <td>AA–99</td>
+                  </tr>
+                  <tr>
+                    <td>Premium Suited</td>
+                    <td>AKs, AQs, AJs, ATs, KQs, KJs</td>
+                  </tr>
+                  <tr>
+                    <td>Premium Offsuit</td>
+                    <td>AKo, AQo</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="doc-meta" class="doc-section">
+            <h2>文档版本</h2>
+            <p class="article-body muted">站内整理自 MVP 方案 v3.0 · 原稿更新 2026-03-22</p>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

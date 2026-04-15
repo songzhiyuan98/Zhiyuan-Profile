@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="投资多 Agent Skill 完整架构文档：个人投资决策、Request Router、Quick/Focused/Full、状态与 T+1 现金、投研与执行分层。非投资建议。"
+    />
+    <title>投资多 Agent Skill 完整架构文档</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <!-- 投资多 Agent Skill 架构说明页：完整正文与目录锚点 id 对齐 js/article-toc.js -->
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/investment-skill-architecture.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← 返回首页</a>
+      </div>
+      <!-- 文档版本切换：保留 v1，并可切到 v2 -->
+      <div class="doc-version-switch" aria-label="文档版本切换">
+        <a class="doc-version-switch__btn" href="/projects/investment-skill-architecture-v2.html">架构 v2.0</a>
+        <a class="doc-version-switch__btn is-active" href="/projects/investment-skill-architecture.html">架构 v1.0</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">概述</a>
+            <a href="#goals">一、文档目标</a>
+            <a href="#principles">二、系统总原则</a>
+            <a href="#layers">三、Skill 总架构</a>
+            <a href="#ux">四、用户交互架构</a>
+            <a href="#team-layers">五、内部团队架构</a>
+            <a href="#chief">六、总协调层</a>
+            <a href="#market-risk">七、市场与风险层</a>
+            <a href="#research-layer">八、投研层</a>
+            <a href="#execution-layer">九、执行层</a>
+            <a href="#state-layer">十、状态层</a>
+            <a href="#agent-invoke">十一、Agent 调用架构</a>
+            <a href="#collab-flow">十二、团队协作顺序</a>
+            <a href="#outputs">十三、输出架构</a>
+            <a href="#learning">十四、学习与改进</a>
+            <a href="#fit-strategy">十五、与策略的匹配</a>
+            <a href="#mvp">十六、初始落地版本</a>
+            <a href="#closing">最终总结</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <!-- 与 TSLA 等项目文档一致：页眉仅标题 + 短导语，第一节起用 doc-section -->
+          <header class="doc-header" id="overview">
+            <p class="article-meta">架构说明文档 · 非投资建议</p>
+            <h1 class="article-title">投资多 Agent Skill 完整架构文档</h1>
+            <div class="article-body">
+              <p>
+                本文说明面向<strong>个人股票决策</strong>的多 Agent Skill：如何分层、如何按问题轻重调度、如何记录状态与现金约束，以及各角色职责与输出形式。版式与站内其他<strong>项目设计文档</strong>（左侧目录 + 正文层级 + 卡片化摘要条）保持一致，便于对照阅读。
+              </p>
+            </div>
+          </header>
+
+          <section id="goals" class="doc-section">
+            <h2>一、文档目标</h2>
+            <div class="article-body">
+              <p>本架构用于构建一个<strong>面向个人投资决策的多 Agent Skill</strong>，服务于以下目标：</p>
+              <ul>
+                <li>管理用户当前持仓</li>
+                <li>跟踪重点关注股票</li>
+                <li>分析新闻、情绪、趋势、机会成本</li>
+                <li>输出持仓调整建议、止盈止损建议、观察重点</li>
+                <li>帮助用户保持纪律，减少情绪化交易</li>
+                <li>在真实交易约束下工作，例如<strong>卖出后现金次日才可再用</strong></li>
+              </ul>
+              <p>该系统适用于：</p>
+              <ul>
+                <li>资金规模较小但追求较快增长的账户</li>
+                <li>可承受中高波动，但不做基本面极差、容易崩溃的垃圾股</li>
+                <li>更偏向<strong>日线与 5 分钟级别结合</strong>的波段 / 短中周期管理，而不是 1 分钟超短线</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="principles" class="doc-section">
+            <h2>二、系统总原则</h2>
+            <div class="article-body">
+              <h3>2.1 角色受限，推理开放</h3>
+              <p>系统不限制 Agent 的内部分析路径。系统只限制：</p>
+              <ul>
+                <li>每个 Agent 的职责边界</li>
+                <li>每个 Agent 的性格与表达风格</li>
+                <li>每个 Agent 的输出责任</li>
+                <li>团队之间的调用关系</li>
+              </ul>
+              <p>也就是说，Agent 可以自由思考，但不能越权，不能混乱输出。</p>
+
+              <h3>2.2 不是每次都跑完整团队</h3>
+              <p>系统必须是<strong>可伸缩调用</strong>的，而不是每次用户问一句话都触发全体 Agent 分析。</p>
+              <p>系统必须先判断：</p>
+              <ul>
+                <li>用户是在问一个<strong>简单问题</strong></li>
+                <li>还是一个<strong>专题问题</strong></li>
+                <li>还是一个<strong>完整组合决策问题</strong></li>
+              </ul>
+              <p>然后再决定调用哪些 Agent。</p>
+
+              <h3>2.3 策略框架固定，不允许 Agent 自改</h3>
+              <p>Agent 不允许自己改变核心交易原则，例如：</p>
+              <ul>
+                <li>主仓比例逻辑</li>
+                <li>风控底线</li>
+                <li>是否允许做弱票</li>
+                <li>决策卡输出要求</li>
+                <li>现金结算约束</li>
+              </ul>
+              <p>允许变化的只有：</p>
+              <ul>
+                <li>每一轮关注重点</li>
+                <li>分析时优先考虑哪些因素</li>
+                <li>本轮更应该看哪个关键位、哪个新闻、哪个风险点</li>
+              </ul>
+
+              <h3>2.4 记「状态」，不记「旧观点」</h3>
+              <p>系统应该优先记住的是：</p>
+              <ul>
+                <li>当前持仓</li>
+                <li>当前可用现金</li>
+                <li>当前未结算现金</li>
+                <li>今日是否卖出</li>
+                <li>明日可用资金</li>
+                <li>当前关注池</li>
+                <li>当前主仓是谁</li>
+                <li>当前是否已有待执行计划</li>
+              </ul>
+              <p>系统不应该强记：</p>
+              <ul>
+                <li>某个 Agent 三天前看多什么</li>
+                <li>某只股票上周是什么判断</li>
+                <li>某条过期新闻的结论</li>
+              </ul>
+              <p>因为市场状态变化很快，旧观点会污染新分析。</p>
+            </div>
+          </section>
+
+          <section id="layers" class="doc-section">
+            <h2>三、整个 Skill 的总架构</h2>
+            <div class="article-body">
+              <p>整个 Skill 分为三大层（与设计系统中的「数字条 / 卡片摘要」对应，便于一眼扫结构）：</p>
+              <div class="stat-strip" aria-label="Skill 三层总览">
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">A</div>
+                  <div class="stat-strip__label">用户交互与调度层 · Request Router · Quick / Focused / Full</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">B</div>
+                  <div class="stat-strip__label">内部团队分析层 · 市场 / 风险 / 新闻 / 投研 / 单票分析</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">C</div>
+                  <div class="stat-strip__label">执行与状态层 · Position Manager · Portfolio State Tracker</div>
+                </div>
+              </div>
+              <p>它们之间关系如下：</p>
+              <ol>
+                <li>用户先和 Skill 对话。</li>
+                <li>Skill 入口先判断用户需求复杂度。</li>
+                <li>然后按需调度内部团队。</li>
+                <li>最终再根据不同模式返回：简单回答、专题分析说明、完整决策卡。</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="ux" class="doc-section">
+            <h2>四、用户交互架构</h2>
+            <div class="article-body">
+              <p>这一层是用户真正接触到的 Skill 表面层。</p>
+
+              <h3>4.1 用户交互层的职责</h3>
+              <p>这一层不负责真正分析市场，而负责：</p>
+              <ul>
+                <li>接收用户输入</li>
+                <li>理解用户意图</li>
+                <li>判断问题复杂度</li>
+                <li>选择调用哪种模式</li>
+                <li>控制最终输出长度与形式</li>
+                <li>保证用户体验自然，不僵硬</li>
+              </ul>
+
+              <h3>4.2 用户可能发出的请求类型</h3>
+              <p><strong>类型一：简单查询</strong> — 不需要开完整团队会议。</p>
+              <blockquote>
+                <ul>
+                  <li>「SNDK 今天有什么新闻？」</li>
+                  <li>「AMD 今天为什么涨？」</li>
+                  <li>「COIN 最近是不是很弱？」</li>
+                  <li>「PLTR 现在逻辑还在吗？」</li>
+                </ul>
+              </blockquote>
+
+              <p><strong>类型二：专题分析</strong> — 需要多一点分析，但通常不需要完整委员会。</p>
+              <blockquote>
+                <ul>
+                  <li>「AMD 和 SNDK 现在哪个更值得关注？」</li>
+                  <li>「美伊谈判破裂对 COIN 和 PLTR 有什么影响？」</li>
+                  <li>「TSLA 现在应该减仓吗？」</li>
+                  <li>「我该不该把 HOOD 换成 COIN？」</li>
+                </ul>
+              </blockquote>
+
+              <p><strong>类型三：完整决策</strong> — 需要完整调度。</p>
+              <blockquote>
+                <ul>
+                  <li>「根据我当前持仓给我完整操作建议」</li>
+                  <li>「我该不该把 TSLA 换成 SNDK 作为主仓」</li>
+                  <li>「给我今天的组合调整方案」</li>
+                  <li>「结合新闻、风险、现金状态给我决策卡」</li>
+                </ul>
+              </blockquote>
+
+              <h3>4.3 用户交互层的核心模块：Request Router</h3>
+              <p>这是整个 Skill 的入口调度器。</p>
+              <div class="doc-columns doc-columns--2">
+                <div class="article-body">
+                  <p><strong>职责</strong></p>
+                  <ul>
+                    <li>判断用户请求属于哪一类</li>
+                    <li>决定调用 Quick / Focused / Full 哪种模式</li>
+                    <li>决定调用哪些 Agent</li>
+                    <li>决定是否需要输出决策卡</li>
+                  </ul>
+                </div>
+                <div class="article-body">
+                  <p><strong>不做的事</strong></p>
+                  <ul>
+                    <li>不替代分析 Agent</li>
+                    <li>不直接做复杂判断</li>
+                    <li>不长期保存市场观点</li>
+                  </ul>
+                </div>
+              </div>
+
+              <h3>4.4 三种运行模式</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>模式</th>
+                    <th>典型场景</th>
+                    <th>Agent 与输出</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Quick Answer</strong></td>
+                    <td>单股、单新闻、单原因、单逻辑</td>
+                    <td>只调最必要 Agent；输出简洁直接；<strong>无</strong>完整决策卡</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Focused Review</strong></td>
+                    <td>1–2 票比较、局部持仓、一条新闻影响多票</td>
+                    <td>少量相关 Agent；专题结论；可用简化结构</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Full Committee</strong></td>
+                    <td>组合决策、主仓轮换、仓位配置、正式建议</td>
+                    <td>完整团队；输出<strong>完整决策卡</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="team-layers" class="doc-section">
+            <h2>五、内部团队架构</h2>
+            <div class="article-body">
+              <p>内部团队是 Skill 的核心分析引擎。四个子层：</p>
+              <div class="stat-strip" aria-label="内部团队四子层">
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">5.1</div>
+                  <div class="stat-strip__label">总协调层 · Chief Strategist</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">5.2</div>
+                  <div class="stat-strip__label">市场与风险层 · Market / Risk / News</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">5.3</div>
+                  <div class="stat-strip__label">投研层 · Research Lead · Ticker Analysts</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">5.4</div>
+                  <div class="stat-strip__label">执行层 · Position Manager</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="chief" class="doc-section">
+            <h2>六、总协调层架构</h2>
+            <div class="article-body">
+              <h3>6.1 Chief Strategist（首席策略官）</h3>
+              <p>这是系统中的最终裁决者。</p>
+              <p><strong>职责</strong></p>
+              <ul>
+                <li>接收来自各 Agent 的分析结果</li>
+                <li>判断当前最重要的主导因素</li>
+                <li>在观点冲突中做取舍</li>
+                <li>决定哪类信息在当前更重要</li>
+                <li>输出最终决策</li>
+                <li>在 Full 模式下输出完整决策卡</li>
+              </ul>
+              <p><strong>它不是</strong></p>
+              <ul>
+                <li>机械汇总员</li>
+                <li>投票器</li>
+                <li>固定 if-else 路由器</li>
+                <li>所有人平均意见的拼盘</li>
+              </ul>
+              <p><strong>它必须具备</strong></p>
+              <ul>
+                <li>灵活性</li>
+                <li>主见</li>
+                <li>接受不确定性的能力</li>
+                <li>动态调权能力</li>
+              </ul>
+              <p><strong>动态调权示例</strong></p>
+              <ul>
+                <li>突发宏观事件时，提高 News Agent 与 Risk Officer 的权重</li>
+                <li>市场无重大新闻但趋势清晰时，提高 Trend / Ticker Analyst 权重</li>
+                <li>涉及大仓位切换时，提高 Position Manager 与 Risk Officer 权重</li>
+              </ul>
+              <p><strong>输出</strong>：在完整模式下，Chief Strategist 必须输出决策卡，而不是一句简单结论。</p>
+            </div>
+          </section>
+
+          <section id="market-risk" class="doc-section">
+            <h2>七、市场与风险层架构</h2>
+            <div class="article-body">
+              <h3>7.1 Market Strategist（市场环境官）</h3>
+              <p><strong>职责</strong></p>
+              <ul>
+                <li>判断当前是 Risk On、Neutral 还是 Risk Off</li>
+                <li>观察大盘与主要板块风格</li>
+                <li>判断当前市场是否支持高 Beta 进攻</li>
+                <li>判断用户当前是否适合重仓进攻</li>
+              </ul>
+              <p><strong>输入</strong></p>
+              <ul>
+                <li>指数环境</li>
+                <li>龙头表现</li>
+                <li>板块轮动</li>
+                <li>风险偏好情况</li>
+              </ul>
+              <p><strong>输出</strong></p>
+              <ul>
+                <li>当前市场环境定性</li>
+                <li>对仓位激进程度的建议</li>
+                <li>哪类方向当前更受支持</li>
+              </ul>
+
+              <h3>7.2 Risk Officer（风险官）</h3>
+              <p><strong>职责</strong></p>
+              <ul>
+                <li>专门挑风险</li>
+                <li>审视当前建议的脆弱性</li>
+                <li>检查是否违反纪律</li>
+                <li>提醒集中度风险、波动风险、尾段追高风险</li>
+                <li>提醒何时必须重新评估</li>
+              </ul>
+              <p><strong>输出</strong></p>
+              <ul>
+                <li>当前最核心风险点</li>
+                <li>哪些建议看似赚钱但代价过高</li>
+                <li>哪种情况出现必须降仓</li>
+                <li>当前计划最容易出错的部分</li>
+              </ul>
+              <p><strong>风格</strong>：严格、保守、少情绪，不负责找机会，负责防止团队过度乐观。</p>
+
+              <h3>7.3 News &amp; Catalyst Agent（新闻与催化剂官）</h3>
+              <p><strong>职责</strong></p>
+              <ul>
+                <li>抓取最近 24–48 小时内的相关新闻</li>
+                <li>过滤低质量、过期、无关资讯</li>
+                <li>提炼真正影响市场或个股的催化剂</li>
+                <li>
+                  将新闻映射到：宏观情绪、板块情绪、个股影响、用户持仓影响
+                </li>
+              </ul>
+              <p><strong>规则</strong></p>
+              <ul>
+                <li>时间优先级极高</li>
+                <li>用户亲自提到的新闻线索优先级更高</li>
+                <li>不堆砌新闻摘要</li>
+                <li>只保留对决策有意义的信息</li>
+              </ul>
+              <p><strong>输出</strong></p>
+              <ul>
+                <li>本轮关键催化剂</li>
+                <li>它们偏 Risk On 还是 Risk Off</li>
+                <li>对相关股票的正负中性影响</li>
+                <li>哪些新闻真正值得进决策卡</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="research-layer" class="doc-section">
+            <h2>八、投研层架构</h2>
+            <div class="article-body">
+              <p>这一层是最复杂、最核心的部分。分成两个部分：8.1 Portfolio Research Lead（研究主管）、8.2 Ticker-Specific Analysts（单票分析员）。</p>
+
+              <h3>8.1 Portfolio Research Lead（研究主管）</h3>
+              <p>这是投研层的协调者，不是最终决策者。</p>
+              <p><strong>职责一：任务分发</strong> — 根据当前请求，把任务分配给相关单票分析员。</p>
+              <p><strong>职责二：本轮 Focus 指令</strong> — 研究主管每一轮都可以指定：这轮哪只票更应该重点看什么；哪个关键位最重要；哪条新闻是重点；哪个维度上次分析不够，这次要补。</p>
+              <p>例如：</p>
+              <ul>
+                <li>SNDK：重点看事件驱动是否延续还是见顶</li>
+                <li>AMD：重点看相对强弱与是否被资金重新关注</li>
+                <li>COIN：重点看 BTC 是否确认趋势，以及宏观风险是否压制高 Beta</li>
+                <li>TSLA：重点看是否仍是原主线，还是已经失去主攻地位</li>
+              </ul>
+              <p><strong>职责三：横向比较</strong> — 研究主管负责比较：机会成本；A 和 B 谁更值得主攻；为什么要从原持仓切到新方向；原方向逻辑是否真的削弱。</p>
+              <p><strong>职责四：评估分析质量</strong> — 研究主管可以对单票分析员做轻量评估，例如：是否漏了风险；是否只看新闻没看结构；是否过度乐观；是否忽略了大盘关系。这不是让员工自我进化，而是让主管每轮提醒重点。</p>
+              <p><strong>记忆要求</strong> — 研究主管需要轻量状态记忆，但不应该保存太多旧观点。</p>
+              <p>它需要记住：</p>
+              <ul>
+                <li>当前持仓结构</li>
+                <li>当前关注池</li>
+                <li>已卖出和待结算现金</li>
+                <li>当前待执行计划</li>
+                <li>本轮 focus 要点</li>
+              </ul>
+              <p>它不需要强记：</p>
+              <ul>
+                <li>上周觉得哪只票最好</li>
+                <li>某个 Analyst 前几轮看多或看空</li>
+              </ul>
+
+              <h3>8.2 单票分析员（Ticker Analysts）</h3>
+              <p>每只重点股票对应一个独立分析员。</p>
+              <p>初始建议包括：</p>
+              <ul>
+                <li>TSLA Analyst</li>
+                <li>NVDA Analyst</li>
+                <li>AMD Analyst</li>
+                <li>MU Analyst</li>
+                <li>SNDK Analyst</li>
+                <li>PLTR Analyst</li>
+                <li>COIN Analyst</li>
+                <li>HOOD Analyst</li>
+              </ul>
+              <p>后续可以扩展。</p>
+
+              <p><strong>单票分析员的统一职责</strong> — 每次收到任务时，必须至少回答以下问题：</p>
+              <ul>
+                <li>当前这只票的核心逻辑是什么</li>
+                <li>这个逻辑当前是否仍成立</li>
+                <li>当前走势强弱如何</li>
+                <li>当前处于可入场区、持有区还是危险区</li>
+                <li>当前持有者应该怎么处理</li>
+                <li>风险点在哪里</li>
+                <li>哪些条件出现需要重新评估</li>
+              </ul>
+
+              <p><strong>单票分析员的特性</strong></p>
+              <ul>
+                <li>有固定人格</li>
+                <li>有固定关注重点</li>
+                <li>没有强长期市场记忆</li>
+                <li>主要依赖当次输入与当次资源调用分析</li>
+              </ul>
+
+              <p><strong>单票分析员是否可以调用新闻资源</strong> — 可以，而且应该可以。但必须遵守：</p>
+              <ul>
+                <li>只用近期新闻</li>
+                <li>只用相关新闻</li>
+                <li>必须解释新闻为什么有意义</li>
+                <li>不允许拿过期资讯充数</li>
+              </ul>
+
+              <p><strong>单票分析员的风格差异</strong> — 每只票可以有不同人格：</p>
+              <ul>
+                <li><strong>TSLA：</strong>更关注预期、叙事、情绪、主线地位</li>
+                <li><strong>AMD：</strong>更关注半导体轮动、相对强弱、行业位置</li>
+                <li><strong>SNDK：</strong>更关注事件驱动、情绪持续性、冲高回落风险</li>
+                <li><strong>PLTR：</strong>更关注 AI 应用叙事、估值情绪、持续性</li>
+                <li><strong>COIN：</strong>更关注 BTC、crypto 情绪、流动性、宏观风险</li>
+                <li><strong>MU：</strong>更关注存储周期、景气修复</li>
+                <li><strong>HOOD：</strong>更关注风险偏好、散户活跃度</li>
+                <li><strong>NVDA：</strong>更关注 AI 主线完整性与龙头地位</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="execution-layer" class="doc-section">
+            <h2>九、执行层架构</h2>
+            <div class="article-body">
+              <h3>9.1 Position Manager（仓位经理）</h3>
+              <p>这是把分析转成动作的关键角色。</p>
+              <p><strong>职责</strong></p>
+              <ul>
+                <li>把投研结论转成可执行仓位动作</li>
+                <li>给出买入、减仓、清仓、切换主仓、观察仓建立等建议</li>
+                <li>给出止盈、止损、重新评估点</li>
+                <li>给出分阶段执行方案</li>
+                <li>结合用户已知的纪律问题，避免无理由卖飞</li>
+              </ul>
+              <p><strong>它不是</strong></p>
+              <ul>
+                <li>重新研究股票逻辑的人</li>
+                <li>不负责比谁更强</li>
+                <li>不负责决定市场环境</li>
+              </ul>
+              <p><strong>它负责</strong></p>
+              <ul>
+                <li>现在到底怎么动仓位</li>
+                <li>今天能动多少</li>
+                <li>明天现金到了怎么继续</li>
+                <li>主攻仓、次仓、现金该怎么排</li>
+              </ul>
+              <p><strong>特别约束：cash T+1</strong> — Position Manager 必须同时处理：</p>
+              <ul>
+                <li>settled cash（已结算现金）</li>
+                <li>unsettled cash（未结算现金）</li>
+                <li>今日卖出产生的待结算资金</li>
+                <li>明日可再部署的资金</li>
+              </ul>
+              <p>所以它不是简单「仓位经理」，而是<strong>仓位与资金执行经理</strong>。</p>
+            </div>
+          </section>
+
+          <section id="state-layer" class="doc-section">
+            <h2>十、状态层架构</h2>
+            <div class="article-body">
+              <h3>10.1 Portfolio State Tracker（组合状态模块）</h3>
+              <p>这是一个状态模块，不一定需要拟人化人格。</p>
+              <p><strong>职责</strong> — 维护真实账户执行上下文，包括：</p>
+              <ul>
+                <li>当前持仓</li>
+                <li>仓位比例</li>
+                <li>主仓 / 次仓 / 观察仓</li>
+                <li>settled cash</li>
+                <li>unsettled cash</li>
+                <li>今日卖出</li>
+                <li>明日预计可用现金</li>
+                <li>当前关注池</li>
+                <li>待执行计划</li>
+              </ul>
+              <p><strong>为什么重要</strong> — 因为系统必须区分：理论上最优方案；今天真实能执行的方案。没有这层，系统就会给出「卖了再立刻全买」的不现实建议。</p>
+              <p><strong>供哪些角色使用</strong>：Chief Strategist、Research Lead、Position Manager、Risk Officer（必要时）。</p>
+            </div>
+          </section>
+
+          <section id="agent-invoke" class="doc-section">
+            <h2>十一、Agent 调用架构</h2>
+            <div class="article-body">
+              <p>各模式下的触发条件与调用关系如下表（正文细节不变，仅版式对齐设计文档中的「表格对照」习惯）。</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>模式</th>
+                    <th>触发场景</th>
+                    <th>默认调用</th>
+                    <th>可选附加</th>
+                    <th>不调用 / 备注</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Quick</strong></td>
+                    <td>单票新闻；单票走势；单票逻辑；简单「为什么」</td>
+                    <td>对应单票分析员</td>
+                    <td>News Agent；Market Strategist</td>
+                    <td>Chief、Position Manager、Research Lead（默认不需要）</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Focused</strong></td>
+                    <td>两票比较；局部持仓；一条新闻影响多票；是否继续持有</td>
+                    <td>相关 1–2 个单票分析员</td>
+                    <td>News；Risk；Market；Research Lead（若比较）；Position Manager（若执行）</td>
+                    <td>一般不调用 Chief，除非用户要正式建议</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Full</strong></td>
+                    <td>整体持仓；主仓轮换；仓位分配；资金部署；正式方案或决策卡</td>
+                    <td colspan="2">见下方完整调用链（顺序执行）</td>
+                    <td>—</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Full 模式完整调用链</h3>
+              <pre class="doc-pre" aria-label="Full 模式 Agent 顺序">Portfolio State Tracker
+→ Market Strategist
+→ News Agent
+→ Risk Officer
+→ Portfolio Research Lead
+→ 相关 Ticker Analysts
+→ Position Manager
+→ Chief Strategist</pre>
+            </div>
+          </section>
+
+          <section id="collab-flow" class="doc-section">
+            <h2>十二、内部团队协作架构</h2>
+            <div class="article-body">
+              <p>这一部分描述团队内部是如何「开会」的。</p>
+              <h3>12.1 标准协作顺序</h3>
+              <ol class="doc-steps">
+                <li>
+                  <strong>第一步：读取上下文</strong> — 从用户输入与 State Tracker 中拿到：当前持仓；现金状态；当前关注池；用户想法；用户补充新闻。
+                </li>
+                <li>
+                  <strong>第二步：环境判断</strong> — Market Strategist 给当前环境判断；News Agent 提取关键催化剂；Risk Officer 提醒大风险。
+                </li>
+                <li>
+                  <strong>第三步：研究主管设定 Focus</strong> — Research Lead 先决定本轮重点看什么，再调单票分析员。
+                </li>
+                <li>
+                  <strong>第四步：单票分析员独立分析</strong> — 各自输出自己负责股票的状态、逻辑、风险、关注点。
+                </li>
+                <li>
+                  <strong>第五步：研究主管横向比较</strong> — Research Lead 输出：谁更强；机会成本比较；哪个更适合主攻；原持仓是否仍值得保留。
+                </li>
+                <li>
+                  <strong>第六步：执行层转成动作</strong> — Position Manager 输出：今日动作；明日动作；分阶段方案；仓位建议。
+                </li>
+                <li>
+                  <strong>第七步：总协调者拍板</strong> — Chief Strategist 做最终判断，输出完整决策卡。
+                </li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="outputs" class="doc-section">
+            <h2>十三、整个 Skill 的输出架构</h2>
+            <div class="article-body">
+              <h3>13.1 Quick 输出</h3>
+              <ul>
+                <li>用于简单问题。</li>
+                <li>形式应自然、简洁、直接。</li>
+                <li>不应堆砌格式。</li>
+              </ul>
+              <h3>13.2 Mini Decision Note</h3>
+              <ul>
+                <li>用于专题分析。</li>
+                <li>建议包含：结论；核心理由；风险；下一步关注点。</li>
+              </ul>
+              <h3>13.3 Full Decision Card</h3>
+              <p>用于完整决策。必须包含字段：</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>字段</th>
+                    <th>说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>最终动作</td>
+                    <td>本轮建议的仓位或计划结论</td>
+                  </tr>
+                  <tr>
+                    <td>当前主导因素</td>
+                    <td>市场 / 新闻 / 结构等何者驱动结论</td>
+                  </tr>
+                  <tr>
+                    <td>核心理由</td>
+                    <td>可复述的逻辑链</td>
+                  </tr>
+                  <tr>
+                    <td>原逻辑是否改变</td>
+                    <td>相对既有持仓主线的修正说明</td>
+                  </tr>
+                  <tr>
+                    <td>风险</td>
+                    <td>主要下行与失效条件</td>
+                  </tr>
+                  <tr>
+                    <td>预期空间</td>
+                    <td>定性或区间式表述</td>
+                  </tr>
+                  <tr>
+                    <td>重新评估条件</td>
+                    <td>触发复盘的价格、时间或事件</td>
+                  </tr>
+                  <tr>
+                    <td>执行方案</td>
+                    <td>分阶段、分日动作</td>
+                  </tr>
+                  <tr>
+                    <td>现金结算约束</td>
+                    <td>与 T+1 / unsettled 相关的可执行性</td>
+                  </tr>
+                  <tr>
+                    <td>置信度</td>
+                    <td>对结论不确定度的显式标注</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="learning" class="doc-section">
+            <h2>十四、系统「学习」与改进架构</h2>
+            <div class="article-body">
+              <p>你已经决定不做员工自我提升，这是对的。因此改进方式不是 self-modifying，而是：</p>
+              <h3>14.1 研究主管驱动的 Focus 迭代</h3>
+              <p>每轮由 Research Lead 指出：</p>
+              <ul>
+                <li>哪个维度上轮不够</li>
+                <li>哪个关键位这轮必须补</li>
+                <li>哪条新闻这轮必须重点看</li>
+                <li>哪个风险不能忽略</li>
+              </ul>
+              <h3>14.2 用户驱动的手动增强</h3>
+              <p>如果用户说：</p>
+              <ul>
+                <li>「我觉得这轮更要看某条新闻」</li>
+                <li>「这只票这次重点看某个价位」</li>
+                <li>「这个方向可能受某事件影响更大」</li>
+              </ul>
+              <p>系统应允许这些输入进入本轮 focus，而不是强行按旧模式分析。</p>
+            </div>
+          </section>
+
+          <section id="fit-strategy" class="doc-section">
+            <h2>十五、为什么这套架构适合你的策略</h2>
+            <div class="article-body">
+              <p>你的底层策略是：</p>
+              <ul>
+                <li>小资金</li>
+                <li>想快速增长</li>
+                <li>愿意集中</li>
+                <li>想轮动到当前最强方向</li>
+                <li>但又不想因为自己情绪乱卖、乱切、乱追</li>
+              </ul>
+              <p>这套架构的意义就在于：</p>
+              <p>它不是替你预测市场，而是替你建立一套：比较机会成本、管理仓位、控制风险、结合新闻、避免情绪操作的<strong>纪律化投资团队</strong>。</p>
+            </div>
+          </section>
+
+          <section id="mvp" class="doc-section">
+            <h2>十六、推荐的初始落地版本</h2>
+            <div class="article-body">
+              <p>你不需要第一天就把所有 Agent 全做满。建议第一版先实现：</p>
+              <div class="doc-columns doc-columns--2">
+                <div class="article-body">
+                  <p><strong>入口与核心层</strong></p>
+                  <ul>
+                    <li>Request Router</li>
+                    <li>Portfolio State Tracker</li>
+                    <li>Chief Strategist</li>
+                    <li>Position Manager</li>
+                    <li>Research Lead</li>
+                    <li>News Agent</li>
+                    <li>Market Strategist</li>
+                    <li>Risk Officer</li>
+                  </ul>
+                </div>
+                <div class="article-body">
+                  <p><strong>初始单票分析员</strong></p>
+                  <ul>
+                    <li>TSLA Analyst</li>
+                    <li>AMD Analyst</li>
+                    <li>PLTR Analyst</li>
+                    <li>COIN Analyst</li>
+                  </ul>
+                  <p><strong>之后再加</strong>：SNDK、MU、NVDA、HOOD。</p>
+                </div>
+              </div>
+              <p>这样第一版就已经非常能用了。</p>
+            </div>
+          </section>
+
+          <section id="closing" class="doc-section">
+            <h2>最终总结</h2>
+            <div class="article-body">
+              <p>你的 Skill 最终应该是一个：对用户灵活、对团队分层、对执行严格的<strong>多 Agent 投资团队系统</strong>。</p>
+              <p>它有三个层面：</p>
+              <div class="stat-strip" aria-label="三层面总结">
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">用户</div>
+                  <div class="stat-strip__label">自然对话；按问题大小选轻重流程；不每次都跑全流程</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">团队</div>
+                  <div class="stat-strip__label">市场 · 风险 · 新闻 · 研究主管 · 单票分析员 · 仓位执行 · 总协调者</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">执行</div>
+                  <div class="stat-strip__label">仓位纪律 · 机会成本 · 现金结算约束 · 决策可解释性</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

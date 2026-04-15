@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Full architecture for a multi-agent personal investment Skill: goals, principles, layers, Request Router, agents, state, outputs. Not financial advice."
+    />
+    <title>Investment multi-Agent Skill — full architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <!-- EN mirror: same section ids as ZH for TOC / article-toc.js -->
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/investment-skill-architecture.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+      <!-- Version switch: keep v1 and allow jump to v2 -->
+      <div class="doc-version-switch" aria-label="Document version switch">
+        <a class="doc-version-switch__btn" href="/en/projects/investment-skill-architecture-v2.html">Architecture v2.0</a>
+        <a class="doc-version-switch__btn is-active" href="/en/projects/investment-skill-architecture.html">Architecture v1.0</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview</a>
+            <a href="#goals">1. Document goals</a>
+            <a href="#principles">2. System principles</a>
+            <a href="#layers">3. Overall architecture</a>
+            <a href="#ux">4. User interaction</a>
+            <a href="#team-layers">5. Internal team</a>
+            <a href="#chief">6. Chief coordination</a>
+            <a href="#market-risk">7. Market &amp; risk</a>
+            <a href="#research-layer">8. Research layer</a>
+            <a href="#execution-layer">9. Execution layer</a>
+            <a href="#state-layer">10. State layer</a>
+            <a href="#agent-invoke">11. Agent invocation</a>
+            <a href="#collab-flow">12. Collaboration order</a>
+            <a href="#outputs">13. Outputs</a>
+            <a href="#learning">14. Learning &amp; iteration</a>
+            <a href="#fit-strategy">15. Strategy fit</a>
+            <a href="#mvp">16. Initial rollout</a>
+            <a href="#closing">Closing summary</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Architecture specification · Not financial advice</p>
+            <h1 class="article-title">Investment multi-Agent Skill — full architecture</h1>
+            <div class="article-body">
+              <p>
+                This page specifies a multi-agent Skill for a <strong>personal equity book</strong>: layers, elastic
+                orchestration, portfolio state and settlement, agent roles, and output shapes. Layout matches other
+                <strong>project spec pages</strong> on this site (sticky TOC, section dividers, summary strips, and
+                comparison tables) so English and Chinese mirrors stay easy to scan side by side.
+              </p>
+            </div>
+          </header>
+
+          <section id="goals" class="doc-section">
+            <h2>1. Document goals</h2>
+            <div class="article-body">
+              <p>This architecture defines a <strong>multi-Agent Skill for personal investment decisions</strong> aimed at:</p>
+              <ul>
+                <li>Managing the user’s current positions</li>
+                <li>Tracking a focused watchlist</li>
+                <li>Analyzing news, sentiment, trends, and opportunity cost</li>
+                <li>Producing position-adjustment ideas, take-profit / stop-loss notes, and what to watch next</li>
+                <li>Supporting discipline and reducing emotional trading</li>
+                <li>Operating under real constraints, e.g. <strong>cash from sales not deployable until the next session</strong></li>
+              </ul>
+              <p><strong>Intended profile:</strong></p>
+              <ul>
+                <li>Smaller capital seeking faster compounding</li>
+                <li>Medium–high volatility tolerance but avoiding structurally weak “junk” names</li>
+                <li>Prefers <strong>daily + ~5-minute</strong> swing / short–medium horizon, not 1-minute scalping</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="principles" class="doc-section">
+            <h2>2. System principles</h2>
+            <div class="article-body">
+              <h3>2.1 Bounded roles, open reasoning</h3>
+              <p>Do not constrain how agents reason internally. Do constrain:</p>
+              <ul>
+                <li>Each agent’s scope of responsibility</li>
+                <li>Persona and voice</li>
+                <li>What each agent must deliver</li>
+                <li>Who may call whom</li>
+              </ul>
+              <p>Agents may think freely but may not overreach or emit chaotic output.</p>
+
+              <h3>2.2 Not every query runs the full committee</h3>
+              <p>Orchestration must be <strong>elastic</strong>, not “one user sentence → full team.”</p>
+              <p>First classify:</p>
+              <ul>
+                <li>A <strong>simple</strong> question</li>
+                <li>A <strong>thematic</strong> question</li>
+                <li>A <strong>full portfolio</strong> decision</li>
+              </ul>
+              <p>Then choose which agents to run.</p>
+
+              <h3>2.3 Strategy frame is fixed; agents cannot rewrite it</h3>
+              <p>Agents may not change core rules such as:</p>
+              <ul>
+                <li>Primary sizing logic</li>
+                <li>Risk floor</li>
+                <li>Policy on weak names</li>
+                <li>Decision-card requirements</li>
+                <li>Cash-settlement constraints</li>
+              </ul>
+              <p>What <em>may</em> change each round:</p>
+              <ul>
+                <li>Focus topics for the round</li>
+                <li>Which factors to weight</li>
+                <li>Which level, headline, or risk to emphasize</li>
+              </ul>
+
+              <h3>2.4 Remember state, not stale opinions</h3>
+              <p><strong>Prefer remembering:</strong></p>
+              <ul>
+                <li>Current positions</li>
+                <li>Available cash</li>
+                <li>Unsettled cash</li>
+                <li>Whether the user sold today</li>
+                <li>Cash expected deployable tomorrow</li>
+                <li>Watchlist</li>
+                <li>Current primary thesis / “main” name</li>
+                <li>Whether a pending execution plan exists</li>
+              </ul>
+              <p><strong>Avoid strong memory of:</strong></p>
+              <ul>
+                <li>Which agent was bullish three days ago</li>
+                <li>Last week’s verdict on a ticker</li>
+                <li>Conclusions from expired headlines</li>
+              </ul>
+              <p>Markets move quickly; stale views pollute fresh analysis.</p>
+            </div>
+          </section>
+
+          <section id="layers" class="doc-section">
+            <h2>3. Overall Skill architecture</h2>
+            <div class="article-body">
+              <p>Three layers (summary strip mirrors the design-system “stat strip” pattern):</p>
+              <div class="stat-strip" aria-label="Three layers">
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">A</div>
+                  <div class="stat-strip__label">User interaction &amp; routing · Request Router · Quick / Focused / Full</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">B</div>
+                  <div class="stat-strip__label">Internal team · Market / Risk / News / Research / Ticker analysts</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">C</div>
+                  <div class="stat-strip__label">Execution &amp; state · Position Manager · Portfolio State Tracker</div>
+                </div>
+              </div>
+              <p>Flow:</p>
+              <ol>
+                <li>User talks to the Skill.</li>
+                <li>Entry classifies complexity.</li>
+                <li>Team runs as needed.</li>
+                <li>Response mode: quick answer, thematic note, or full decision card.</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="ux" class="doc-section">
+            <h2>4. User interaction architecture</h2>
+            <div class="article-body">
+              <p>This is the user-facing surface of the Skill.</p>
+
+              <h3>4.1 Responsibilities</h3>
+              <p>This layer does <em>not</em> replace deep market analysis. It:</p>
+              <ul>
+                <li>Ingests user input</li>
+                <li>Infers intent</li>
+                <li>Classifies complexity</li>
+                <li>Selects run mode</li>
+                <li>Shapes output length and format</li>
+                <li>Keeps tone natural</li>
+              </ul>
+
+              <h3>4.2 Request types</h3>
+              <p><strong>Type 1 — Simple lookup</strong> — no full committee.</p>
+              <blockquote>
+                <ul>
+                  <li>“What’s the news on SNDK today?”</li>
+                  <li>“Why is AMD up today?”</li>
+                  <li>“Is COIN weak lately?”</li>
+                  <li>“Is the PLTR thesis still intact?”</li>
+                </ul>
+              </blockquote>
+
+              <p><strong>Type 2 — Thematic</strong> — more depth, usually not the full board.</p>
+              <blockquote>
+                <ul>
+                  <li>“AMD vs SNDK — which matters more now?”</li>
+                  <li>“If US–Iran talks break, how do COIN and PLTR react?”</li>
+                  <li>“Should I trim TSLA here?”</li>
+                  <li>“Swap HOOD for COIN?”</li>
+                </ul>
+              </blockquote>
+
+              <p><strong>Type 3 — Full decision</strong> — full orchestration.</p>
+              <blockquote>
+                <ul>
+                  <li>“Full plan from my current book”</li>
+                  <li>“Rotate primary from TSLA to SNDK?”</li>
+                  <li>“Today’s portfolio adjustment plan”</li>
+                  <li>“Decision card with news, risk, and cash state”</li>
+                </ul>
+              </blockquote>
+
+              <h3>4.3 Request Router</h3>
+              <p>Entry orchestrator for the Skill.</p>
+              <div class="doc-columns doc-columns--2">
+                <div class="article-body">
+                  <p><strong>Does</strong></p>
+                  <ul>
+                    <li>Classify the request</li>
+                    <li>Choose Quick / Focused / Full</li>
+                    <li>Pick agents</li>
+                    <li>Decide if a decision card is required</li>
+                  </ul>
+                </div>
+                <div class="article-body">
+                  <p><strong>Does not</strong></p>
+                  <ul>
+                    <li>Replace analyst agents</li>
+                    <li>Make the final complex judgment alone</li>
+                    <li>Long-term store “market views”</li>
+                  </ul>
+                </div>
+              </div>
+
+              <h3>4.4 Run modes</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mode</th>
+                    <th>Typical use</th>
+                    <th>Agents &amp; output</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Quick Answer</strong></td>
+                    <td>Single name, headline, cause, or simple “why”</td>
+                    <td>Minimal agents; short output; <strong>no</strong> full card</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Focused Review</strong></td>
+                    <td>1–2 names, partial book, one headline on several names</td>
+                    <td>Small agent set; thematic note; optional light structure</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Full Committee</strong></td>
+                    <td>Book-level decisions, primary rotation, sizing, formal advice</td>
+                    <td>Full team; <strong>full decision card</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="team-layers" class="doc-section">
+            <h2>5. Internal team architecture</h2>
+            <div class="article-body">
+              <p>Four sub-layers of the analytical engine:</p>
+              <div class="stat-strip" aria-label="Four sub-layers">
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">5.1</div>
+                  <div class="stat-strip__label">Chief coordination · Chief Strategist</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">5.2</div>
+                  <div class="stat-strip__label">Market &amp; risk · Market / Risk / News</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">5.3</div>
+                  <div class="stat-strip__label">Research · Research Lead · Ticker analysts</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">5.4</div>
+                  <div class="stat-strip__label">Execution · Position Manager</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="chief" class="doc-section">
+            <h2>6. Chief coordination layer</h2>
+            <div class="article-body">
+              <h3>6.1 Chief Strategist</h3>
+              <p>Final arbiter.</p>
+              <p><strong>Responsibilities:</strong></p>
+              <ul>
+                <li>Integrate agent outputs</li>
+                <li>Name the dominant driver</li>
+                <li>Resolve conflicts</li>
+                <li>Weight information types for this round</li>
+                <li>Ship the final call</li>
+                <li>In Full mode, emit the full decision card</li>
+              </ul>
+              <p><strong>Not:</strong></p>
+              <ul>
+                <li>A mechanical rollup</li>
+                <li>A majority vote</li>
+                <li>A rigid if-else router</li>
+                <li>An average of everyone’s opinions</li>
+              </ul>
+              <p><strong>Must have:</strong></p>
+              <ul>
+                <li>Flexibility</li>
+                <li>A point of view</li>
+                <li>Comfort with uncertainty</li>
+                <li>Dynamic re-weighting</li>
+              </ul>
+              <p><strong>Re-weighting examples:</strong></p>
+              <ul>
+                <li>Macro shock → raise News + Risk weight</li>
+                <li>Quiet tape but clean trend → raise Trend / Ticker analyst weight</li>
+                <li>Large rotation → raise Position Manager + Risk weight</li>
+              </ul>
+              <p><strong>Output:</strong> In Full mode, the Chief must output a decision card, not a one-liner.</p>
+            </div>
+          </section>
+
+          <section id="market-risk" class="doc-section">
+            <h2>7. Market &amp; risk layer</h2>
+            <div class="article-body">
+              <h3>7.1 Market Strategist</h3>
+              <p><strong>Responsibilities:</strong></p>
+              <ul>
+                <li>Risk-on / neutral / risk-off read</li>
+                <li>Index and sector style</li>
+                <li>Whether high-beta offense is supported</li>
+                <li>Whether the user’s profile fits aggressive sizing now</li>
+              </ul>
+              <p><strong>Inputs:</strong> indices; leaders; rotation; risk appetite.</p>
+              <p><strong>Outputs:</strong> environment label; aggressiveness guidance; favored directions.</p>
+
+              <h3>7.2 Risk Officer</h3>
+              <p><strong>Responsibilities:</strong></p>
+              <ul>
+                <li>Surface risks</li>
+                <li>Stress-test proposal fragility</li>
+                <li>Flag discipline breaches</li>
+                <li>Flag concentration, volatility, late chase</li>
+                <li>When a forced re-review is needed</li>
+              </ul>
+              <p><strong>Outputs:</strong> top risks; ideas that look profitable but are too costly; conditions that require de-risking; where the plan is most likely to fail.</p>
+              <p><strong>Voice:</strong> strict, conservative, low hype — prevents euphoria, not idea generation.</p>
+
+              <h3>7.3 News &amp; Catalyst Agent</h3>
+              <p><strong>Responsibilities:</strong></p>
+              <ul>
+                <li>Pull last 24–48h relevant flow</li>
+                <li>Drop spam / stale / irrelevant items</li>
+                <li>Extract true catalysts</li>
+                <li>Map to macro mood, sector mood, single-name impact, portfolio impact</li>
+              </ul>
+              <p><strong>Rules:</strong> time-first; user-mentioned leads prioritized; no headline dumps; only decision-useful facts.</p>
+              <p><strong>Outputs:</strong> this round’s catalysts; risk-on/off tilt; per-name impact; what belongs on the card.</p>
+            </div>
+          </section>
+
+          <section id="research-layer" class="doc-section">
+            <h2>8. Research layer</h2>
+            <div class="article-body">
+              <p>Split into 8.1 Portfolio Research Lead and 8.2 ticker-specific analysts.</p>
+
+              <h3>8.1 Portfolio Research Lead</h3>
+              <p>Coordinator, not final decider.</p>
+              <p><strong>1) Dispatch</strong> — assign work to relevant ticker analysts.</p>
+              <p><strong>2) Round focus brief</strong> — each round may specify: what to emphasize per name; key level; key headline; which dimension was thin last time.</p>
+              <p>Examples:</p>
+              <ul>
+                <li>SNDK: event follow-through vs blow-off top</li>
+                <li>AMD: relative strength and whether flows are returning</li>
+                <li>COIN: BTC trend confirmation + macro crushing high beta</li>
+                <li>TSLA: still core theme vs losing “primary” status</li>
+              </ul>
+              <p><strong>3) Cross-section compare</strong> — opportunity cost; A vs B for primary book; why rotate; whether the old thesis actually broke.</p>
+              <p><strong>4) Quality pass</strong> — missed risks; news-only without structure; too bullish; ignored tape — nudges per round, not “self-evolving staff.”</p>
+              <p><strong>Memory:</strong> light state — book shape, watchlist, pending settlement, pending plans, this round’s focus — not “who was best last week” or prior-round bull/bear by analyst.</p>
+
+              <h3>8.2 Ticker analysts</h3>
+              <p>One analyst per key name. Initial roster:</p>
+              <ul>
+                <li>TSLA, NVDA, AMD, MU, SNDK, PLTR, COIN, HOOD — extensible.</li>
+              </ul>
+              <p><strong>Each pass must answer at least:</strong></p>
+              <ul>
+                <li>Core thesis</li>
+                <li>Still valid?</li>
+                <li>Relative strength</li>
+                <li>Enter / hold / danger zone</li>
+                <li>What incumbents should do</li>
+                <li>Risks</li>
+                <li>Re-evaluation triggers</li>
+              </ul>
+              <p><strong>Traits:</strong> fixed persona and focus; no heavy long-horizon memory; relies on this round’s inputs/tools.</p>
+              <p><strong>News:</strong> encouraged — recent, relevant, explained meaning; no stale filler.</p>
+              <p><strong>Persona sketch:</strong></p>
+              <ul>
+                <li><strong>TSLA:</strong> expectations, narrative, sentiment, theme leadership</li>
+                <li><strong>AMD:</strong> semi rotation, RS, industry slot</li>
+                <li><strong>SNDK:</strong> events, sentiment persistence, blow-off risk</li>
+                <li><strong>PLTR:</strong> AI app story, multiple sentiment, durability</li>
+                <li><strong>COIN:</strong> BTC, crypto mood, liquidity, macro</li>
+                <li><strong>MU:</strong> memory cycle, recovery</li>
+                <li><strong>HOOD:</strong> risk appetite, retail activity</li>
+                <li><strong>NVDA:</strong> AI leadership and theme completeness</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="execution-layer" class="doc-section">
+            <h2>9. Execution layer</h2>
+            <div class="article-body">
+              <h3>9.1 Position Manager</h3>
+              <p>Turns research into actions.</p>
+              <p><strong>Responsibilities:</strong></p>
+              <ul>
+                <li>Translate conclusions into executable book moves</li>
+                <li>Add, trim, exit, rotate primary, open watch sleeves</li>
+                <li>TP / SL / re-check levels</li>
+                <li>Staged execution</li>
+                <li>Respect known behavioral traps — avoid selling winners without a rule</li>
+              </ul>
+              <p><strong>Not:</strong> re-doing “who is stronger”; not the macro decider.</p>
+              <p><strong>Is:</strong> how to move the book <em>now</em>; what fits <em>today</em>; how to stage <em>tomorrow’s</em> deployable cash; primary / secondary / cash stack.</p>
+              <p><strong>Cash T+1:</strong> must track settled vs unsettled, today’s sale proceeds, next-day deployable — a <strong>position + cash execution manager</strong>, not a theoretical allocator.</p>
+            </div>
+          </section>
+
+          <section id="state-layer" class="doc-section">
+            <h2>10. State layer</h2>
+            <div class="article-body">
+              <h3>10.1 Portfolio State Tracker</h3>
+              <p>May be non-personified. Maintains:</p>
+              <ul>
+                <li>Positions and weights</li>
+                <li>Primary / secondary / watch sleeves</li>
+                <li>Settled and unsettled cash</li>
+                <li>Sells today</li>
+                <li>Expected deployable cash tomorrow</li>
+                <li>Watchlist</li>
+                <li>Pending plans</li>
+              </ul>
+              <p><strong>Why it matters:</strong> separates theoretical optimum from what is executable today — avoids “sell all and immediately redeploy” fantasies.</p>
+              <p><strong>Consumers:</strong> Chief, Research Lead, Position Manager, Risk when needed.</p>
+            </div>
+          </section>
+
+          <section id="agent-invoke" class="doc-section">
+            <h2>11. Agent invocation architecture</h2>
+            <div class="article-body">
+              <p>Mode comparison (same semantics as Chinese; table layout for quick scanning).</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mode</th>
+                    <th>Triggers</th>
+                    <th>Default</th>
+                    <th>Optional</th>
+                    <th>Skip / note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Quick</strong></td>
+                    <td>Single-name news, tape, thesis, simple “why”</td>
+                    <td>Matching ticker analyst</td>
+                    <td>News, Market Strategist</td>
+                    <td>Chief, PM, Research Lead (usually)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Focused</strong></td>
+                    <td>Two-name compare; partial book; one headline on several names; hold vs fold</td>
+                    <td>1–2 analysts</td>
+                    <td>News, Risk, Market, Research Lead, PM as needed</td>
+                    <td>Usually skip Chief unless formal advice requested</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Full</strong></td>
+                    <td>Whole book; primary rotation; deployment; explicit card</td>
+                    <td colspan="2">See ordered chain below</td>
+                    <td>—</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Full mode chain</h3>
+              <pre class="doc-pre" aria-label="Full mode agent order">Portfolio State Tracker
+→ Market Strategist
+→ News Agent
+→ Risk Officer
+→ Portfolio Research Lead
+→ Relevant Ticker Analysts
+→ Position Manager
+→ Chief Strategist</pre>
+            </div>
+          </section>
+
+          <section id="collab-flow" class="doc-section">
+            <h2>12. Internal collaboration (“meeting”) order</h2>
+            <div class="article-body">
+              <h3>12.1 Standard sequence</h3>
+              <ol class="doc-steps">
+                <li>
+                  <strong>Step 1 — Context</strong> from user + state: positions, cash, watchlist, user view,
+                  user-supplied headlines.
+                </li>
+                <li>
+                  <strong>Step 2 — Environment</strong> — Market read; News catalysts; Risk top threats.
+                </li>
+                <li>
+                  <strong>Step 3 — Research Lead focus</strong>, then ticker analysts.
+                </li>
+                <li>
+                  <strong>Step 4 — Ticker analysts</strong> each output state, thesis, risks, watch items.
+                </li>
+                <li>
+                  <strong>Step 5 — Research Lead cross-check</strong> — who is stronger; opportunity cost; primary
+                  candidate; keep old book or not.
+                </li>
+                <li>
+                  <strong>Step 6 — Position Manager</strong> — today vs tomorrow actions; staging; sizing.
+                </li>
+                <li>
+                  <strong>Step 7 — Chief</strong> — final judgment and full decision card.
+                </li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="outputs" class="doc-section">
+            <h2>13. Output architecture</h2>
+            <div class="article-body">
+              <h3>13.1 Quick</h3>
+              <ul>
+                <li>For simple questions</li>
+                <li>Natural, short, direct — no template spam</li>
+              </ul>
+              <h3>13.2 Mini Decision Note</h3>
+              <ul>
+                <li>For thematic analysis</li>
+                <li>Include: conclusion; core rationale; risks; what to watch next</li>
+              </ul>
+              <h3>13.3 Full Decision Card</h3>
+              <p>For full decisions. Required fields:</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Final action</td>
+                    <td>Book-level recommendation for this round</td>
+                  </tr>
+                  <tr>
+                    <td>Dominant driver</td>
+                    <td>What actually moved the conclusion (tape, news, macro, etc.)</td>
+                  </tr>
+                  <tr>
+                    <td>Core rationale</td>
+                    <td>Explainable logic chain</td>
+                  </tr>
+                  <tr>
+                    <td>Whether the old thesis changed</td>
+                    <td>Explicit delta vs prior primary story</td>
+                  </tr>
+                  <tr>
+                    <td>Risks</td>
+                    <td>Main downside and invalidation paths</td>
+                  </tr>
+                  <tr>
+                    <td>Expected range</td>
+                    <td>Qualitative or bounded expectation</td>
+                  </tr>
+                  <tr>
+                    <td>Re-evaluation triggers</td>
+                    <td>Prices, time windows, or events that force a refresh</td>
+                  </tr>
+                  <tr>
+                    <td>Execution plan</td>
+                    <td>Staged actions across days / sessions</td>
+                  </tr>
+                  <tr>
+                    <td>Cash settlement constraints</td>
+                    <td>T+1 / unsettled realism for what can trade today</td>
+                  </tr>
+                  <tr>
+                    <td>Confidence</td>
+                    <td>Explicit uncertainty label</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="learning" class="doc-section">
+            <h2>14. “Learning” and improvement</h2>
+            <div class="article-body">
+              <p>No self-modifying “employee evolution.” Improvement is:</p>
+              <h3>14.1 Research Lead–driven focus iteration</h3>
+              <p>Each round the Lead may flag:</p>
+              <ul>
+                <li>Which dimension was thin last round</li>
+                <li>Which level must be re-marked</li>
+                <li>Which headline must be re-read</li>
+                <li>Which risk cannot be hand-waved</li>
+              </ul>
+              <h3>14.2 User-driven overrides</h3>
+              <p>If the user says this round should overweight a headline, a price level, or an event channel, that input should enter the focus brief instead of forcing a stale template.</p>
+            </div>
+          </section>
+
+          <section id="fit-strategy" class="doc-section">
+            <h2>15. Why this fits the underlying strategy</h2>
+            <div class="article-body">
+              <p>Underlying stance:</p>
+              <ul>
+                <li>Small capital</li>
+                <li>Growth tilt</li>
+                <li>Willing to concentrate</li>
+                <li>Wants to rotate toward current strength</li>
+                <li>Fears emotional churn (panic sells, whipsaw rotations, chase)</li>
+              </ul>
+              <p>The architecture is <strong>not</strong> a market oracle; it is a <strong>disciplined desk</strong> for opportunity cost, sizing, risk, headlines, and process.</p>
+            </div>
+          </section>
+
+          <section id="mvp" class="doc-section">
+            <h2>16. Recommended initial rollout</h2>
+            <div class="article-body">
+              <p>You do not need every agent on day one. Ship first:</p>
+              <div class="doc-columns doc-columns--2">
+                <div class="article-body">
+                  <p><strong>Core spine</strong></p>
+                  <ul>
+                    <li>Request Router</li>
+                    <li>Portfolio State Tracker</li>
+                    <li>Chief Strategist</li>
+                    <li>Position Manager</li>
+                    <li>Research Lead</li>
+                    <li>News Agent</li>
+                    <li>Market Strategist</li>
+                    <li>Risk Officer</li>
+                  </ul>
+                </div>
+                <div class="article-body">
+                  <p><strong>First ticker roster</strong></p>
+                  <ul>
+                    <li>TSLA, AMD, PLTR, COIN</li>
+                  </ul>
+                  <p><strong>Later add:</strong> SNDK, MU, NVDA, HOOD — already very usable at v1.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="closing" class="doc-section">
+            <h2>Closing summary</h2>
+            <div class="article-body">
+              <p>The Skill should be <strong>flexible to the user</strong>, <strong>layered internally</strong>, and <strong>strict on execution</strong>.</p>
+              <p>Three surfaces:</p>
+              <div class="stat-strip" aria-label="Three surfaces">
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">User</div>
+                  <div class="stat-strip__label">Natural chat; light vs heavy process by question size — not every query runs the full pipeline</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">Team</div>
+                  <div class="stat-strip__label">Market · risk · news · research lead · ticker analysts · execution · chief</div>
+                </div>
+                <div class="stat-strip__item">
+                  <div class="stat-strip__value">Exec</div>
+                  <div class="stat-strip__label">Sizing discipline · opportunity cost · settlement reality · explainability</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="AnimeHub (2024): full-stack anime community—Jikan search and cache, ratings, posts, Socket notifications; React, Express, MongoDB, MIT."
+    />
+    <title>AnimeHub · Project documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/animehub.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview</a>
+            <a href="#links">Repository</a>
+            <a href="#features">Features</a>
+            <a href="#tech">Tech stack</a>
+            <a href="#impl">Implementation notes</a>
+            <a href="#quickstart">Quick start</a>
+            <a href="#structure">Directory layout</a>
+            <a href="#contributing">Contributing &amp; license</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              Full stack · React · Express · MongoDB · MIT · 2024 (first full-stack project)
+            </p>
+            <h1 class="article-title">AnimeHub</h1>
+            <p class="article-meta" style="margin-bottom: 12px">
+              Search, ratings, comments, and community features for anime fans
+            </p>
+            <div class="article-body">
+              <p>
+                A combined <strong>anime forum</strong>: fetch metadata from
+                <a href="https://jikan.moe" target="_blank" rel="noopener noreferrer">Jikan</a> (unofficial
+                MyAnimeList API) with server-side caching; user ratings, nested comments, posts and tags,
+                favorites, light personalization, and <strong>WebSocket notifications</strong> for
+                replies and mentions. i18next for Chinese / English / Japanese.
+              </p>
+              <p>
+                Frontend and backend live in a monorepo-style layout (<code>animehub-backend</code> /
+                <code>animehub-frontend</code>); Heroku (API) and Netlify (static + routing) experiments
+                existed—see the repository for what still applies.
+              </p>
+            </div>
+          </header>
+
+          <section id="links" class="doc-section">
+            <h2>Repository</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  GitHub:
+                  <a href="https://github.com/songzhiyuan98/Animehub" target="_blank" rel="noopener noreferrer">https://github.com/songzhiyuan98/Animehub</a>
+                </li>
+              </ul>
+              <p class="muted">
+                Subfolders remain <code>animehub-backend</code> / <code>animehub-frontend</code>; after clone
+                the folder name is usually <code>Animehub</code> (match GitHub casing).
+              </p>
+            </div>
+          </section>
+
+          <section id="features" class="doc-section">
+            <h2>Features</h2>
+            <div class="article-body">
+              <h3>Search &amp; content</h3>
+              <ul>
+                <li>Anime search with multi-condition filters (genre, status, score, …)</li>
+                <li>Detail pages: synopsis, scores, trailers, etc.; multilingual search and translated queries</li>
+                <li>Server cache for hot titles (e.g. NodeCache + TTL)</li>
+              </ul>
+              <h3>Community</h3>
+              <ul>
+                <li>User ratings; nested comments and likes</li>
+                <li>Posts: rich text (React Quill), tags, pagination and infinite scroll</li>
+                <li>Favorite anime and posts; profile aggregates posts, comments, and favorites</li>
+              </ul>
+              <h3>Recommendations &amp; notifications</h3>
+              <ul>
+                <li>Recommendations from browsing / favorites, plus a daily pick</li>
+                <li>Socket.io push; persisted notification center</li>
+              </ul>
+              <h3>Experience</h3>
+              <ul>
+                <li>Responsive layout (desktop and mobile)</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="tech" class="doc-section">
+            <h2>Tech stack</h2>
+            <div class="article-body">
+              <h3>Frontend</h3>
+              <ul>
+                <li>React 18, React Router 6</li>
+                <li>Redux Toolkit</li>
+                <li>MUI 5</li>
+                <li>Axios, socket.io-client, React Quill, infinite-scroll helpers</li>
+                <li>i18next (http-backend, language detection)</li>
+              </ul>
+              <h3>Backend</h3>
+              <ul>
+                <li>Node.js, Express</li>
+                <li>MongoDB, Mongoose</li>
+                <li>JWT access + refresh, bcrypt</li>
+                <li>Socket.io, Multer, Nodemailer, node-cache</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="impl" class="doc-section">
+            <h2>Implementation notes (summary)</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>Auth:</strong> short-lived access token + long-lived refresh; hashed passwords</li>
+                <li><strong>Anime detail:</strong> Jikan v4 by id; serve from memory cache when hit</li>
+                <li><strong>Posts:</strong> FormData with title, rich body, tag ids; create tags on the fly when needed</li>
+                <li><strong>Notifications:</strong> persist then emit to recipient rooms; populate sender and linked comment when listing</li>
+              </ul>
+              <p class="muted">See README and source for concrete routes; this page avoids long embedded snippets that drift from the repo.</p>
+            </div>
+          </section>
+
+          <section id="quickstart" class="doc-section">
+            <h2>Quick start</h2>
+            <div class="article-body">
+              <pre class="doc-pre">git clone https://github.com/songzhiyuan98/Animehub.git
+cd Animehub</pre>
+              <pre class="doc-pre">cd animehub-backend && npm install
+cd ../animehub-frontend && npm install</pre>
+              <p>Create <code>.env</code> under <code>animehub-backend</code>, for example:</p>
+              <pre class="doc-pre">MONGO_URI=mongodb://localhost:27017/animehub
+JWT_SECRET=...
+JWT_REFRESH_SECRET=...
+PORT=5000
+# Email (Mailjet, etc.) per README</pre>
+              <pre class="doc-pre">cd animehub-backend && npm start
+cd ../animehub-frontend && npm start</pre>
+              <p class="muted">Ports may differ from the usual CRA 3000—follow local <code>package.json</code> scripts.</p>
+            </div>
+          </section>
+
+          <section id="structure" class="doc-section">
+            <h2>Directory layout (summary)</h2>
+            <div class="article-body">
+              <pre class="doc-pre">AnimeHub/
+├── animehub-backend/     # Express: config, controllers, models, routes, utils, server.js
+├── animehub-frontend/    # React: public, src/components, redux, …
+├── package.json          # root workspace / scripts (if present)
+└── README.md</pre>
+            </div>
+          </section>
+
+          <section id="contributing" class="doc-section">
+            <h2>Contributing &amp; license</h2>
+            <div class="article-body">
+              <p>Fork and open PRs; branches and commit style should follow the README contributor notes.</p>
+              <p><strong>License:</strong> MIT.</p>
+              <p><strong>Contact:</strong> <a href="mailto:songzhiyuan98@gmail.com">songzhiyuan98@gmail.com</a></p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98/Animehub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Nature Medicine：七类 MRI 多器官生物学年龄（MRIBAG），31 万余人；蛋白组、代谢组、GWAS、可成药靶点、死亡风险与 A4 认知。开放获取文章链接见页内。"
+    />
+    <title>MRI 多器官衰老钟 · 研究笔记</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/research-mribag.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <!-- 返回首页 -->
+        <a href="../index.html">← 返回首页</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">概览</a>
+            <a href="#numbers">核心数字</a>
+            <a href="#abstract">摘要</a>
+            <a href="#background">背景</a>
+            <a href="#methods">方法（概要）</a>
+            <a href="#results-models">结果 · 模型表现</a>
+            <a href="#results-omics">结果 · 蛋白组与代谢组</a>
+            <a href="#results-genetics">结果 · 遗传与可成药靶点</a>
+            <a href="#results-clinical">结果 · 临床意义</a>
+            <a href="#discussion">讨论与局限</a>
+            <a href="#resources">数据与代码</a>
+            <a href="#citation">引用</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              论文 · 开放获取 · 网络首发 2025 年 10 月 16 日 ·
+              <em>Nature Medicine</em> 第 32 卷，82–92 页（2026）
+            </p>
+            <h1 class="article-title">
+              MRI-based multi-organ clocks for healthy aging and disease assessment
+            </h1>
+            <!-- 作者行与期刊英文体例一致：本站署名用拉丁拼写 Zhiyuan Song -->
+            <p class="article-meta" style="margin-bottom: 12px">
+              The MULTI Consortium，Huizi Cao，<strong>Zhiyuan Song</strong>，Michael R. Duggan，Guray
+              Erus，Dhivya Srinivasan，Ye Ella Tian，Wenjia Bai，Michael S. Rafii，Paul Aisen，Daniel
+              W. Belsky，Keenan A. Walker，Andrew Zalesky，Luigi Ferrucci，Christos Davatzikos 与
+              <strong>Junhao Wen</strong>（通讯作者）
+            </p>
+            <div class="article-body">
+              <p>
+                <strong>开放获取正文：</strong>
+                <a href="https://www.nature.com/articles/s41591-025-03999-8" target="_blank" rel="noopener noreferrer">https://www.nature.com/articles/s41591-025-03999-8</a>
+              </p>
+              <p class="muted">
+                本站为个人读书笔记；数字与表述以正式发表论文为准，引用请用期刊版本。
+              </p>
+            </div>
+          </header>
+
+          <section id="numbers" class="doc-section">
+            <h2>核心数字</h2>
+            <div class="stat-strip">
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">313,645</div>
+                <div class="stat-strip__label">受试者（MULTI）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">7</div>
+                <div class="stat-strip__label">MRIBAG 器官 / 组织</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">2,923</div>
+                <div class="stat-strip__label">血浆蛋白（Olink）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">327</div>
+                <div class="stat-strip__label">代谢物（Nightingale）</div>
+              </div>
+            </div>
+            <div class="stat-strip" style="margin-top: 16px">
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">53</div>
+                <div class="stat-strip__label">GWAS 位点–MRIBAG 对（P &lt; 5×10⁻⁸）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">9</div>
+                <div class="stat-strip__label">可成药基因（DGIdb）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">603</div>
+                <div class="stat-strip__label">蛋白–MRIBAG 关联（ProWAS）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">758</div>
+                <div class="stat-strip__label">代谢物–MRIBAG 关联（MetWAS）</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="abstract" class="doc-section">
+            <h2>摘要（中文意译，与期刊一致）</h2>
+            <div class="article-body">
+              <p>
+                跨器官、跨组织的生物学衰老钟加深了人们对衰老与疾病的理解。本研究在该框架上拓展，构建<strong>七个</strong>基于磁共振影像的多器官生物学年龄差（MRIBAG），覆盖脑、心、肝、脂肪、脾、肾与胰。在
+                MULTI 整合的 <strong>313,645</strong> 名个体中，将七个 MRIBAG 与 2,923
+                个血浆蛋白、327 个代谢物及约 647 万个常见遗传变异相联系。全基因组关联分析得到 53
+                对「位点–MRIBAG」在 P &lt; 5×10⁻⁸ 下显著。遗传相关与孟德尔随机化支持器官特异与跨器官联系，并涉及
+                24 个非 MRI 生物学衰老钟与 525
+                个疾病终点。通过功能基因定位与和蛋白组/代谢组证据的贝叶斯共定位，优先考虑<strong>九个</strong>可成药基因作为未来抗衰老干预的候选靶点。七个
+                MRIBAG 还与未来全身性疾病（如糖尿病）及<strong>全因死亡</strong>风险相关。最后，在阿尔茨海默病药物
+                solanezumab 的 240
+                周治疗中，基线脑影像上「更年轻」与「更老化」的脑轮廓对应不同的认知下降轨迹，但该异质性<strong>不能</strong>完全归因于药物本身。综上，本研究开发七个
+                MRIBAG，强化现有多器官生物学衰老框架，并展示其在衰老研究中的临床潜力。
+              </p>
+            </div>
+          </section>
+
+          <section id="background" class="doc-section">
+            <h2>背景</h2>
+            <div class="article-body">
+              <p>
+                MRI 可无创观察随年龄变化的结构与功能。「脑龄」类模型在神经衰老生物标志中应用广泛，但将同一思路系统推广到其他器官的研究较少。UK
+                Biobank 的大规模多器官 MRI 与 <strong>MULTI Consortium</strong>
+                的整合，使得在蛋白组（ProtBAG）、代谢组（MetBAG）、表型组（PhenoBAG）、表观遗传钟等多层时钟之外，再建立器官特异的生物学年龄差，并拼成一致的衰老—疾病图景成为可能。
+              </p>
+            </div>
+          </section>
+
+          <section id="methods" class="doc-section">
+            <h2>方法（概要）</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <strong>MULTI 队列（方法 1）：</strong>31 万余名个体的多器官 MRI（七个系统/组织）、基因型、UKB-PPP
+                  血浆蛋白组与 Nightingale 代谢组；下游结合 FinnGen、PGC 等汇总 GWAS。伦理包括 Columbia
+                  IRB（MULTI）、UKBB、BLSA、A4 试验中心等。
+                </li>
+                <li>
+                  <strong>MRIBAG 构建（方法 2）：</strong>在更新<strong>脑 MRIBAG</strong>（119
+                  个灰质体积、嵌套交叉验证、500
+                  人 holdout）之外，新建心、肝、脂肪、脾、肾、胰六个 MRIBAG；模型含 LASSO、线性 SVR、弹性网络及调参神经网络等，注意腹部特征共线性等过拟合风险。生物学年龄差定义为预测年龄减日历年龄，下游分析均做<strong>年龄偏差校正</strong>。
+                </li>
+                <li>
+                  <strong>ProWAS / MetWAS（方法 3）：</strong>线性模型将每个 MRIBAG 与 2,923 个蛋白、327
+                  个代谢物关联，协变量含人口学、批次、LOD、器官特异影像协变量、40
+                  个主成分等；Bonferroni 阈值 P &lt; 0.05/(2923×7) 与 P &lt;
+                  0.05/(327×7)。另有交互式火山图门户。
+                </li>
+                <li>
+                  <strong>遗传学（方法 4）：</strong>欧洲裔 fastGWA（QC 后约 648 万 SNP）、FUMA
+                  位点注释、GCTA SNP 遗传率、LDSC 分层遗传率、与 PhenoBAG/ProtBAG/MetBAG 及 525
+                  个疾病终点的遗传相关、双向双样本孟德尔随机化（TwoSampleMR）、分割样本
+                  <strong>PRS-CS</strong>、基因图位（位置、eQTL、染色质相互作用）及与
+                  ProtBAG/MetBAG 的贝叶斯<strong>共定位</strong>，并结合 DGIdb 挖掘药物—基因再利用假说。
+                </li>
+                <li>
+                  <strong>临床预测（方法 5）：</strong>ICD-10 首发疾病与全因死亡的 Cox
+                  模型；在 A4 试验中按基线脑 MRIBAG（加速 vs 减速老化）分层，考察至第 240 周的 PACC
+                  轨迹，采用与原试验一致的样条混合模型框架。
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="results-models" class="doc-section">
+            <h2>结果 · 模型表现</h2>
+            <div class="article-body">
+              <p>
+                在健康对照上，各器官最优模型在 holdout 集上预测年龄与日历年龄的 Pearson
+                <em>r</em> 约 0.23–0.77，偏差校正前平均绝对误差约<strong>5
+                年</strong>量级。脑 MRIBAG 在独立队列中另有验证（含对 A4 等外部队列的域偏移讨论）。腹部
+                MRI 表型较脑更少且共线性更强，外推性受限——论文讨论未来更密采集协议与体素级深度模型的必要性。
+              </p>
+            </div>
+          </section>
+
+          <section id="results-omics" class="doc-section">
+            <h2>结果 · 蛋白组与代谢组</h2>
+            <div class="article-body">
+              <p>
+                <strong>ProWAS</strong> 校正多重检验后得到 603 个蛋白–MRIBAG
+                关联；<strong>肾 MRIBAG</strong> 命中最多（如 NPDC1、IGFBP6、TAFA5），其次为脾、肝、脂肪、胰、脑、心（心例：REN）。器官富集蛋白如脾的
+                <strong>VCAM1</strong>、胰的 <strong>PLA2G1B</strong>（亦与脂肪/脾相关）体现组织特异衰老生物学（Human
+                Protein Atlas 语境）。
+              </p>
+              <p>
+                <strong>MetWAS</strong> 得到 758 个代谢物–MRIBAG 关联（|r| 多 &lt;
+                0.3）。脾与脂肪 MRIBAG 的代谢谱最丰富（如乙酸、HDL
+                亚类）；肌酐与肾 MRIBAG 正相关、与脂肪 MRIBAG
+                负相关，提示不同调节角色。STRING 通路富集与分性别分析见补充材料。
+              </p>
+            </div>
+          </section>
+
+          <section id="results-genetics" class="doc-section">
+            <h2>结果 · 遗传与可成药靶点</h2>
+            <div class="article-body">
+              <p>
+                GWAS 得到 <strong>53</strong> 对基因组显著「位点–性状」。SNP 遗传率 h<sup>2</sup> 在各
+                MRIBAG 上约 <strong>0.29–0.47</strong>。分层遗传率显示与器官一致的染色质富集（如心
+                MRIBAG 与心肌组织 H3K4me3/H3K27ac）。
+              </p>
+              <p>
+                遗传相关将 MRIBAG 与其他多组学衰老钟及 FinnGen/PGC
+                疾病终点相连（如心 MRIBAG 与高血压）。双向 MR 提示需谨慎解读的因果路径（如高血压→心 MRIBAG；AD→肝
+                MRIBAG；肾 MRIBAG 与 2 型糖尿病双向等）。分割样本 <strong>PRS</strong> 解释的增量方差有限（脑
+                PRS 在目标分割上增量 R² 最高约 2.18%）。
+              </p>
+              <p>
+                GWAS 后定位与共定位（对 ProtBAG/MetBAG，PP.H4 &gt; 0.8）支持 <strong>62</strong>
+                个独特基因；DGIdb 查询突出 <strong>九个</strong> 已有药物相互作用的基因（122
+                种药物），含免疫抑制剂、降糖药与抗肿瘤药等。<strong>ALDH2</strong>（脾 MRIBAG）作为示例讨论其广泛治疗注释与
+                AlphaFold 三维结构。
+              </p>
+            </div>
+          </section>
+
+          <section id="results-clinical" class="doc-section">
+            <h2>结果 · 临床意义</h2>
+            <div class="article-body">
+              <p>
+                Cox 模型将 MRIBAG 及 MRIBAG-PRS 与 ICD-10 首发疾病及<strong>全因死亡</strong>关联：例如脑/脂肪/胰
+                MRIBAG 及胰 PRS 与非胰岛素依赖型糖尿病；脑 MRIBAG 与物质滥用、焦虑、消化道出血；心 MRIBAG
+                与高血压等。脑与脂肪 MRIBAG 对死亡更多表现为<strong>风险</strong>方向，肝与脾 MRIBAG
+                出现<strong>保护性</strong>风险比模式（文中讨论解读谨慎，含无病敏感性分析）。
+              </p>
+              <p>
+                在 <strong>A4 研究</strong>中，按基线脑 MRIBAG
+                分为「年轻化（减速老化）」与「老化（加速老化）」时，<strong>用药组与安慰剂组</strong>至第
+                <strong>240</strong> 周的 PACC
+                轨迹均不同；安慰剂组统计分离更强（置换单侧 P≈0.03）。第 240 周时药物与安慰剂在任一年龄分层内<strong>无</strong>显著差异——认知下降的异质性因此<strong>不能</strong>完全归因于试验药物。
+              </p>
+            </div>
+          </section>
+
+          <section id="discussion" class="doc-section">
+            <h2>讨论与局限（压缩）</h2>
+            <div class="article-body">
+              <p>
+                工作将 MRIBAG 定位为沿「遗传—多组学—疾病」路径的<strong>影像内表型</strong>，并强调器官特异与共享结构。局限包括
+                UKBB 横断面框架、腹部 IDP 相对脑仍欠发达、环境协变量有限、GWAS
+                以欧洲裔为主，以及肝/脾 MRIBAG「保护性」关联的生物学歧义，需重复与机制跟进。未来方向包括纵向影像、多种族
+                GWAS、更密腹部协议及 tau/淀粉样 PET 知情分型等。
+              </p>
+            </div>
+          </section>
+
+          <section id="resources" class="doc-section">
+            <h2>数据与代码</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <a href="https://labs-laboratory.com/medicine/" target="_blank" rel="noopener noreferrer">MEDICINE 知识门户</a>
+                  — GWAS 汇总统计与预训练 ML 模型
+                </li>
+                <li>
+                  <a href="https://www.synapse.org/Synapse:syn64923248/wiki/630992" target="_blank" rel="noopener noreferrer">Synapse</a>
+                  （syn64923248）
+                </li>
+                <li>
+                  <a href="https://zenodo.org/records/15857817" target="_blank" rel="noopener noreferrer">Zenodo</a>
+                  — 附图、扩展数据、MRIBAG 推导代码与补充文件
+                </li>
+                <li>
+                  交互浏览：
+                  <a href="https://labs-laboratory.com/medicine/mribag_prowas.html" target="_blank" rel="noopener noreferrer">ProWAS</a>、
+                  <a href="https://labs-laboratory.com/medicine/mribag_metwas.html" target="_blank" rel="noopener noreferrer">MetWAS</a>、
+                  <a href="https://labs-laboratory.com/medicine/mribag_gdi.html" target="_blank" rel="noopener noreferrer">药物–基因（DGIdb）</a>
+                </li>
+                <li>
+                  论文引用的软件包括 MLNI（MRIBAG 生成）、FUMA、GCTA/fastGWA、LDSC、TwoSampleMR、PRS-CS、lifelines、STRING、coloc
+                  等——版本见 Zenodo README。
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="citation" class="doc-section">
+            <h2>引用</h2>
+            <div class="article-body">
+              <p class="muted">
+                书目格式建议从
+                <a href="https://www.nature.com/articles/s41591-025-03999-8" target="_blank" rel="noopener noreferrer"><em>Nature Medicine</em> 论文页</a>
+                导出官方引用（开放获取）。简写：
+              </p>
+              <p>
+                The MULTI Consortium <em>et al.</em> MRI-based multi-organ clocks for healthy
+                aging and disease assessment. <em>Nature Medicine</em> <strong>32</strong>,
+                82–92 (2026). 开放获取；2025 年 10 月 16 日网络首发。
+                <a href="https://www.nature.com/articles/s41591-025-03999-8" target="_blank" rel="noopener noreferrer">https://www.nature.com/articles/s41591-025-03999-8</a>
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚">
+          <a href="../index.html">首页</a>
+          <a href="https://www.nature.com/articles/s41591-025-03999-8" target="_blank" rel="noopener noreferrer">Nature Medicine</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>TSLA Options War Room · 项目文档</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/tsla-options-war-room.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← 返回首页</a>
+      </div>
+
+      <div class="doc-layout">
+        <!-- 左侧目录：与下方各 section 的 id 一一对应 -->
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">概述与定位</a>
+            <a href="#meta">Skill 元数据</a>
+            <a href="#why-novelty">动机与新颖性</a>
+            <a href="#design-ideas">设计取向</a>
+            <a href="#vs-bot">与 Bot 的差异</a>
+            <a href="#architecture">系统架构</a>
+            <a href="#agents">Agent 投委会</a>
+            <a href="#interaction">交互与输出</a>
+            <a href="#reasoning">方向与盘面</a>
+            <a href="#data-policy">数据策略</a>
+            <a href="#discipline">纪律与风控</a>
+            <a href="#memory-tracking">状态与绩效</a>
+            <a href="#usage">安装与使用</a>
+            <a href="#disclaimer">免责声明</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Claude Code Skill · TSLA 7–10 DTE · 非投资建议</p>
+            <h1 class="article-title">TSLA Options War Room</h1>
+            <div class="article-body">
+              <p>
+                一套 <strong>AI 驱动的 TSLA 短期期权决策基础设施</strong>：不是单一 prompt 喊单，也不是传统
+                trading bot。用户侧只看到一个<strong>资深交易顾问</strong>；背后是多角色对抗辩论、本地行情快照、交易日志与绩效追踪，整体复杂度对用户不可见。
+              </p>
+              <p>
+                标的以 <strong>TSLA</strong> 为主，结合 <strong>QQQ / SPY</strong> 做 Beta
+                语境；周期聚焦 <strong>7–10 DTE</strong>；输出<strong>全部中文</strong>，不使用 emoji。
+              </p>
+            </div>
+          </header>
+
+          <!-- Skill 注册信息 -->
+          <section id="meta" class="doc-section">
+            <h2>Skill 元数据</h2>
+            <ul class="info-list article-body">
+              <li>
+                <strong>name</strong>
+                <span><code>tsla-options-war-room</code></span>
+              </li>
+              <li>
+                <strong>description（英文原文，与 SKILL 一致）</strong>
+                <span>Use when user asks about TSLA options trading, position management, entry/exit decisions, strike selection, or any question about their TSLA put/call positions. Also triggers on questions about QQQ/SPY context for TSLA trades, option simulation needs, or when user says keywords like &quot;能做吗&quot;, &quot;要不要卖&quot;, &quot;补仓&quot;, &quot;止盈&quot;, &quot;止损&quot;, &quot;现在什么方向&quot;.</span>
+              </li>
+              <li>
+                <strong>description（中文摘要）</strong>
+                <span>TSLA 期权交易、持仓、进出场、行权；QQQ/SPY 语境下的 TSLA；期权模拟；以及「能做吗」「要不要卖」「补仓」「止盈」「止损」「现在什么方向」等口语触发。</span>
+              </li>
+            </ul>
+          </section>
+
+          <!-- 为什么做、新颖点 -->
+          <section id="why-novelty" class="doc-section">
+            <h2>动机与新颖性</h2>
+            <div class="article-body">
+              <h3>短期期权里真正难的是什么</h3>
+              <p>
+                难的不只是「看对方向」，而是：<strong>在对的位置入场</strong>（追高追低是主要亏损来源）、<strong>管住手</strong>（无纪律加仓与扛单）、<strong>盘中快速判断</strong>（机会窗口短，不能花半小时写报告）。本系统把这三件事拆开产品化：对抗式方向判断、硬编码仓位与止盈止损规则、按需拉取快照（约数秒内可用）。
+              </p>
+              <h3>新颖性体现在哪里</h3>
+              <ul>
+                <li><strong>投委会隐喻 + 单一声音：</strong>后台可并行多角色，但用户永远只读到一个顾问口吻，不暴露 Agent、步骤或工具日志。</li>
+                <li><strong>深度可渐进：</strong>默认给「可用答案」（中等深度），完整七段式报告仅在用户明确要「展开 / 完整分析 / 计划」时给出，避免「问一句答三千字」。</li>
+                <li><strong>规则与模型解耦：</strong>仓位上限、第二张合约用途、时间审查、结构止损与合约止损等以文档级硬规则约束，减少情绪覆盖理性。</li>
+                <li><strong>数据可信度分级：</strong>量价结论只认 Robinhood 完整成交量；REST / KLineLens 用于价格与结构，避免用残缺 volume 做 RVOL 类结论。</li>
+                <li><strong>可审计的闭环：</strong>入场写入预测字段，平仓追问实际成交价与原因，journal 可回溯「预测 vs 实际」，支撑后续统计胜率与方向准确率。</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- 个人在开发上的取向 -->
+          <section id="design-ideas" class="doc-section">
+            <h2>我在开发上的取向</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>产品优先于炫技：</strong>LLM 擅长叙述与整合，但方向决策必须经得起「空方也能自圆其说」的推敲；因此把多空对抗写进硬性流程，而不是事后补丁。</li>
+                <li><strong>时间框架写进纪律：</strong>实盘教训（例如大周期偏多时只看短周期做空被 V 反）被抽象成「日线定方向、小时线定结构、盘中定入场；冲突以日线为准」，减少同一错误反复发生。</li>
+                <li><strong>诚实面对数据边界：</strong>API 给不了可靠 volume 就不假装能做量价；宁可少说一句，也不输出伪精确结论。</li>
+                <li><strong>流式与可感知进度：</strong>完整分析要求在主进程边写边出字，避免长时间空白；若必须并行子任务，先用自然语言过渡，让用户知道「团队在算什么」。</li>
+                <li><strong>对话即状态机：</strong>trade_state 与 journal 把「有没有仓、为什么进、预测是什么、怎么出的」串成生命周期，系统表现可查，而不是一次性聊天。</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- 对比表 -->
+          <section id="vs-bot" class="doc-section">
+            <h2>与普通 Trading Bot 的差异</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>维度</th>
+                    <th>常见 Trading Bot</th>
+                    <th>War Room</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>方向</td>
+                    <td>单模型单边输出居多</td>
+                    <td>多空对抗后再给结论；深度越高，对抗呈现越显式</td>
+                  </tr>
+                  <tr>
+                    <td>交互</td>
+                    <td>固定模板输入输出</td>
+                    <td>自然语言；轻量 → 中等 → 完整报告渐进</td>
+                  </tr>
+                  <tr>
+                    <td>风控</td>
+                    <td>简单止损线</td>
+                    <td>结构止损 + 合约回撤 + 时间审查 + 仓位硬规则</td>
+                  </tr>
+                  <tr>
+                    <td>上下文</td>
+                    <td>常无状态</td>
+                    <td>持仓、日志、历史 EXIT 统计可查询</td>
+                  </tr>
+                  <tr>
+                    <td>文风</td>
+                    <td>易写成研报腔</td>
+                    <td>要求像老交易员聊天：先结论、短段落、信息密度高</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 架构 -->
+          <section id="architecture" class="doc-section">
+            <h2>系统架构</h2>
+            <div class="article-body">
+              <p>逻辑拓扑可以概括为：用户自然语言 → Claude Code 加载 Skill → 按需读/刷新行情与记忆 → 主顾问整合输出。</p>
+              <pre class="doc-pre">你提问
+   |
+   v
++---------------------------+
+| Claude Code Skill         |  10 个角色化 Agent：结构 / 宏观 / 多空辩论 /
+| (War Room)                |  执行规划 / 期权结构 / 风控 等（用户不可见）
++---------------------------+
+   |
+   +-----------+-------------+
+   |                       |
+   v                       v
++-------------+    +----------------+
+| Market      |    | Trade Memory   |
+| Service     |    | 持仓 + 日志    |
+| REST 快照   |    +----------------+
++-------------+
+   |
+   v
++-------------+
+| Twelve Data |  TSLA / QQQ / SPY（需 API Key）
++-------------+</pre>
+              <p>
+                <strong>按需拉取、无常驻进程：</strong>触发后检查
+                <code>latest_snapshot.json</code> 时间戳；新鲜则直接用，过期则静默执行
+                <code>python3 fetch_now.py</code>（约 3–5 秒）。不配置 API 时，可依赖用户截图由模型做结构判断。
+              </p>
+            </div>
+          </section>
+
+          <!-- Agent 表 -->
+          <section id="agents" class="doc-section">
+            <h2>Agent 投委会（后台）</h2>
+            <div class="article-body">
+              <p>每个 Agent 在仓库 <code>agents/*.md</code> 中有完整人设与输出要求；调度过程对用户完全不可见。首席顾问负责汇总为单一声音。</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>角色</th>
+                    <th>文件</th>
+                    <th>典型调用场景</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>市场情报员</td>
+                    <td><code>market-monitor.md</code></td>
+                    <td>中等深度及以上：快速罗列盘面事实</td>
+                  </tr>
+                  <tr>
+                    <td>研究协调员</td>
+                    <td><code>clarifier.md</code></td>
+                    <td>信息缺口：向用户自然索要截图或数据</td>
+                  </tr>
+                  <tr>
+                    <td>结构分析师</td>
+                    <td><code>market-structure.md</code></td>
+                    <td>趋势、压力/支撑、是否追价位置</td>
+                  </tr>
+                  <tr>
+                    <td>Beta 风险顾问</td>
+                    <td><code>macro-context.md</code></td>
+                    <td>有 QQQ 数据时：大盘是否支持当前方向</td>
+                  </tr>
+                  <tr>
+                    <td>空头交易主管</td>
+                    <td><code>bear-continuation.md</code></td>
+                    <td>完整分析 / Entry：为 PUT 辩护</td>
+                  </tr>
+                  <tr>
+                    <td>反转交易员</td>
+                    <td><code>bull-reversal.md</code></td>
+                    <td>完整分析 / Entry：为 CALL 辩护</td>
+                  </tr>
+                  <tr>
+                    <td>执行规划师</td>
+                    <td><code>pullback-entry.md</code></td>
+                    <td>完整分析：方向落到具体入场区间与条件</td>
+                  </tr>
+                  <tr>
+                    <td>期权结构顾问</td>
+                    <td><code>options-strategy.md</code></td>
+                    <td>选 strike、成本区间、theta/gamma/IV 口述</td>
+                  </tr>
+                  <tr>
+                    <td>风控主管</td>
+                    <td><code>risk-manager.md</code></td>
+                    <td>完整分析与持仓管理：执行硬规则</td>
+                  </tr>
+                  <tr>
+                    <td>首席顾问</td>
+                    <td>（主进程整合，非单独 md）</td>
+                    <td>汇总各角色输出，对用户保持单一顾问口吻与最终结论框</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="muted">完整分析时，Bear / Bull 等可并行；prompt 需含完整角色定义、市场数据与前序分析，并要求区分事实 / 推断 / 建议 / 不确定性。</p>
+            </div>
+          </section>
+
+          <!-- UX + 深度 + 报告 -->
+          <section id="interaction" class="doc-section">
+            <h2>交互原则与输出形态</h2>
+            <div class="article-body">
+              <h3>用户体验（第一原则）</h3>
+              <ul>
+                <li>禁止在用户可见输出中出现：模式名、派发 Agent、步骤号、<code>Read(...)</code> 等工具痕迹或终端风格日志。</li>
+                <li><strong>单一声音：</strong>不说「某某 Agent 认为」；内部分歧用「我们内部有不同看法」概括。</li>
+                <li><strong>渐进展开：</strong>先快速给方向与把握度；用户要「展开 / 完整计划」再进入长报告。</li>
+                <li><strong>自洽：</strong>每条回复独立可读，不写「同上文」类引用。</li>
+                <li><strong>文风：</strong>先结论再理由；短段落加空行；减少「结构上很明确」类空话。</li>
+              </ul>
+              <h3>三种深度</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>深度</th>
+                    <th>触发</th>
+                    <th>输出形态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>轻量</td>
+                    <td>「什么方向」「能做 put 吗」等短问</td>
+                    <td>约 5–8 行：结论、理由、把握度、是否展开</td>
+                  </tr>
+                  <tr>
+                    <td>中等（默认）</td>
+                    <td>有截图/数据、问怎么做、明天开盘等</td>
+                    <td>约 15–25 行：方向、核心理由、反面风险、入场区间与止损、结尾问是否出完整计划</td>
+                  </tr>
+                  <tr>
+                    <td>完整分析</td>
+                    <td>用户明确「完整分析」「展开」「要」（回应邀请）或最终入场确认</td>
+                    <td>七段式委员会报告 + ASCII 结论框（见下）</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>完整分析时的流式硬性规则</h3>
+              <p>
+                完整报告应在<strong>主进程直接流式写出</strong>，避免「派发一个大 Agent 后用户干等两分钟」。若某段确需子 Agent
+                做重计算，应先输出已完成的分析，并可用一句自然过渡说明团队在算什么。
+              </p>
+              <h3>完整报告骨架（节选标题）</h3>
+              <pre class="doc-pre">============ TSLA 期权顾问委员会分析报告 ============
+一、今日盘面
+二、技术结构
+三、大盘环境
+四、多空看法
+五、交易计划
+六、仓位和风险
+七、不确定性
+====================================================
++---------------------------------------------+
+|           委员会最终结论                      |
++---------------------------------------------+
+| 动作 / 方向 / 入场区间 / 执行价 / 成本      |
+| 目标 / 止损 / 止盈 / 时间 / 失效 / 置信度   |
++---------------------------------------------+</pre>
+              <h3>期权收益估算（口述标准）</h3>
+              <p>
+                禁止简单线性「delta × 价格变动 = 利润」。需说明 gamma 导致 delta
+                非线性、theta 慢磨与 IV 变化对区间的挤压或放大，并给出合理<strong>区间</strong>而非单点数字，可对比「快跌到位」与「慢跌磨过去」。
+              </p>
+              <h3>必须引导 Simulation 的场景</h3>
+              <ul>
+                <li>问何时出收益、止盈在哪、最晚何时卖</li>
+                <li>补第二张合约、临近到期（剩余约 3 天内）、问「继续拿值不值得」</li>
+                <li>需精细评估 theta 衰减时</li>
+              </ul>
+              <h3>交易心态（须在合适时机出现）</h3>
+              <ul>
+                <li>强调「趋势延续」而非赌次日精确价位</li>
+                <li>强调「没有好位置就不做」——低开下杀时可能拿不到好 PUT 价格</li>
+                <li>每次建议末尾用一句话收束，像老手经验谈</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- 方向、多周期、QQQ -->
+          <section id="reasoning" class="doc-section">
+            <h2>方向判断与盘面规则</h2>
+            <div class="article-body">
+              <h3>多空对抗（硬性）</h3>
+              <p>凡涉及 PUT/CALL 方向，内部必须同时考虑空方与多方论据再定调。轻量回应可不展开双方论点，但结论须经过对抗推敲；势均力敌时要提示不确定性高。</p>
+              <h3>多时间框架（内部顺序，对用户用自然语言）</h3>
+              <ol>
+                <li>日线定大方向</li>
+                <li>小时线定当前在趋势哪一段</li>
+                <li>盘中 K 线定入场时机与价位</li>
+              </ol>
+              <p>盘中与日线冲突时<strong>以日线为准</strong>；日线不明时须直白告知「还没走出来，再等等」。</p>
+              <h3>QQQ 配合做空（做 TSLA PUT 时）</h3>
+              <ul>
+                <li>QQQ 涨幅 &lt; 0.3% 或翻绿 → 视为配合做空</li>
+                <li>QQQ 仍在 +0.5% 以上 → 大盘偏多，做空 TSLA 为逆风</li>
+                <li>QQQ 不配合但 TSLA 独自下跌 → 提醒可能仅是盘中波动，勿急于认定趋势</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- 数据 -->
+          <section id="data-policy" class="doc-section">
+            <h2>数据策略与路径</h2>
+            <div class="article-body">
+              <h3>主路径与备用路径</h3>
+              <ul>
+                <li>快照：<code>~/tsla-options-war-room-skill/market_service/data/latest_snapshot.json</code></li>
+                <li>备用：<code>~/Zhiyuan/trading-system/market_service/data/latest_snapshot.json</code></li>
+                <li>事件：<code>latest_event.json</code>；持仓：<code>trade_memory/trade_state.json</code>；日志：<code>trade_memory/trade_journal.jsonl</code>（末 20 行等策略按 Skill）</li>
+              </ul>
+              <h3>新鲜度</h3>
+              <p>时间戳在 5 分钟内直接用；超时静默跑 <code>fetch_now.py</code>；美股收盘后收盘价可视为不过期。</p>
+              <h3>上下文优先（非价格类）</h3>
+              <p>同一对话中用户已口述持仓则不必反复读 trade_state；价格类始终以最新截图或刷新后快照为准。</p>
+              <h3>量价数据源优先级（硬性）</h3>
+              <ul>
+                <li>成交量、RVOL、缩量放量等：<strong>仅 Robinhood 截图</strong>。</li>
+                <li>REST / KLineLens：价格走势、趋势、形态、压力支撑；<strong>不得单独作为量价结论依据</strong>。</li>
+                <li>无 Robinhood volume 时：跳过量价，不解释「做不了量价」；结构仍可给方向建议。</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- 纪律 -->
+          <section id="discipline" class="doc-section">
+            <h2>仓位、止盈止损与纪律</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>规则</th>
+                    <th>内容</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>默认仓位</td>
+                    <td>1 张核心仓</td>
+                  </tr>
+                  <tr>
+                    <td>最大仓位</td>
+                    <td>2 张；第二张仅优化成本，禁止情绪加仓</td>
+                  </tr>
+                  <tr>
+                    <td>减仓</td>
+                    <td>两张中一张盈利时优先卖一张回到单张</td>
+                  </tr>
+                  <tr>
+                    <td>时间审查</td>
+                    <td>2–3 个交易日无 follow-through 须重审</td>
+                  </tr>
+                  <tr>
+                    <td>强制退出</td>
+                    <td>价格结构确认 thesis 失效</td>
+                  </tr>
+                  <tr>
+                    <td>禁止</td>
+                    <td>情绪补仓、无 thesis 加仓</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>止盈（摘要）</h3>
+              <ul>
+                <li>单张核心仓：约 20%–35%</li>
+                <li>两张：一张盈利或总体 15%–25% 时先卖一张</li>
+                <li>强趋势（TSLA 与 QQQ 共振）：剩余仓 40%–70% 视情况扩展</li>
+              </ul>
+              <h3>止损（摘要）</h3>
+              <ul>
+                <li>结构止损：PUT 强收复关键阻力并确认；CALL 确认跌破关键支撑</li>
+                <li>合约风险止损：回撤约 25%–35% 且结构无改善</li>
+                <li>时间：理想 1–3 天出结果；临近到期偏向退出</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- 生命周期 -->
+          <section id="memory-tracking" class="doc-section">
+            <h2>交易生命周期与绩效</h2>
+            <div class="article-body">
+              <p>用户确认执行动作后更新 <code>trade_state.json</code> 与追加 <code>trade_journal.jsonl</code>（须先经用户确认）。动作类型包括 ENTER_1、ADD_SECOND、TRIM_TO_1、EXIT 等。</p>
+              <p>平仓时主动追问：卖出价、盈亏、出场原因；EXIT 记录含 thesis 结果分类（correct / partial / incorrect / stopped_out）。入场 ENTER_1 写入 predictions（方向、目标、止损、置信度等）以便事后对比。</p>
+              <p>用户问「系统表现」时读取所有 EXIT 聚合：总次数、胜率、平均/累计收益、最佳最差单笔、方向判断四类占比、按 PUT/CALL 分类等；也可配合 <code>performance_tracker.py</code>。</p>
+            </div>
+          </section>
+
+          <!-- 使用 -->
+          <section id="usage" class="doc-section">
+            <h2>安装与使用</h2>
+            <div class="article-body">
+              <h3>1. 克隆仓库</h3>
+              <pre class="doc-pre">cd ~
+git clone https://github.com/songzhiyuan98/tsla-options-war-room-skill.git
+cd tsla-options-war-room-skill</pre>
+              <h3>2. 安装 Skill 到 Claude</h3>
+              <pre class="doc-pre">mkdir -p ~/.claude/skills/tsla-options-war-room
+cp SKILL.md ~/.claude/skills/tsla-options-war-room/
+cp -r agents/ ~/.claude/skills/tsla-options-war-room/</pre>
+              <h3>3. 配置数据服务（可选）</h3>
+              <pre class="doc-pre">pip3 install -r requirements.txt
+cp .env.example .env
+# 编辑 .env 填入 Twelve Data API Key（免费层约 800 次/天，正常够用）</pre>
+              <h3>4. 对话触发</h3>
+              <p>在 Claude Code 中使用 <code>/tsla-options-war-room</code> 或自然语言触发 description 中的场景。有 Key 时 Skill 会自动刷新快照；无 Key 时可依赖截图。</p>
+              <h3>双目录职责</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>位置</th>
+                    <th>内容</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>~/tsla-options-war-room-skill/</code></td>
+                    <td>Python、<code>fetch_now.py</code>、运行时数据目录</td>
+                  </tr>
+                  <tr>
+                    <td><code>~/.claude/skills/tsla-options-war-room/</code></td>
+                    <td>SKILL.md + agents，供加载执行</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>仓库目录结构（摘要）</h3>
+              <pre class="doc-pre">tsla-options-war-room-skill/
+├── SKILL.md
+├── agents/
+├── market_service/    # config, rest_client, snapshot_builder, data/
+├── trade_memory/      # state_manager, performance_tracker
+├── fetch_now.py
+├── run.py             # 可选常驻
+└── schemas/</pre>
+              <h3>交易参数一览</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>参数</th>
+                    <th>设定</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>标的</td>
+                    <td>TSLA（参考 QQQ、SPY）</td>
+                  </tr>
+                  <tr>
+                    <td>期权周期</td>
+                    <td>7–10 DTE</td>
+                  </tr>
+                  <tr>
+                    <td>仓位</td>
+                    <td>默认 1 张，最多 2 张</td>
+                  </tr>
+                  <tr>
+                    <td>基础止盈</td>
+                    <td>约 20%–35%</td>
+                  </tr>
+                  <tr>
+                    <td>强趋势止盈</td>
+                    <td>约 40%–70%（共振时）</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>对话示例（压缩）</h3>
+              <blockquote>
+                <p style="margin: 0 0 0.75rem"><strong>用户：</strong>TSLA 现在能做 PUT 吗？</p>
+                <p style="margin: 0 0 0.75rem"><strong>顾问（中等深度示意）：</strong>方向偏空，但当前价位不宜追空；给出压力/支撑与「等反弹再进」的区间思路，并问是否结合 QQQ 看入场。</p>
+                <p style="margin: 0"><strong>用户：</strong>要完整计划 → 输出七段报告与结论框。</p>
+              </blockquote>
+              <h3>注意事项</h3>
+              <ul>
+                <li>仅供学习与研究，不构成投资建议；期权亏损风险极高。</li>
+                <li>分析以技术面为主，突发事件与基本面不在默认范围内。</li>
+                <li>建议先在模拟环境验证再考虑实盘。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="disclaimer" class="doc-section">
+            <h2>免责声明</h2>
+            <blockquote>
+              <p style="margin: 0" class="article-body">
+                本页为个人项目文档摘录与整理，不构成投资建议。任何交易决策与后果由使用者自行承担。
+              </p>
+            </blockquote>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98/tsla-options-war-room-skill" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

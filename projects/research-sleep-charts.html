@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="睡眠与多器官、多组学生物学衰老钟：23 个 BAG、GAM、遗传与生存、晚年抑郁中介。medRxiv；PMC 全文；已被 Nature 接收。"
+    />
+    <title>睡眠图表 · 多器官多组学衰老钟 · 研究笔记</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/research-sleep-charts.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <!-- 返回首页 -->
+        <a href="../index.html">← 返回首页</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">概览</a>
+            <a href="#numbers">核心数字</a>
+            <a href="#abstract">摘要</a>
+            <a href="#background">背景</a>
+            <a href="#methods">方法（概要）</a>
+            <a href="#results-bag">结果 · 睡眠与 BAG</a>
+            <a href="#results-genetics">结果 · 遗传与生存</a>
+            <a href="#results-lld">结果 · 晚年抑郁路径</a>
+            <a href="#discussion">讨论与局限</a>
+            <a href="#resources">数据与代码</a>
+            <a href="#citation">引用</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              预印本 · medRxiv · 2025 年 8 月 · PMC / PubMed 收录 ·
+              <strong>已被 Nature 接收</strong>（正式刊出待定）
+            </p>
+            <h1 class="article-title">
+              Sleep chart of biological aging clocks across organs and omics
+            </h1>
+            <!-- 作者行与预印本/期刊英文体例一致：本站署名用拉丁拼写 Zhiyuan Song -->
+            <p class="article-meta" style="margin-bottom: 12px">
+              The MULTI study，Cliodhna Kate O&rsquo;Toole，<strong>Zhiyuan Song</strong>，Filippos
+              Anagnostakis，Zhijian Yang，Ye Ella Tian，Michael R Duggan，Chunrui Zou，Yue Leng，Yi
+              Cai，Wenjia Bai，Cynthia HY Fu，Michael S Rafii，Paul Aisen，Gao Wang，Philip L De
+              Jager，Jian Zeng，Hamilton Se-Hwee Oh，Xia Zhou，Keenan A Walker，Daniel W Belsky，Andrew
+              Zalesky，Eleanor M Simonsick，Susan M Resnick，Luigi Ferrucci，Christos Davatzikos 与
+              <strong>Junhao Wen</strong>（通讯作者）
+            </p>
+            <div class="article-body">
+              <p>
+                <strong>预印本全文（PMC）：</strong>
+                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12363694/" target="_blank" rel="noopener noreferrer">https://pmc.ncbi.nlm.nih.gov/articles/PMC12363694/</a>
+                ·
+                <a href="https://doi.org/10.1101/2025.08.08.25333313" target="_blank" rel="noopener noreferrer">medRxiv DOI</a>
+                ·
+                <a href="https://pubmed.ncbi.nlm.nih.gov/40832429/" target="_blank" rel="noopener noreferrer">PubMed PMID 40832429</a>
+              </p>
+              <p class="muted">
+                本站为个人读书笔记；正式表述以刊出后的 <em>Nature</em> PDF 为准。
+              </p>
+            </div>
+          </header>
+
+          <section id="numbers" class="doc-section">
+            <h2>核心数字</h2>
+            <div class="stat-strip">
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">23</div>
+                <div class="stat-strip__label">BAG（蛋白 / 代谢 / MRI）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">9</div>
+                <div class="stat-strip__label">显著 U 形（P &lt; 0.05/23）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">720</div>
+                <div class="stat-strip__label">成像表型 IDP（GAM）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">~50 万</div>
+                <div class="stat-strip__label">UKBB 睡眠时长（字段 1160）</div>
+              </div>
+            </div>
+            <div class="stat-strip" style="margin-top: 16px">
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">5</div>
+                <div class="stat-strip__label">GWAS 位点（异常 vs 正常睡眠）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">153</div>
+                <div class="stat-strip__label">遗传相关（P &lt; 0.05/527）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">153</div>
+                <div class="stat-strip__label">Cox 疾病关联（P &lt; 0.05/726）</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">1.50 / 1.40</div>
+                <div class="stat-strip__label">全因死亡 HR（短睡 / 长睡 vs [6–8]h）</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="abstract" class="doc-section">
+            <h2>摘要（中文意译，与预印本一致）</h2>
+            <div class="article-body">
+              <p>
+                充足且节律良好的睡眠有助于健康衰老与长寿。本研究提出「睡眠图表（Sleep
+                Chart）」，评估睡眠时长与 17 个器官系统或组织、3 类组学（影像、血浆蛋白组、血浆代谢组）上的
+                <strong>23 个生物学衰老钟</strong>之间的关系。首先，在 9 个脑与躯体系统及 3
+                类组学上，短睡（&lt;6 小时）与长睡（&gt;8 小时）均与更高的生物学年龄差（BAG）相关，呈系统性
+                <strong>U 形</strong>；最优睡眠时长因器官与性别而异（约 [6.4–7.8]
+                小时）。与正常睡眠（[6–8] 小时）相比，短睡与长睡还与脑外全身性疾病及<strong>全因死亡</strong>风险升高一致相关，证据来自遗传相关与发病时间预测（如偏头痛、抑郁、糖尿病等）。短睡与长睡与<strong>晚年抑郁</strong>通过不同路径相关：长睡更可能经生物学衰老间接作用，短睡与结局的关联更直接。孟德尔随机化未发现疾病对睡眠扰动具有广泛因果效应，但不能完全排除睡眠部分反映潜在疾病负担。总体结论支持 U
+                形关系更可能由<strong>可改变的睡眠问题</strong>驱动而非单纯遗传易感，提示优化睡眠或有助于健康衰老、降低疾病风险与延长寿命。交互式门户见
+                <a href="https://labs-laboratory.com/sleepchart" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/sleepchart</a>。
+              </p>
+            </div>
+          </section>
+
+          <section id="background" class="doc-section">
+            <h2>背景</h2>
+            <div class="article-body">
+              <p>
+                多器官、多组学的生物学年龄差（MRIBAG、ProtBAG、MetBAG 等）在日历年龄之外刻画衰老。既往工作提示睡眠与部分表型衰老钟呈
+                U 形关系；本研究在 UK Biobank 中检验该模式是否跨器官、跨组学、跨性别成立，并结合
+                FinnGen、PGC、TriNetX、MESA 等数据，探讨睡眠扰动与遗传、发病、死亡及晚年抑郁路径的关联，数据经
+                <strong>MULTI</strong> 框架整合。
+              </p>
+            </div>
+          </section>
+
+          <section id="methods" class="doc-section">
+            <h2>方法（概要）</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <strong>睡眠与 BAG：</strong>自报睡眠时长（字段 1160），分析窗口 4–10 小时；对 23 个
+                  BAG、720 个 IDP、2923 个血浆蛋白（其中 342 个器官富集）、327
+                  个代谢物（其中 107 个器官相关）拟合 GAM（<code>mgcv</code>，三次样条）；协变量含人口学、人体测量、血压、中心、疾病指示等，部分分析含
+                  40 个遗传主成分；各分析族内 Bonferroni 校正。
+                </li>
+                <li>
+                  <strong>遗传学：</strong>UKBB 欧洲裔样本，REGENIE 对短睡 vs [6–8]h、长睡 vs
+                  [6–8]h 做 GWAS；FUMA 位点、MAGMA（GTEx v8）、与 527 个 FinnGen/PGC 性状的
+                  LDSC 遗传相关；BAG 多基因评分与睡眠的关系见扩展数据。
+                </li>
+                <li>
+                  <strong>生存分析：</strong>Cox 模型：726 个无共病 ICD-10
+                  首发终点及全因死亡；TriNetX 中以失眠、嗜睡作为短睡、长睡的代理指标做验证。
+                </li>
+                <li>
+                  <strong>中介分析：</strong>结构方程模型（<code>lavaan</code>，bootstrap）检验
+                  睡眠 → MRIBAG → LLD1/LLD2；另做反向设定与疾病→睡眠的 MR 敏感性分析。
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="results-bag" class="doc-section">
+            <h2>结果 · 睡眠与生物学衰老钟</h2>
+            <div class="article-body">
+              <p>
+                23 个 BAG 中有 9 个与睡眠呈显著非线性（U 形）关联（P &lt;
+                0.05/23），涉及脑、肺、肝、免疫、皮肤等 ProtBAG，内分泌 MetBAG，以及脑、脂肪与胰腺
+                MRIBAG；男女最优睡眠大致在 6.4–7.8 小时（女）与 6.4–7.7 小时（男）。同一模式在 720 个
+                IDP、342 个器官富集蛋白、107 个器官相关代谢物上得到支持。下游分析将睡眠分为短（&lt;6
+                h）、正常 [6–8] h、长（&gt;8 h），并以 [7–9] h 为正常睡眠做敏感性分析。
+              </p>
+            </div>
+          </section>
+
+          <section id="results-genetics" class="doc-section">
+            <h2>结果 · 遗传与生存</h2>
+            <div class="article-body">
+              <p>
+                GWAS 在异常 vs 正常睡眠比较中检出 5 个基因组显著位点；MAGMA 显示短睡遗传信号在多个脑区表达富集。BAG
+                的 PRS 与睡眠关系大多不再呈 U 形，提示环境驱动为主，部分内分泌/代谢钟与睡眠仍有遗传重叠。LDSC
+                显示异常睡眠与 153 个疾病性状遗传相关（短睡更偏全身系统，长睡更偏神经精神）。Cox
+                分析得到 153 个显著疾病关联（短睡为主，HR 约 1.2–7.0），短睡与长睡相对 [6–8] h
+                的全因死亡 HR 分别约 1.50 与 1.40。TriNetX 结果与 UKBB 主要结论一致。
+              </p>
+            </div>
+          </section>
+
+          <section id="results-lld" class="doc-section">
+            <h2>结果 · 晚年抑郁路径</h2>
+            <div class="article-body">
+              <p>
+                基线睡眠 → 随访 MRIBAG → LLD 分型的结构方程提示：<strong>短睡</strong>更多通过指向 LLD
+                的<strong>直接路径</strong>起作用，脂肪 MRIBAG 等具中介意义；<strong>长睡</strong>则更依赖器官中介（尤其脑
+                MRIBAG）。反向 MR 未支持疾病对睡眠的广泛因果影响，双向关系仍不能完全排除。
+              </p>
+            </div>
+          </section>
+
+          <section id="discussion" class="doc-section">
+            <h2>讨论与局限（压缩）</h2>
+            <div class="article-body">
+              <p>
+                「睡眠图表」将睡眠时长置于与多器官、多组学衰老负荷及全身结局一致的可干预暴露框架下。局限包括自报睡眠、GWAS
+                以欧洲裔为主、残余混杂（长睡可能标志亚临床疾病）、以及需可穿戴设备与独立大队列重复验证。完整方法、附图与交互图见
+                Sleep Chart 门户与 PMC 全文。
+              </p>
+            </div>
+          </section>
+
+          <section id="resources" class="doc-section">
+            <h2>数据与代码</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <a href="https://labs-laboratory.com/sleepchart" target="_blank" rel="noopener noreferrer">Sleep Chart 门户</a>
+                  — 汇总统计、图表与交互浏览
+                </li>
+                <li>
+                  遗传相关浏览器
+                  <a href="https://labs-laboratory.com/sleepchart/sleep_gc.html" target="_blank" rel="noopener noreferrer">sleep_gc.html</a>
+                  · Cox 可视化
+                  <a href="https://labs-laboratory.com/sleepchart/sleep_cox.html" target="_blank" rel="noopener noreferrer">sleep_cox.html</a>
+                </li>
+                <li>
+                  <a href="https://labs-laboratory.com/medicine/" target="_blank" rel="noopener noreferrer">MEDICINE</a>
+                  — 23 个 BAG 的 GWAS
+                </li>
+                <li>
+                  Synapse：
+                  <a href="https://www.synapse.org/Synapse:syn64923248/wiki/63099289" target="_blank" rel="noopener noreferrer">syn64923248</a>、
+                  <a href="https://www.synapse.org/Synapse:syn68602065/wiki/63332990" target="_blank" rel="noopener noreferrer">syn68602065</a>
+                </li>
+                <li>
+                  软件栈见论文与 PMC 补充材料（MLNI、mgcv、GAMLSS、lifelines、lavaan、STRING、MetaboAnalyst、REGENIE、LDSC、FUMA
+                  等）。
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="citation" class="doc-section">
+            <h2>引用（暂定）</h2>
+            <div class="article-body">
+              <p class="muted">
+                <em>Nature</em> 正式发表后请以期刊版本为准。此前可引用 medRxiv 与 PMC：
+              </p>
+              <p>
+                The MULTI study <em>et al.</em> Sleep chart of biological aging clocks across
+                organs and omics. <em>medRxiv</em> (2025).
+                <a href="https://doi.org/10.1101/2025.08.08.25333313" target="_blank" rel="noopener noreferrer">10.1101/2025.08.08.25333313</a>；
+                PMID
+                <a href="https://pubmed.ncbi.nlm.nih.gov/40832429/" target="_blank" rel="noopener noreferrer">40832429</a>；
+                全文
+                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12363694/" target="_blank" rel="noopener noreferrer">PMC12363694</a>。
+                <strong>已被 Nature 接收</strong>（待刊）。
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚">
+          <a href="../index.html">首页</a>
+          <a href="https://labs-laboratory.com/sleepchart" target="_blank" rel="noopener noreferrer">Sleep Chart</a>
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12363694/" target="_blank" rel="noopener noreferrer">预印本 (PMC)</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

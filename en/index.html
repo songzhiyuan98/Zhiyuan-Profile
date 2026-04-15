@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Zhiyuan Song</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- 根路径 / 经 Vercel rewrite 指向本页时，样式用站点绝对路径，避免相对路径解析到错误目录 -->
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="/en/index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="/en/index.html#work">Projects</a>
+          <a href="/en/index.html#research">Research</a>
+          <a href="/en/index.html#writing">Notes</a>
+          <a class="lang-switch" href="/index.html" hreflang="zh-Hans">中文</a>
+          <a class="btn-dark" href="mailto:songzhiyuan98@gmail.com">Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1>Zhiyuan Song</h1>
+      <p class="hero__sub">
+        Recent work, progress, research, and reflections from notes—collected here.
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="work">
+      <div class="section__head">
+        <h2>Projects</h2>
+        <span class="section__kicker">Projects</span>
+      </div>
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2026">2026</h3>
+        <div class="card-grid">
+          <a class="card" href="/en/projects/investment-skill-architecture-v2.html">
+            <span class="card__kicker">Skill · Multi-agent · Portfolio discipline</span>
+            <h3>Investment Skill Architecture</h3>
+            <p>
+              A decision-support Skill concept for a personal equity book: a small multi-agent “desk” that
+              helps you track positions and a watchlist, weigh news and risk and opportunity cost, and shape
+              more disciplined next steps—including cash that only frees up after settlement—not hot takes.
+              The linked page is an architecture spec, not financial advice.
+            </p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+          <a class="card" href="/en/projects/tsla-options-war-room.html">
+            <span class="card__kicker">Skill · Options · 2026-04</span>
+            <h3>TSLA Options War Room</h3>
+            <p>
+              Claude Code Skill for short-dated TSLA options: local quote snapshots and trade logs,
+              committee-style multi-agent review with a single user-facing voice. Rules for DTE,
+              timeframe, and position discipline (incl. QQQ context).
+            </p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+          <a class="card" href="/en/projects/vpct-vpip-controller.html">
+            <span class="card__kicker">iOS · SwiftUI · 2026 · App Store in review</span>
+            <h3>VPCT – VPIP Controller</h3>
+            <p>
+              iOS poker companion: live VPIP / tilt, layered detectors, and a “cooldown only on danger”
+              policy. SwiftUI + SwiftData; guests can start sessions; signed-in users sync stats and
+              career data.
+            </p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+          <a class="card" href="/en/projects/klinelens.html">
+            <span class="card__kicker">Open source · Docker · since 2026-01</span>
+            <h3>KLineLens</h3>
+            <p>
+              Open-source K-line structure terminal: multi-timeframe market structure, pluggable data
+              sources and strategies, built-in 0DTE state machine. MIT; Next.js + FastAPI + Python
+              core; self-host with Docker.
+            </p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+          <a class="card" href="/en/projects/novel-studio.html">
+            <span class="card__kicker">Multi-agent · MVP · hybrid RAG · 2026-01</span>
+            <h3>Novel Studio</h3>
+            <p>
+              Multi-agent desk for serialized fiction: deterministic orchestration, multi-model workers,
+              canon and blueprint loop. Hybrid RAG: MVP centers L0 scene cards; L1 semantic retrieval
+              stacks after gates pass.
+            </p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+        </div>
+      </div>
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2025">2025</h3>
+        <div class="card-grid">
+          <a class="card" href="/en/projects/study-assistant.html">
+            <span class="card__kicker">Monorepo · Next.js · pgvector · 2025-09</span>
+            <h3>AI Study Assistant</h3>
+            <p>
+              Textbook-oriented monorepo: document parsing and chunking, pgvector semantic retrieval,
+              OpenAI summaries and flashcards. Fastify API + BullMQ workers; mock exams and audit
+              roadmap, MIT.
+            </p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+          <a class="card" href="/en/projects/talentsync.html">
+            <span class="card__kicker">Fullstack · AI application · 2025-03</span>
+            <h3>TalentSync</h3>
+            <p>
+              Full-stack AI job flow: resume–JD matching, cover letters and PDFs, roles and application
+              status. React + Express + MongoDB; Stripe subscriptions and Google OAuth; main path runnable
+              online.
+            </p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+          <a class="card" href="/en/projects/personal-website-template.html">
+            <span class="card__kicker">Next.js · Portfolio · MIT · 2025-01</span>
+            <h3>Portfolio Website Template</h3>
+            <p>
+              Next.js open portfolio template: job seeker and scholar variants, modular blocks, skill
+              icons and timelines. TypeScript + Tailwind, MIT, Vercel deploy; repo maintained in public.
+            </p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+        </div>
+      </div>
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2024">2024</h3>
+        <div class="card-grid">
+          <a class="card" href="/en/projects/animehub.html">
+            <span class="card__kicker">React · Express · MongoDB · 2024</span>
+            <h3>AnimeHub</h3>
+            <p>
+              First full-stack anime community: Jikan fetch and cache, ratings and comments, rich-text
+              posts and tags, Socket notifications and profile. React 18 + Redux + MUI; Express +
+              MongoDB + JWT, MIT.
+            </p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="research">
+      <div class="section__head">
+        <h2>Research</h2>
+        <span class="section__kicker">Research</span>
+      </div>
+      <div class="card-grid">
+        <a class="card" href="/en/projects/research-sleep-charts.html">
+          <span class="card__kicker">Accepted at Nature · Preprint Aug 2025</span>
+          <h3>Sleep chart · multi-organ aging clocks</h3>
+          <p>
+            UK Biobank / MULTI: sleep vs 23 organ–omics aging clocks, genetics, survival, LLD pathways;
+            Sleep Chart portal and PMC full text.
+          </p>
+          <span class="card__cta">Read summary →</span>
+        </a>
+        <a class="card" href="/en/projects/research-mribag.html">
+          <span class="card__kicker">Nature Medicine · Open access · Oct 2025</span>
+          <h3>MRI multi-organ biological age (MRIBAG)</h3>
+          <p>
+            Seven MRI organ age gaps: proteomics, metabolomics, GWAS, druggable targets, disease and
+            mortality risk, and A4 cognition stratification; full text via Nature Medicine open-access
+            link.
+          </p>
+          <span class="card__cta">Read summary →</span>
+        </a>
+        <div class="card card--placeholder">
+          <span class="card__kicker">Placeholder</span>
+          <h3>Next paper note</h3>
+          <p>Next collaboration or methods note will go here.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="writing">
+      <div class="section__head">
+        <h2>Notes</h2>
+        <span class="section__kicker">Notes</span>
+      </div>
+      <div class="card-grid">
+        <a class="card" href="/en/projects/writing-agent-skill-constraints.html">
+          <span class="card__kicker">Agent · Skill · Engineering · 2026-04</span>
+          <h3>Agent skills: constraints over scripted workflows</h3>
+          <p>
+            Prefer shaping <strong>agent skills</strong> with <strong>constraints and boundaries</strong>
+            (safety, tool permissions, output shape, when to stop) over hard-coding prescribed paths and
+            workflows, which tend to fail when real requests diverge.
+          </p>
+          <span class="card__cta">Read full article →</span>
+        </a>
+        <div class="card card--placeholder">
+          <span class="card__kicker">Placeholder</span>
+          <h3>Next note</h3>
+          <p>More posts will follow here.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a class="lang-switch" href="/index.html" hreflang="zh-Hans">中文</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a
+            href="https://scholar.google.com/citations?user=wh3s5WkAAAAJ&amp;hl=zh-CN"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Scholar</a>
+          <a href="mailto:songzhiyuan98@gmail.com">Email</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Nature Medicine: seven MRI-based multi-organ biological age gaps (MRIBAG) in 313k+ participants; proteomics, metabolomics, GWAS, druggable targets, mortality risk, and A4 cognition. Open-access article linked on page."
+    />
+    <title>MRI multi-organ aging clocks · Research notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/research-mribag.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview</a>
+            <a href="#numbers">Key numbers</a>
+            <a href="#abstract">Abstract</a>
+            <a href="#background">Background</a>
+            <a href="#methods">Methods (summary)</a>
+            <a href="#results-models">Results · Model performance</a>
+            <a href="#results-omics">Results · Proteomics &amp; metabolomics</a>
+            <a href="#results-genetics">Results · Genetics &amp; druggable targets</a>
+            <a href="#results-clinical">Results · Clinical implications</a>
+            <a href="#discussion">Discussion &amp; limitations</a>
+            <a href="#resources">Data &amp; code</a>
+            <a href="#citation">Citation</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              Paper · Open access · Online first 16 Oct 2025 ·
+              <em>Nature Medicine</em> volume 32, pages 82–92 (2026)
+            </p>
+            <h1 class="article-title">
+              MRI-based multi-organ clocks for healthy aging and disease assessment
+            </h1>
+            <p class="article-meta" style="margin-bottom: 12px">
+              The MULTI Consortium, Huizi Cao, <strong>Zhiyuan Song</strong>, Michael R. Duggan, Guray
+              Erus, Dhivya Srinivasan, Ye Ella Tian, Wenjia Bai, Michael S. Rafii, Paul Aisen, Daniel
+              W. Belsky, Keenan A. Walker, Andrew Zalesky, Luigi Ferrucci, Christos Davatzikos, and
+              <strong>Junhao Wen</strong> (corresponding author)
+            </p>
+            <div class="article-body">
+              <p>
+                <strong>Open-access article:</strong>
+                <a href="https://www.nature.com/articles/s41591-025-03999-8" target="_blank" rel="noopener noreferrer">https://www.nature.com/articles/s41591-025-03999-8</a>
+              </p>
+              <p class="muted">
+                Personal reading notes; numbers and wording follow the published paper—cite the journal version.
+              </p>
+            </div>
+          </header>
+
+          <section id="numbers" class="doc-section">
+            <h2>Key numbers</h2>
+            <div class="stat-strip">
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">313,645</div>
+                <div class="stat-strip__label">Participants (MULTI)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">7</div>
+                <div class="stat-strip__label">MRIBAG organs / tissues</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">2,923</div>
+                <div class="stat-strip__label">Plasma proteins (Olink)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">327</div>
+                <div class="stat-strip__label">Metabolites (Nightingale)</div>
+              </div>
+            </div>
+            <div class="stat-strip" style="margin-top: 16px">
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">53</div>
+                <div class="stat-strip__label">GWAS locus–MRIBAG pairs (P &lt; 5×10⁻⁸)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">9</div>
+                <div class="stat-strip__label">Druggable genes (DGIdb)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">603</div>
+                <div class="stat-strip__label">Protein–MRIBAG associations (ProWAS)</div>
+              </div>
+              <div class="stat-strip__item">
+                <div class="stat-strip__value">758</div>
+                <div class="stat-strip__label">Metabolite–MRIBAG associations (MetWAS)</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="abstract" class="doc-section">
+            <h2>Abstract (aligned with the journal paper)</h2>
+            <div class="article-body">
+              <p>
+                Cross-organ biological aging clocks deepen our understanding of aging and disease. Building on that framework, we construct <strong>seven</strong> MRI-based multi-organ biological age gaps (MRIBAGs) covering brain, heart, liver, adipose, spleen, kidney, and pancreas. In <strong>313,645</strong> individuals integrated under MULTI, we connect the seven MRIBAGs to 2,923 plasma proteins, 327 metabolites, and ~6.47 million common genetic variants. Genome-wide association analysis yields <strong>53</strong> significant locus–MRIBAG pairs at P &lt; 5×10⁻⁸. Genetic correlation and Mendelian randomization support organ-specific and cross-organ links involving
+                24 non-MRI aging clocks and 525 disease endpoints. Functional mapping plus Bayesian colocalization with proteomic/metabolic evidence prioritizes <strong>nine</strong> druggable genes as candidate targets for future anti-aging interventions. The seven MRIBAGs also relate to future systemic diseases (e.g., diabetes) and <strong>all-cause mortality</strong>. Finally, in the solanezumab Alzheimer’s trial (240 weeks), baseline brain MRI profiles that look “younger” vs “older” track different cognitive decline trajectories, but this heterogeneity <strong>cannot</strong> be fully attributed to drug assignment. Together, we develop seven MRIBAGs that strengthen the multi-organ aging framework and illustrate clinical research potential.
+              </p>
+            </div>
+          </section>
+
+          <section id="background" class="doc-section">
+            <h2>Background</h2>
+            <div class="article-body">
+              <p>
+                MRI non-invasively captures structural change with age. “Brain age” models are widely used, but systematic extension across other organs is rarer. Large-scale multi-organ MRI in UK Biobank plus <strong>MULTI Consortium</strong> integration makes it feasible to add organ-specific biological age gaps alongside proteomic (ProtBAG), metabolic (MetBAG), phenotypic (PhenoBAG), epigenetic, and other clocks—and to stitch a coherent aging–disease map.
+              </p>
+            </div>
+          </section>
+
+          <section id="methods" class="doc-section">
+            <h2>Methods (summary)</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <strong>MULTI cohort (Methods 1):</strong> multi-organ MRI for seven systems/tissues, genotypes, UKB-PPP proteomics, Nightingale metabolomics; downstream meta-analyses with FinnGen, PGC, etc. Ethics span Columbia IRB (MULTI), UK Biobank, BLSA, A4 trial sites, and more.
+                </li>
+                <li>
+                  <strong>MRIBAG construction (Methods 2):</strong> refresh <strong>brain MRIBAG</strong> (119 gray-matter volumes, nested CV, 500-person holdout) and add six new MRIBAGs (heart, liver, adipose, spleen, kidney, pancreas); models include LASSO, linear SVR, elastic net, tuned neural nets, with attention to abdominal collinearity/overfitting. Biological age gap is predicted age minus chronological age; downstream analyses apply <strong>age-residualization</strong>.
+                </li>
+                <li>
+                  <strong>ProWAS / MetWAS (Methods 3):</strong> linear models linking each MRIBAG to 2,923 proteins and 327 metabolites with covariates for demographics, batches, LOD, organ-specific imaging covariates, 40 PCs, etc.; Bonferroni at P &lt; 0.05/(2923×7) and P &lt; 0.05/(327×7); interactive volcano portal.
+                </li>
+                <li>
+                  <strong>Genetics (Methods 4):</strong> European-ancestry fastGWA (~6.48M SNPs post-QC), FUMA annotation, GCTA SNP heritability, LDSC stratified heritability, genetic correlation with PhenoBAG/ProtBAG/MetBAG and 525 disease endpoints, bidirectional two-sample MR (TwoSampleMR), split-sample <strong>PRS-CS</strong>, gene mapping (positional, eQTL, chromatin interactions), Bayesian <strong>colocalization</strong> with ProtBAG/MetBAG, plus DGIdb mining for drug–gene repurposing hypotheses.
+                </li>
+                <li>
+                  <strong>Clinical prediction (Methods 5):</strong> Cox models for de novo ICD-10 diseases and all-cause mortality; in A4, stratify by baseline brain MRIBAG (accelerated vs decelerated aging) and model PACC to week 240 with spline mixed models consistent with the original trial.
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="results-models" class="doc-section">
+            <h2>Results · Model performance</h2>
+            <div class="article-body">
+              <p>
+                On healthy controls, best per-organ models achieve Pearson <em>r</em> between predicted and chronological age ~0.23–0.77 on holdout data, with mean absolute error on the order of <strong>five years</strong> before residualization. Brain MRIBAG has additional external validation (including domain shift discussion for A4). Abdominal MRI phenotypes remain sparser and more collinear than brain—limited extrapolation; the paper discusses denser protocols and voxel-level deep models as future work.
+              </p>
+            </div>
+          </section>
+
+          <section id="results-omics" class="doc-section">
+            <h2>Results · Proteomics &amp; metabolomics</h2>
+            <div class="article-body">
+              <p>
+                <strong>ProWAS</strong> yields 603 protein–MRIBAG associations after multiple testing; <strong>kidney MRIBAG</strong> has the most hits (e.g., NPDC1, IGFBP6, TAFA5), followed by spleen, liver, adipose, pancreas, brain, heart (example: REN). Organ-enriched proteins such as splenic <strong>VCAM1</strong> and pancreatic <strong>PLA2G1B</strong> (also tied to adipose/spleen) illustrate tissue-specific aging biology (Human Protein Atlas context).
+              </p>
+              <p>
+                <strong>MetWAS</strong> reports 758 metabolite–MRIBAG links (many |r| &lt; 0.3). Spleen and adipose MRIBAGs show the richest metabolic fingerprints (e.g., acetate, HDL subclasses); creatinine correlates positively with kidney MRIBAG and negatively with adipose MRIBAG, hinting at distinct regulatory roles. STRING pathway enrichments and sex-stratified analyses appear in supplements.
+              </p>
+            </div>
+          </section>
+
+          <section id="results-genetics" class="doc-section">
+            <h2>Results · Genetics &amp; druggable targets</h2>
+            <div class="article-body">
+              <p>
+                GWAS identifies <strong>53</strong> genome-wide significant locus–trait pairs. SNP heritability h<sup>2</sup> per MRIBAG is roughly <strong>0.29–0.47</strong>. Stratified LDSC shows chromatin enrichments consistent with organ context (e.g., heart MRIBAG with cardiac H3K4me3/H3K27ac).
+              </p>
+              <p>
+                Genetic correlation links MRIBAGs to other multi-omic clocks and FinnGen/PGC endpoints (e.g., heart MRIBAG with hypertension). Bidirectional MR highlights paths that need cautious interpretation (e.g., hypertension → heart MRIBAG; AD → liver MRIBAG; bidirectional kidney MRIBAG and type 2 diabetes). Split-sample <strong>PRS</strong> explains limited incremental variance (brain PRS up to ~2.18% incremental R² on the target split).
+              </p>
+              <p>
+                Post-GWAS mapping plus colocalization with ProtBAG/MetBAG (PP.H4 &gt; 0.8) supports <strong>62</strong> unique genes; DGIdb highlights <strong>nine</strong> genes with existing drug interactions (122 drugs), spanning immunosuppressants, antidiabetics, antineoplastics, etc. <strong>ALDH2</strong> (spleen MRIBAG) exemplifies broad therapeutic annotations paired with AlphaFold structure discussion.
+              </p>
+            </div>
+          </section>
+
+          <section id="results-clinical" class="doc-section">
+            <h2>Results · Clinical implications</h2>
+            <div class="article-body">
+              <p>
+                Cox models tie MRIBAGs and MRIBAG-PRSs to de novo ICD-10 diseases and <strong>all-cause mortality</strong>: e.g., brain/adipose/pancreas MRIBAGs and pancreas PRS with non–insulin-dependent diabetes; brain MRIBAG with substance use, anxiety, GI bleeding; heart MRIBAG with hypertension. Brain and adipose MRIBAGs skew toward <strong>risk</strong> for mortality, whereas liver and spleen MRIBAGs show <strong>protective</strong>-looking hazard patterns (interpreted cautiously in-text, including disease-free sensitivity analyses).
+              </p>
+              <p>
+                In <strong>A4</strong>, splitting baseline brain MRIBAG into “rejuvenated” vs “aged” profiles yields distinct PACC trajectories to week <strong>240</strong> in <strong>both drug and placebo arms</strong>; separation is stronger in placebo (permutation one-sided P≈0.03). At week 240 there is <strong>no</strong> significant drug–placebo difference within either stratum—cognitive heterogeneity therefore <strong>cannot</strong> be fully attributed to the investigational therapy.
+              </p>
+            </div>
+          </section>
+
+          <section id="discussion" class="doc-section">
+            <h2>Discussion &amp; limitations (compressed)</h2>
+            <div class="article-body">
+              <p>
+                MRIBAGs are positioned as imaging endotypes along genetic–multi-omic–disease axes, emphasizing both organ-specific and shared structure. Limitations include UK Biobank’s cross-sectional frame, less mature abdominal IDPs vs brain, limited environmental covariates, predominantly European GWAS, and biological ambiguity around “protective” liver/spleen associations—replication and mechanistic follow-up are needed. Future directions: longitudinal imaging, multi-ancestry GWAS, denser abdominal protocols, and tau/amyloid PET–informed stratification.
+              </p>
+            </div>
+          </section>
+
+          <section id="resources" class="doc-section">
+            <h2>Data &amp; code</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <a href="https://labs-laboratory.com/medicine/" target="_blank" rel="noopener noreferrer">MEDICINE knowledge portal</a>
+                  — GWAS summary statistics and pretrained ML models
+                </li>
+                <li>
+                  <a href="https://www.synapse.org/Synapse:syn64923248/wiki/630992" target="_blank" rel="noopener noreferrer">Synapse</a>
+                  (syn64923248)
+                </li>
+                <li>
+                  <a href="https://zenodo.org/records/15857817" target="_blank" rel="noopener noreferrer">Zenodo</a>
+                  — figures, extended data, MRIBAG derivation code, supplements
+                </li>
+                <li>
+                  Interactive browsers:
+                  <a href="https://labs-laboratory.com/medicine/mribag_prowas.html" target="_blank" rel="noopener noreferrer">ProWAS</a>,
+                  <a href="https://labs-laboratory.com/medicine/mribag_metwas.html" target="_blank" rel="noopener noreferrer">MetWAS</a>,
+                  <a href="https://labs-laboratory.com/medicine/mribag_gdi.html" target="_blank" rel="noopener noreferrer">Drug–gene (DGIdb)</a>
+                </li>
+                <li>
+                  Software cited includes MLNI (MRIBAG generation), FUMA, GCTA/fastGWA, LDSC, TwoSampleMR, PRS-CS, lifelines, STRING, coloc—versions on Zenodo README.
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="citation" class="doc-section">
+            <h2>Citation</h2>
+            <div class="article-body">
+              <p class="muted">
+                Export the official reference from the
+                <a href="https://www.nature.com/articles/s41591-025-03999-8" target="_blank" rel="noopener noreferrer"><em>Nature Medicine</em> article page</a>
+                (open access). Short form:
+              </p>
+              <p>
+                The MULTI Consortium <em>et al.</em> MRI-based multi-organ clocks for healthy
+                aging and disease assessment. <em>Nature Medicine</em> <strong>32</strong>,
+                82–92 (2026). Open access; online first 16 Oct 2025.
+                <a href="https://www.nature.com/articles/s41591-025-03999-8" target="_blank" rel="noopener noreferrer">https://www.nature.com/articles/s41591-025-03999-8</a>
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="https://www.nature.com/articles/s41591-025-03999-8" target="_blank" rel="noopener noreferrer">Nature Medicine</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

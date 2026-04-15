@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <!-- Discoverability: multi-agent fiction workbench, hybrid RAG (L0/L1) -->
+    <meta
+      name="keywords"
+      content="Novel Studio, multi-agent, multiagent, long-form fiction, AI fiction workbench, hybrid RAG, story-state RAG, L0 structured recall, L1 semantic retrieval, orchestrator, canon memory, PostgreSQL, TypeScript, pnpm"
+    />
+    <meta
+      name="description"
+      content="Novel Studio: a multi-agent long-form fiction workbench with a deterministic orchestrator, canon and blueprint loop; MVP ships L0 structured recall, with L1 semantic retrieval after quality gates (hybrid RAG roadmap)."
+    />
+    <title>Novel Studio · Project documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/novel-studio.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview &amp; positioning</a>
+            <a href="#status">Features &amp; progress</a>
+            <a href="#rag">Two-layer RAG plan</a>
+            <a href="#architecture">Four planes</a>
+            <a href="#orchestration">Orchestration &amp; agents</a>
+            <a href="#workflow">Workflow phases</a>
+            <a href="#packets">Packets &amp; budget</a>
+            <a href="#qa">QA &amp; release</a>
+            <a href="#safety">Safety &amp; hard rules</a>
+            <a href="#tech">Tech stack</a>
+            <a href="#structure">Repository layout</a>
+            <a href="#tests">Tests &amp; cost</a>
+            <a href="#quickstart">Quick start</a>
+            <a href="#docs">Doc index</a>
+            <a href="#disclaimer">Disclaimer</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">MVP in development · Monorepo · PostgreSQL · since Jan 2026 · design spec v2 (Mar 2026)</p>
+            <h1 class="article-title">Novel Studio</h1>
+            <p class="article-meta" style="margin-bottom: 12px">AI-Powered Serial Fiction Workbench</p>
+            <p class="article-meta" style="margin-bottom: 14px">
+              Keywords: <span lang="en">multi-agent</span> long-form fiction engineering · <span lang="en">hybrid RAG</span> (L0 structured canon + evolving L1 semantic layer) · canon memory · deterministic orchestration
+            </p>
+            <div class="article-body">
+              <p>
+                <strong>Novel Studio</strong> is an AI-driven <strong>serial fiction workbench</strong> and a canonical <strong lang="en">multi-agent</strong>
+                system: you steer like a director while Chat Agent, a deterministic orchestrator, and LLM workers (plan / write / QA / summarize) execute behind the scenes. World bible, character sheets, timelines, and thread hooks live in a <strong>Canon store</strong> as the single source of truth; chapters flow blueprint → draft → QA → canonization. Retrieval aims at <strong>story-state RAG</strong> long term: the MVP ships L0 precise recall, then layers L1 semantics after validation—overall a <strong lang="en">hybrid RAG</strong> roadmap (see “Two-layer RAG plan” below).
+              </p>
+              <p>
+                Repository:
+                <a href="https://github.com/songzhiyuan98/Novel-Studio" target="_blank" rel="noopener noreferrer">https://github.com/songzhiyuan98/Novel-Studio</a>
+                (public GitHub: <em>A Multi-Agent System for Long-Form Fiction Generation</em>)
+              </p>
+            </div>
+          </header>
+
+          <section id="status" class="doc-section">
+            <h2>Features &amp; implementation progress</h2>
+            <div class="article-body">
+              <p>Core pipeline runs end-to-end; some capabilities still iterate. Table aligned with README.</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Capability</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Chat with AI (ideation, intent routing)</td>
+                    <td>Shipped</td>
+                  </tr>
+                  <tr>
+                    <td>Chapter pipeline: direction → blueprint → write → QA → canonize</td>
+                    <td>Shipped</td>
+                  </tr>
+                  <tr>
+                    <td>Canon memory: characters, rules, timelines, thread tracking</td>
+                    <td>Shipped</td>
+                  </tr>
+                  <tr>
+                    <td>Layered character sheets (core / important / episodic), editable</td>
+                    <td>Shipped</td>
+                  </tr>
+                  <tr>
+                    <td>World settings, chapter reader (scene tags + summaries)</td>
+                    <td>Shipped</td>
+                  </tr>
+                  <tr>
+                    <td>Multi-model: DeepSeek (write/QA) + GPT-4o-mini (plan/chat)</td>
+                    <td>Shipped</td>
+                  </tr>
+                  <tr>
+                    <td>Cost tracking, orchestration traces (per-agent visibility)</td>
+                    <td>Shipped</td>
+                  </tr>
+                  <tr>
+                    <td>Project templates</td>
+                    <td>Shipped</td>
+                  </tr>
+                  <tr>
+                    <td>Per-scene rewriting</td>
+                    <td>Backend done / frontend wiring pending</td>
+                  </tr>
+                  <tr>
+                    <td>Streaming output in UI</td>
+                    <td>Backend done / frontend partial</td>
+                  </tr>
+                  <tr>
+                    <td>Impact analysis for setting changes</td>
+                    <td>Planned</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section">
+            <h2 id="rag">RAG strategy: two-layer plan</h2>
+            <div class="article-body">
+              <p class="muted">
+                Authoritative spec:
+                <code>docs/superpowers/specs/2026-03-24-core-architecture-design.md</code>. This page is a condensed mirror.
+              </p>
+              <p>
+                <strong>RAG is two layers:</strong> <strong>L0</strong> ships with the MVP; <strong>L1</strong> arrives after MVP validation. Experimental notes (e.g.
+                <code>rag-optimization-strategy.md</code>) may discuss engineering tweaks, but <strong>product framing stays L0 / L1</strong>.
+              </p>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Layer</th>
+                    <th>Name</th>
+                    <th>Phase</th>
+                    <th>One-liner</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>L0</strong></td>
+                    <td>Structured canon recall</td>
+                    <td>MVP, day one</td>
+                    <td>No vectors; confirmed canon in structured storage + scene-card metadata driving exact ID/key queries</td>
+                  </tr>
+                  <tr>
+                    <td><strong>L1</strong></td>
+                    <td>Semantic retrieval</td>
+                    <td>Post-MVP</td>
+                    <td>Embedding search for conceptual links key queries miss; coexists with L0 as additive, not replacement</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h3 id="rag-l0">L0 — structured canon recall (MVP)</h3>
+              <h4>What it is</h4>
+              <p>
+                <strong>Not</strong> generic vector RAG. Canon lives as <strong>structured JSON</strong> in the Canon Store; <strong>scene cards</strong> carry structured tags (<code>characters</code>, <code>locations</code>, <code>threads</code>, <code>callbacks</code>,
+                etc.) that act as <strong>database query keys</strong>. The Packet Compiler issues queries, pulls matching character state, world rules, thread state, etc., and packs them into each worker’s packet under token budget.
+              </p>
+              <h4>What L0 pulls (confirmed canon only)</h4>
+              <ul>
+                <li>Story bible / world rule entries</li>
+                <li>Character sheets and state summaries</li>
+                <li>Chapter summaries (Layer 0: per chapter)</li>
+                <li>Volume summaries (Layer 1: ~every 100 chapters; may be placeholders for the five-chapter MVP acceptance; see design doc)</li>
+                <li>Timeline events, open threads, development chains</li>
+              </ul>
+              <h4>Token budget (P0–P4)</h4>
+              <p>Each worker call has a fixed context budget; the Packet Compiler <strong>fills by priority</strong> until exhausted:</p>
+              <pre class="doc-pre">P0 — Hard constraints (must include: current scene card, chapter goals, style guardrails, output contract, etc.)
+P1 — Current state (almost always: characters/relationships in this chapter, active threads, etc.)
+P2 — Recent context (important: last 3 chapter summaries L0, current volume summary L1, recent timeline, etc.)
+P3 — Distant reference (as needed: historical volume summaries, full world rules, historical relationship shifts)
+P4 — Supplementary (if budget remains: development chains, recurring QA themes, etc.)</pre>
+              <p>Per-worker field breakdown lives in the design spec and <code>docs/api-spec.md</code>.</p>
+
+              <h3 id="rag-l0-scale">Why L0 is enough for MVP long-context</h3>
+              <p>The spec’s <strong>key insight</strong>: lean on layered summaries + state tables, not MVP-stage vectors.</p>
+              <p>Example (chapter ~350, writer packet scale):</p>
+              <pre class="doc-pre">Volumes 1–3 summaries (Layer 1)   ~1500 chars each
+Last 3 chapter summaries (Layer 0) ~1500 chars total
+Relevant character state (live)      ~1000 chars
+Active threads, etc.                 ~500 chars
+────────────────────────────────────
+~8000 chars ≈ ~12K tokens of canon context</pre>
+              <p>That is roughly <strong>12K tokens of canon context</strong> spanning very long serial history; <strong>scene-card tags signal what to retrieve</strong>, <strong>replacing</strong> semantic search duties in the MVP.</p>
+
+              <h3 id="rag-l1">L1 — semantic retrieval (post-MVP)</h3>
+              <h4>Goal</h4>
+              <p>Add <strong>embedding</strong>-based search to surface conceptual links <strong>exact key matching cannot cover</strong>.</p>
+              <h4>Problems L1 solves (examples)</h4>
+              <ul>
+                <li>Distant-chapter foreshadow / callback motifs related to the current chapter</li>
+                <li>Conceptually similar conflicts or motifs</li>
+                <li>Thematic ties across the story</li>
+                <li>Development-chain nodes still relevant when scene cards omit explicit tags</li>
+              </ul>
+              <h4>Preconditions before starting L1 (per spec)</h4>
+              <p>Do <strong>not</strong> start L1 implementation until these hold—avoid stacking complexity on an unstable pipeline:</p>
+              <ul>
+                <li>Artifact schema is stable</li>
+                <li>Chapter summaries exist with reliable quality</li>
+                <li>Canon read paths are proven on production-like flows</li>
+                <li>QA report / contract schemas are stable</li>
+                <li>L0 packet assembly is tested across <strong>multiple consecutive chapters</strong> (spec example: 5+)</li>
+              </ul>
+
+              <h3 id="rag-coexist">L0 + L1 coexistence: migration framing (spec)</h3>
+              <p><strong>L1 augments L0, never replaces it.</strong> The Packet Compiler pipeline is:</p>
+              <pre class="doc-pre">1. L0: structured queries from scene-card keys (always)
+2. L1: semantic search fills remaining budget with supplemental context
+3. Merge + dedupe
+4. Truncate to total token budget and write the final packet</pre>
+              <p>
+                After L1 ships, keyword reranking, QA-triggered narrow second passes, etc. are <strong>implementation details inside L1</strong>—the product still reads “L0 first, L1 second, then merge.”
+              </p>
+
+              <h3 id="rag-workers">Retrieval by worker (spec)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Role</th>
+                    <th>Retrieval</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Chat Agent</td>
+                    <td>Does not use RAG directly</td>
+                    <td>Light views from Canon Store (e.g. <strong>project summary</strong>) for chat and intent routing</td>
+                  </tr>
+                  <tr>
+                    <td>Planner</td>
+                    <td>L0 (+ future L1)</td>
+                    <td>Next-chapter planning: dependencies, callbacks, open threads, development nodes, etc.</td>
+                  </tr>
+                  <tr>
+                    <td>Writer</td>
+                    <td>L0 (+ future L1)</td>
+                    <td>Canon + recent story state for the current scene; emphasizes in-scene character/relationship state and active threads</td>
+                  </tr>
+                  <tr>
+                    <td>QA</td>
+                    <td>L0 (+ future L1)</td>
+                    <td>Pull <strong>evidence sources</strong> for potential conflicts; compare draft claims to <strong>confirmed</strong> canon entries</td>
+                  </tr>
+                  <tr>
+                    <td>Summarizer</td>
+                    <td>No retrieval</td>
+                    <td>Input is the <strong>full chapter text</strong> (+ required role lists per spec); LLM compresses to structured output</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h3 id="rag-mvp-scope">MVP boundary (aligned with spec)</h3>
+              <p>The core spec states the <strong>MVP excludes</strong> embeddings / vector retrieval (no product L1); it includes L0 scene-card recall, chapter summarization pipeline, artifact versioning, and state machines. Acceptance includes: chapter 5’s context packet correctly references settings confirmed since chapter 1, and <strong>drafts and rejections never enter</strong> later packets.</p>
+              <p class="muted">“In progress” here means the mainline implements L0; L1 and heavier retrieval advance after the gates above—track implementation in <code>docs/mvp-todolist.md</code>.</p>
+            </div>
+          </section>
+
+          <section id="architecture" class="doc-section">
+            <h2>Four architecture planes</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Plane</th>
+                    <th>Responsibilities (summary)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>UX</td>
+                    <td>Chat + option chips, orchestration traces, approve/reject, artifact editing, status surfaces (business rules stay out of UI)</td>
+                  </tr>
+                  <tr>
+                    <td>Control</td>
+                    <td>Chat Agent (LLM, sole user voice) + Orchestrator (pure code: state machine, packets, dispatch, canon gates)</td>
+                  </tr>
+                  <tr>
+                    <td>Knowledge</td>
+                    <td>PostgreSQL: projects, versioned artifacts, Canon Store (confirmed: rules, character state, relationships, chapter/volume summaries, timelines, threads, development chains, etc.)</td>
+                  </tr>
+                  <tr>
+                    <td>Generation</td>
+                    <td>Planner / Writer / QA / Summarizer (stateless single-shot calls); Vercel AI SDK multi-provider; prompts + Zod output contracts</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="muted">Knowledge centers on Canon Store; MVP enables <strong>L0 structured recall</strong> only; <strong>L1 semantic retrieval</strong> stacks after spec gates—see “Two-layer RAG plan.”</p>
+            </div>
+          </section>
+
+          <section id="orchestration" class="doc-section">
+            <h2>Orchestration &amp; agent roles</h2>
+            <div class="article-body">
+              <pre class="doc-pre">User ↔ Chat Agent (GPT-4o-mini) → Orchestrator (deterministic code)
+                                        ├── Planner (GPT-4o-mini)
+                                        ├── Writer (DeepSeek)
+                                        ├── QA (DeepSeek)
+                                        └── Summarizer (DeepSeek)
+                                        ↕
+                            Knowledge: PostgreSQL + Canon Store</pre>
+              <p>
+                <strong>Key design:</strong> the Orchestrator is <strong>testable deterministic code</strong>, not an LLM. Routing, transitions, and packet assembly are code-guaranteed; workers do not read full chat logs or dispatch to each other. The chain is always user → Chat → Orchestrator → worker → return.
+              </p>
+              <ul>
+                <li><strong>Chat Agent:</strong> intent parsing, light ideation, hands pipeline work to the Orchestrator; cannot rewrite canon directly or bypass QA.</li>
+                <li><strong>Orchestrator:</strong> state machine, token-budget packets, dispatch, safety caps, audit/cost, blueprint approval gate, triggers Summarizer after canonization; may run green/yellow/red impact analysis on setting changes (per spec).</li>
+                <li><strong>Planner:</strong> expands user outlines, or brainstorms directions from canon/threads then expands into a <strong>blueprint</strong> (per-scene goals, emotional beats, dialogue reversals, etc.).</li>
+                <li><strong>Writer:</strong> streams drafts under an approved blueprint; executes the blueprint strictly.</li>
+                <li><strong>QA:</strong> continuity, motivation, pacing, style, foreshadow logic, <strong>blueprint coverage</strong>, <strong>character-sheet compliance</strong>; structured decision + cited evidence.</li>
+                <li><strong>Summarizer:</strong> after canonization, produces chapter summaries and drives incremental Canon Store updates.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="workflow" class="doc-section">
+            <h2>Workflow phases (summary)</h2>
+            <div class="article-body">
+              <h3>Phase 0 — project bootstrap</h3>
+              <p>Create project (title, genre, tone, logline, etc.) → provision DB, initial brief, <code>ProjectTemplate</code> formatting knobs, initial open issues.</p>
+              <h3>Phase 1 — story foundation (once per project)</h3>
+              <p>Feasibility pass → draft world rules, layered character sheets, relationship graph, high-level outline, development chains, etc. → user edits/rejects/confirms → write canon projections.</p>
+              <h3>Phase 2–N — chapter loop</h3>
+              <ol>
+                <li><strong>Blueprint:</strong> Planner in “expand outline” or “brainstorm then expand” mode; <strong>no writing until the user approves the blueprint</strong>.</li>
+                <li><strong>Write:</strong> Orchestrator compiles Writer packet (blueprint + canon slices + style, etc.) under budget, streams draft.</li>
+                <li><strong>QA:</strong> auto-dispatch; pass / pass_with_notes / revise / block; optional <strong>per-scene</strong> rewrite loops.</li>
+                <li><strong>Canonize:</strong> on user confirm, update chapter state, call Summarizer, parse outputs to increment CharacterState, Timeline, Thread, etc., with audit logs.</li>
+              </ol>
+              <h3>Branching &amp; revision</h3>
+              <p>Uncertainty paths: orchestrator-side parsing, Chat asks 1–3 precise user questions, or continue with “provisional assumptions” (non-canon until confirmed). Mid-flight setting changes can run impact tiers (green/yellow/red) with user confirmation (see design doc).</p>
+            </div>
+          </section>
+
+          <section id="packets" class="doc-section">
+            <h2>Packets &amp; token budget</h2>
+            <div class="article-body">
+              <p>
+                Each worker receives a <strong>distinct, compact, task-specific</strong> packet compiled under budget; formatting knobs (chapter length, volume scale, style baselines, etc.) come from
+                <code>ProjectTemplate</code>, not hard-coded defaults in compiler logic. This section matches the P0–P4 ladder and L0→L1 merge strategy in <a href="#rag">Two-layer RAG plan</a>.
+              </p>
+              <h3>Fill order (shared across workers)</h3>
+              <pre class="doc-pre">P0 — Hard constraints (blueprint/scene, goals, output contract)
+P1 — Current state (character sheets &amp; state, relationships, active threads)
+P2 — Near context (last 3 chapter summaries, current volume summary)
+P3 — Distant reference (historical volume summaries, full world rules, etc.)
+P4 — Supplementary (development chains, historical QA, etc.)</pre>
+              <p>Planner / Writer / QA / Summarizer each have agreed fields (e.g. Writer binds blueprint, per-scene character state, <code>style_profile</code>); output contracts live in <code>docs/api-spec.md</code>.</p>
+              <p>When asking follow-ups, follow a <strong>minimal question set</strong>: at most ~three high-signal questions, prefer chips/cards.</p>
+            </div>
+          </section>
+
+          <section id="qa" class="doc-section">
+            <h2>QA &amp; release policy</h2>
+            <div class="article-body">
+              <p>QA is a narrative <strong>release gate</strong>, not cosmetic polish: stateless worker, inputs are compiled chapter + relevant canon slices, output is a structured report.</p>
+              <h3>Check dimensions</h3>
+              <ul>
+                <li>Continuity (violations of confirmed canon, character state, chronology)</li>
+                <li>Motivation integrity (major actions vs known pressures and motives)</li>
+                <li>Pacing (scene balance)</li>
+                <li>Style compliance (POV, tense, density vs style profile)</li>
+                <li>Setup/payoff (missing important callbacks, messy new hooks)</li>
+              </ul>
+              <h3>Evidence rules</h3>
+              <p>Medium/high severity issues must cite evidence: <code>source_type</code>, <code>source_id</code>, excerpts, etc.</p>
+              <h3>Release paths</h3>
+              <ul>
+                <li><code>pass</code> / <code>pass_with_notes</code> → show user → can canonize</li>
+                <li><code>revise</code> → show issues + suggested fixes; user taps “revise” as a <strong>new user action</strong> (resets task counters) before rewrite or QA rerun</li>
+                <li><code>block</code> → halt until user resolves or replans</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="safety" class="doc-section">
+            <h2>Safety &amp; hard rules</h2>
+            <div class="article-body">
+              <ul>
+                <li>Workers <strong>must not</strong> read full raw session history; work from packets.</li>
+                <li>Workers <strong>must not</strong> dispatch to each other; only the Orchestrator dispatches.</li>
+                <li>Only <strong>explicit user confirmation</strong> promotes content into canon.</li>
+                <li>Writer dispatch requires a prior <strong>blueprint approval</strong>.</li>
+                <li>Per user action: <code>MAX_TASKS_PER_USER_ACTION = 5</code>, <code>MAX_TOKENS_PER_TASK = 50,000</code>, <code>MAX_TOTAL_TOKENS_PER_ACTION = 150,000</code>; a typical chapter Plan+Write+QA is three tasks; revisions reset counters via a new action to prevent unbounded loops.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="tech" class="doc-section">
+            <h2>Tech stack</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Layer</th>
+                    <th>Choice</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Runtime</td>
+                    <td>Node.js + TypeScript</td>
+                  </tr>
+                  <tr>
+                    <td>LLM</td>
+                    <td>Vercel AI SDK (OpenAI + DeepSeek)</td>
+                  </tr>
+                  <tr>
+                    <td>Database</td>
+                    <td>PostgreSQL + Drizzle ORM</td>
+                  </tr>
+                  <tr>
+                    <td>API</td>
+                    <td>Hono</td>
+                  </tr>
+                  <tr>
+                    <td>Frontend</td>
+                    <td>Next.js 15 + Tailwind CSS</td>
+                  </tr>
+                  <tr>
+                    <td>Monorepo</td>
+                    <td>pnpm workspace</td>
+                  </tr>
+                  <tr>
+                    <td>Containers</td>
+                    <td>Docker Compose</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="structure" class="doc-section">
+            <h2>Repository layout (summary)</h2>
+            <div class="article-body">
+              <pre class="doc-pre">apps/
+  api/     # Hono, port 3001
+  web/     # Next.js, port 3002
+packages/
+  core/           # shared types
+  orchestrator/   # workflow engine, packet compile, guardrails, canon projection
+  prompts/        # prompt templates + Zod output schemas
+  llm-adapter/    # Vercel AI SDK wrapper, multi-provider, token accounting
+docs/             # design specs, plans, architecture</pre>
+            </div>
+          </section>
+
+          <section id="tests" class="doc-section">
+            <h2>Tests &amp; measured cost (excerpt)</h2>
+            <div class="article-body">
+              <ul>
+                <li>~<strong>98</strong> unit tests across six packages.</li>
+                <li><strong>Five-chapter</strong> end-to-end validation passed.</li>
+                <li>DeepSeek Writer: ~2842–4471 characters per chapter (target band ~2000–3000 Chinese characters).</li>
+                <li>Cost reference: ~<strong>$0.032 / 5 chapters</strong> (varies with model pricing).</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="quickstart" class="doc-section">
+            <h2>Quick start</h2>
+            <div class="article-body">
+              <pre class="doc-pre">git clone https://github.com/songzhiyuan98/Novel-Studio.git
+cd Novel-Studio
+cp .env.example .env
+# Fill OPENAI_API_KEY, DEEPSEEK_API_KEY, etc.
+
+docker compose up -d
+# PostgreSQL :5432 · API :3001 · Web :3002
+
+# First run: install deps, migrate schema, seed data
+pnpm install
+cd apps/api
+DATABASE_URL=postgresql://novel_studio:novel_studio_dev@localhost:5432/novel_studio npx drizzle-kit push
+DATABASE_URL=postgresql://novel_studio:novel_studio_dev@localhost:5432/novel_studio npx tsx src/db/seed.ts
+
+# Open in browser
+open http://localhost:3002</pre>
+              <h3>Run API/Web locally (DB still via Docker)</h3>
+              <pre class="doc-pre">docker compose up postgres -d
+cd apps/api && pnpm dev    # :3001
+cd apps/web && pnpm dev    # :3002</pre>
+            </div>
+          </section>
+
+          <section id="docs" class="doc-section">
+            <h2>Documentation index (in repo)</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Path</th>
+                    <th>Contents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>docs/superpowers/specs/2026-03-25-design-v2.md</code></td>
+                    <td>Full design v2 (23 decisions)</td>
+                  </tr>
+                  <tr>
+                    <td><code>docs/mvp-todolist.md</code></td>
+                    <td>Implementation progress</td>
+                  </tr>
+                  <tr>
+                    <td><code>docs/data-models.md</code></td>
+                    <td>DB schema (~17 tables)</td>
+                  </tr>
+                  <tr>
+                    <td><code>docs/agents.md</code></td>
+                    <td>Agent responsibilities</td>
+                  </tr>
+                  <tr>
+                    <td><code>docs/workflow.md</code></td>
+                    <td>Chapter production workflow</td>
+                  </tr>
+                  <tr>
+                    <td><code>docs/api-spec.md</code></td>
+                    <td>API &amp; internal contracts</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="disclaimer" class="doc-section">
+            <h2>Disclaimer</h2>
+            <blockquote>
+              <p style="margin: 0" class="article-body">
+                This page excerpts a personal project description to showcase architecture and roadmap; the repository Markdown and code are authoritative. Generated content is not professional advice; third-party LLM use must follow their terms and data policies.
+              </p>
+            </blockquote>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98/Novel-Studio" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

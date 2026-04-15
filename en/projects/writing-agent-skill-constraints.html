@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Agent skills in practice: shape agents with constraints and boundaries instead of brittle scripted workflows—tool permissions, output contracts, stop conditions, and evolvability."
+    />
+    <title>Agent skills: constraints over scripted workflows · Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/writing-agent-skill-constraints.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <!-- Back to notes section on English home -->
+        <a href="../index.html#writing">← Notes</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Why this note</a>
+            <a href="#problem">When prescribed paths hurt</a>
+            <a href="#constraints">Constraints &amp; boundaries</a>
+            <a href="#practice">How I think about Skills</a>
+            <a href="#closing">Closing</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Notes · Agent · Skill · Engineering judgment · 2026-04</p>
+            <h1 class="article-title">Agent skills: constraints over scripted workflows</h1>
+            <p class="article-meta" style="margin-bottom: 12px">
+              English version · personal take, not product documentation
+            </p>
+            <div class="article-body">
+              <p>
+                While wiring Claude Code Skills and watching multi-agent apps, one takeaway keeps getting
+                sharper:
+                <strong
+                  >putting agents inside clear, checkable constraints and boundaries is usually more
+                  stable—and easier to evolve—than freezing a “step A → B → C” workflow.</strong>
+                The latter demos well; once real requests branch, it tends to rot or accrete patches.
+              </p>
+            </div>
+          </header>
+
+          <section id="problem" class="doc-section">
+            <h2>When prescribed paths lose</h2>
+            <div class="article-body">
+              <p>
+                Script-style flows assume <strong>enumerable world state and predictable intent</strong>.
+                In engineering, tools return messy payloads, users change goals mid-flight, context gets
+                truncated, and models occasionally drift. The more detailed the flow, the faster branch
+                explosion arrives; every new corner case edits the spine of the workflow, and maintenance
+                cost climbs.
+              </p>
+              <p>
+                Worse: <strong>workflows hard-code “how,”</strong> while leaving “what must never happen”
+                and “what counts as done” underspecified. That invites tool calls when it shouldn’t,
+                continuation when it should stop, and confident hallucinations when it should refuse—none
+                of which is fixed by sprinkling extra <code>if</code>s. You need <strong>boundary
+                  semantics</strong> up front.
+              </p>
+            </div>
+          </section>
+
+          <section id="constraints" class="doc-section">
+            <h2>Where I prefer to invest: constraints &amp; boundaries</h2>
+            <div class="article-body">
+              <p>Axes that compound for me (stacked, not either/or):</p>
+              <ul>
+                <li>
+                  <strong>Safety &amp; permissions:</strong> which MCP endpoints / subprocesses are never
+                  reachable, which directories are read-only, which fields never touch logs—before “step 3
+                  must call tool X.”
+                </li>
+                <li>
+                  <strong>Output shape &amp; contracts:</strong> granularity for users (one-line verdict
+                  vs executable checklist), when uncertainty must be stated, rules for citations and code
+                  fences—reducing damage from “sounds expert but isn’t.”
+                </li>
+                <li>
+                  <strong>Stop / escalate / degrade:</strong> when the agent must hand off to a human,
+                  signals that trigger read-only retrieval without writes, when to discard a draft and
+                  retry—often higher ROI than polishing the happy path alone.
+                </li>
+                <li>
+                  <strong>Observability &amp; replay:</strong> minimal trails when boundaries fire, so you can
+                  diff prompt/tool versions later—fuel for iterating constraints themselves.
+                </li>
+              </ul>
+              <p>
+                Intuitively, <strong>constraints are guardrails</strong> that still let the model reason
+                inside them; <strong>workflows are rails</strong> that require a global re-lay whenever you
+                derail. In frontier AI engineering, models and tools move fast—rails age faster than
+                guardrails.
+              </p>
+            </div>
+          </section>
+
+          <section id="practice" class="doc-section">
+            <h2>How this maps to an Agent Skill</h2>
+            <div class="article-body">
+              <p>
+                In <code>description</code>, triggers, and rules files, I try to spell out first:
+                <strong>when to activate, when to refuse, boundaries on tools and data, and the user-visible
+                  output policy</strong>. The exact “call sub-agent N at step k” wiring stays loose,
+                stitched with checkpoints rather than micro-scripts—unless the domain is truly regulated
+                (e.g., settlement, prescribing), where rails belong.
+              </p>
+              <p>
+                Versus “prescribed paths,” <strong>constraints-first</strong> feels like drafting a small
+                constitution: few clauses, debatable, versionable. Workflows feel like ever-growing
+                administrative code—more lines, more drift from the field.
+              </p>
+            </div>
+          </section>
+
+          <section id="closing" class="doc-section">
+            <h2>Closing</h2>
+            <div class="article-body">
+              <p>
+                This is not anti-workflow—it’s against <strong>using workflows as a substitute for
+                  boundary thinking</strong>. The hard part for agents/skills is reliable decisions in open
+                environments; there, boundaries outlive paths. If practice changes, I’ll write another note
+                to revise or narrow this claim.
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#writing">Notes</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

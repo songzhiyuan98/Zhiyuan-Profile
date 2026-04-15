@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="TalentSync：全栈 AI 求职助手；简历与职位匹配、智能求职信、Stripe 会员与在线演示。"
+    />
+    <!-- 浏览器标签与对外标题仅使用英文名 TalentSync -->
+    <title>TalentSync · 项目文档</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/talentsync.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← 返回首页</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">概述</a>
+            <a href="#links">演示与仓库</a>
+            <a href="#features">核心功能</a>
+            <a href="#subscription">Stripe 会员</a>
+            <a href="#tech">技术栈</a>
+            <a href="#structure">目录结构</a>
+            <a href="#quickstart">快速开始</a>
+            <a href="#api">API 摘要</a>
+            <a href="#security">安全</a>
+            <a href="#contributing">贡献与许可</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              全栈 · MIT · 2025-03 起 · 最近维护距今约三个月
+            </p>
+            <h1 class="article-title">TalentSync</h1>
+            <p class="article-meta" style="margin-bottom: 12px">
+              AI-Powered Career Assistant · AI 驱动的智能求职助手
+            </p>
+            <div class="article-body">
+              <p>
+                TalentSync 是基于 React、Express 与 MongoDB 的全栈 AI
+                求职助手，集成 OpenAI、Google Gemini 等模型，提供简历与职位的多维度匹配分析（ATS、排名、HR、技术向）、智能求职信与
+                PDF 导出、职位与投递状态管理，以及 Stripe 订阅（Free / Premium / Enterprise）与 Google OAuth 登录。
+              </p>
+              <p>
+                演示链接、开源仓库与功能细则见下文各节；环境变量、REST API 与部署说明以 GitHub 仓库 README 为准。
+              </p>
+            </div>
+          </header>
+
+          <section id="links" class="doc-section">
+            <h2>演示与仓库</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  仓库：<a href="https://github.com/songzhiyuan98/TalentSync" target="_blank" rel="noopener noreferrer">https://github.com/songzhiyuan98/TalentSync</a>
+                </li>
+                <li>
+                  在线演示：<a href="https://talentsync-green.vercel.app" target="_blank" rel="noopener noreferrer">https://talentsync-green.vercel.app</a>
+                </li>
+                <li>
+                  联系：<a href="mailto:songzhiyuan98@gmail.com">songzhiyuan98@gmail.com</a>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="features" class="doc-section">
+            <h2>核心功能</h2>
+            <div class="article-body">
+              <h3>简历与职位匹配分析</h3>
+              <ul>
+                <li>
+                  <strong>ATS 分析：</strong>关键词匹配、格式检查、通过概率评估
+                </li>
+                <li>
+                  <strong>排名分析：</strong>预测排名分位、与头部候选人对比
+                </li>
+                <li>
+                  <strong>HR 向分析：</strong>第一印象、面试建议、表达问题识别
+                </li>
+                <li>
+                  <strong>技术分析：</strong>可信度、风险点、预期面试题方向
+                </li>
+              </ul>
+              <h3>智能求职信</h3>
+              <ul>
+                <li>基于简历与目标职位生成个性化求职信</li>
+                <li>突出经历与技能匹配</li>
+                <li>多语言与风格；支持 PDF 导出</li>
+              </ul>
+              <h3>职位管理</h3>
+              <ul>
+                <li>JD 解析与结构化存储</li>
+                <li>状态：已保存、已投递、面试中、已录用、已拒绝等</li>
+              </ul>
+              <h3>用户系统</h3>
+              <ul>
+                <li>邮箱注册 / 登录</li>
+                <li>Google OAuth 2.0</li>
+                <li>JWT；订阅档位与 Stripe 结算</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="subscription" class="doc-section">
+            <h2>Stripe 会员与订阅</h2>
+            <div class="article-body">
+              <p>
+                完整商业化路径：<strong>Stripe</strong>
+                结账、Webhook、多档位权益区分。
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>能力</th>
+                    <th>Free</th>
+                    <th>Premium</th>
+                    <th>Enterprise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Gemini 模型</td>
+                    <td>不限</td>
+                    <td>不限</td>
+                    <td>不限</td>
+                  </tr>
+                  <tr>
+                    <td>GPT-4o 分析</td>
+                    <td>约 1 次/天</td>
+                    <td>不限</td>
+                    <td>不限</td>
+                  </tr>
+                  <tr>
+                    <td>GPT-o1 分析</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td>不限</td>
+                  </tr>
+                  <tr>
+                    <td>求职信生成</td>
+                    <td>有</td>
+                    <td>有</td>
+                    <td>有</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="muted">
+                具体限额与定价以仓库 <code>README.md</code> 及 Stripe Dashboard
+                配置为准。
+              </p>
+            </div>
+          </section>
+
+          <section id="tech" class="doc-section">
+            <h2>技术栈</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>前端</th>
+                    <th>版本 / 说明（摘自 README）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>框架</td>
+                    <td>React 18.2</td>
+                  </tr>
+                  <tr>
+                    <td>路由</td>
+                    <td>react-router-dom v6.30</td>
+                  </tr>
+                  <tr>
+                    <td>状态</td>
+                    <td>Redux Toolkit v2.6</td>
+                  </tr>
+                  <tr>
+                    <td>样式</td>
+                    <td>Tailwind CSS + Material-UI v7</td>
+                  </tr>
+                  <tr>
+                    <td>动效 / PDF / 图表</td>
+                    <td>Framer Motion；jspdf、html2pdf.js；ECharts v5.6</td>
+                  </tr>
+                </tbody>
+              </table>
+              <table>
+                <thead>
+                  <tr>
+                    <th>后端与部署</th>
+                    <th>说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>运行时 / 框架</td>
+                    <td>Node.js + Express.js v4.21</td>
+                  </tr>
+                  <tr>
+                    <td>数据库</td>
+                    <td>MongoDB + Mongoose v8.13</td>
+                  </tr>
+                  <tr>
+                    <td>认证</td>
+                    <td>JWT + Google OAuth + bcryptjs</td>
+                  </tr>
+                  <tr>
+                    <td>AI</td>
+                    <td>OpenAI（GPT-4o、GPT-o1）+ Google Gemini</td>
+                  </tr>
+                  <tr>
+                    <td>支付</td>
+                    <td>Stripe v18</td>
+                  </tr>
+                  <tr>
+                    <td>文件</td>
+                    <td>multer、pdf-parse、pdfkit 等</td>
+                  </tr>
+                  <tr>
+                    <td>部署</td>
+                    <td>前端 Vercel；后端 Railway；数据库 MongoDB Atlas</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="structure" class="doc-section">
+            <h2>仓库目录结构（摘要）</h2>
+            <div class="article-body">
+              <pre class="doc-pre">
+TalentSync/
+├── backend/           # Express：models, controllers, routes, services
+├── frontend/          # React：pages, components, store, services
+├── README.md
+├── PROJECT_DOCUMENTATION.md
+├── CONTRIBUTING.md
+└── LICENSE</pre
+              >
+            </div>
+          </section>
+
+          <section id="quickstart" class="doc-section">
+            <h2>快速开始</h2>
+            <div class="article-body">
+              <p>前置：Node.js ≥ 16、MongoDB（本地或 Atlas）、npm 或 yarn。</p>
+              <pre class="doc-pre">
+git clone https://github.com/songzhiyuan98/TalentSync.git
+cd TalentSync   # 或克隆后目录名以本地为准
+
+cd backend && npm install
+cd ../frontend && npm install
+
+# 在 backend/.env、frontend/.env 中配置 MONGO_URI、OPENAI_API_KEY、
+# GEMINI_API_KEY、JWT_SECRET、Google OAuth、Stripe、API_URL 等
+# 详见 README
+
+cd backend && npm start    # 默认 :3001
+cd frontend && npm start   # 默认 :3000</pre
+              >
+              <p>浏览器访问 <code>http://localhost:3000</code>。</p>
+            </div>
+          </section>
+
+          <section id="api" class="doc-section">
+            <h2>API 摘要</h2>
+            <div class="article-body">
+              <p>
+                基础路径前缀 <code>/api/</code>。完整列表见仓库
+                <code>PROJECT_DOCUMENTATION.md</code>。
+              </p>
+              <ul>
+                <li>
+                  <strong>认证：</strong
+                  ><code>POST /api/auth/register</code
+                  >、<code>login</code>、<code>GET /api/auth/google</code
+                  >、<code>/me</code>、<code>logout</code>
+                </li>
+                <li>
+                  <strong>简历：</strong
+                  >upload、列表、active、set-active、delete
+                </li>
+                <li><strong>职位：</strong>parse、保存、用户列表、详情</li>
+                <li><strong>分析：</strong>创建、详情、列表</li>
+                <li><strong>求职信：</strong>生成、详情、PDF 下载</li>
+                <li>
+                  <strong>支付：</strong>checkout session、订阅状态、取消订阅
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="security" class="doc-section">
+            <h2>安全</h2>
+            <div class="article-body">
+              <ul>
+                <li>JWT；密码 bcrypt</li>
+                <li>Google OAuth 2.0</li>
+                <li>Stripe 支付链路</li>
+                <li>上传大小限制（如 10MB）、CORS、Helmet 等</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="contributing" class="doc-section">
+            <h2>贡献与许可</h2>
+            <div class="article-body">
+              <p>欢迎 PR；流程见 <code>CONTRIBUTING.md</code>。</p>
+              <p><strong>License：</strong>MIT。</p>
+              <p class="muted">
+                致谢与第三方服务列表见 GitHub README（OpenAI、Google
+                Gemini、Stripe、Vercel、Railway 等）。
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98/TalentSync" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://talentsync-green.vercel.app" target="_blank" rel="noopener noreferrer">Demo</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

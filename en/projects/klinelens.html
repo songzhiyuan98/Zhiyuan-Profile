@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="KLineLens: open-source K-line structure terminal for intraday and swing trading—multi-timeframe structure, auto S/R, breakout scoring, extended hours, 0DTE plan state machine, pluggable strategies."
+    />
+    <title>KLineLens · Open-source project documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">Projects</a>
+          <a href="../index.html#research">Research</a>
+          <a href="../index.html#writing">Notes</a>
+          <a class="lang-switch" href="../../projects/klinelens.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html">← Home</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Overview</a>
+            <a href="#value">Open-source positioning</a>
+            <a href="#why">Why KLineLens</a>
+            <a href="#features">Core features</a>
+            <a href="#odte">0DTE module</a>
+            <a href="#providers">Data providers</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#dataflow">Data flow &amp; cache</a>
+            <a href="#milestones">Milestones &amp; acceptance</a>
+            <a href="#strategies">Pluggable strategies</a>
+            <a href="#quickstart">Quick start</a>
+            <a href="#docs">Documentation index</a>
+            <a href="#contributing">Contributing</a>
+            <a href="#roadmap">Roadmap</a>
+            <a href="#license">License &amp; disclaimer</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">
+              Open source · Monorepo · Next.js + FastAPI · Python core · MIT · since 2026-01-13
+            </p>
+            <h1 class="article-title">KLineLens</h1>
+            <div class="article-body">
+              <p>
+                <strong>KLineLens</strong> is an open-source <strong>K-line structure terminal</strong> for <strong>intraday and swing</strong> trading: multi-timeframe market structure, automatic support/resistance, breakout quality scoring, pre/post-market context, plus a built-in <strong>0DTE options plan</strong> state machine and a <strong>pluggable strategy framework</strong>. Optional GPT-4 / Gemini narratives in English or Chinese.
+              </p>
+              <p>
+                Repository:
+                <a href="https://github.com/songzhiyuan98/KLineLens" target="_blank" rel="noopener noreferrer">github.com/songzhiyuan98/KLineLens</a>
+              </p>
+            </div>
+          </header>
+
+          <section id="value" class="doc-section">
+            <h2>Open-source positioning</h2>
+            <div class="article-body">
+              <p>
+                For traders and developers, KLineLens stresses <strong>data ownership</strong> and <strong>strategy extensibility</strong>.
+              </p>
+              <ul>
+                <li>
+                  <strong>Bring-your-own market data:</strong> switch Yahoo Finance, TwelveData, Alpaca, Alpha Vantage, etc. via environment variables; free tiers to start, paid keys when you need reliable volume—no single-vendor lock-in.
+                </li>
+                <li>
+                  <strong>Code your own strategies:</strong> implement modules against a unified strategy interface, register them, and they flow through the terminal UI and API; built-in playbooks and 0DTE are reference implementations—community can add strategies and providers (see
+                  <code>CUSTOM_STRATEGY.md</code>, <code>CONTRIBUTING.md</code>).
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="why" class="doc-section">
+            <h2>Why KLineLens</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>Full timeframe stack:</strong> 1m/5m intraday through 15m/1h/1d swing; trend / range / chop with confidence.</li>
+                <li>
+                  <strong>Built-in 0DTE:</strong> state-machine-driven same-day options plan at the <strong>underlying</strong> level—<strong>no options-chain quotes required</strong>.
+                </li>
+                <li><strong>Pluggable strategies:</strong> extend as modules on the same analysis + UI rails.</li>
+                <li>
+                  <strong>Breakout confirmation:</strong> three factors to reduce false breaks—close confirmation, RVOL ≥ 1.8, outcome vs ATR threshold (see engine spec).
+                </li>
+                <li><strong>Optional AI narrative:</strong> OpenAI / Google APIs for bilingual commentary.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="features" class="doc-section">
+            <h2>Core features (summary)</h2>
+            <div class="article-body">
+              <h3>Market structure</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Capability</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Trend Detection</td>
+                    <td>Up / down / range + confidence</td>
+                  </tr>
+                  <tr>
+                    <td>Auto S/R Zones</td>
+                    <td>ATR-based support/resistance with strength</td>
+                  </tr>
+                  <tr>
+                    <td>Breakout Quality</td>
+                    <td>Multi-factor breakout scoring</td>
+                  </tr>
+                  <tr>
+                    <td>Behavior Inference</td>
+                    <td>Wyckoff-style: accumulation, distribution, markup probabilities with evidence</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Extended hours</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Capability</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Premarket Regime</td>
+                    <td>Gap &amp; Go, fill-the-gap, trend continuation, range day, etc.</td>
+                  </tr>
+                  <tr>
+                    <td>Key Levels</td>
+                    <td>Prior close (YC), premarket high/low (PMH/PML), etc.</td>
+                  </tr>
+                  <tr>
+                    <td>Session Awareness</td>
+                    <td>Adjust analysis context by session</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>Languages</h3>
+              <p>Full Chinese UI and AI commentary; English UI and commentary; extend via i18n.</p>
+            </div>
+          </section>
+
+          <section id="odte" class="doc-section">
+            <h2>0DTE strategy module (state machine)</h2>
+            <div class="article-body">
+              <p>Same-day ultra short-dated options planning driven by a state machine; typical path:</p>
+              <pre class="doc-pre">WAIT → WATCH → ARMED → ENTER → HOLD → TRIM → EXIT</pre>
+              <p>Output is an <strong>underlying-level</strong> plan (prices, targets, stops, phases)—usable in MVP without live options-chain feeds.</p>
+            </div>
+          </section>
+
+          <section id="providers" class="doc-section">
+            <h2>Hot-swappable data providers</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Provider</th>
+                    <th>Free tier</th>
+                    <th>Volume</th>
+                    <th>Setup</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Yahoo Finance</td>
+                    <td>Relaxed</td>
+                    <td>Partial / inconsistent</td>
+                    <td>Often no API key</td>
+                  </tr>
+                  <tr>
+                    <td>TwelveData</td>
+                    <td>~800 calls/day</td>
+                    <td>More reliable</td>
+                    <td>Free API key</td>
+                  </tr>
+                  <tr>
+                    <td>Alpaca</td>
+                    <td>Generous quotas</td>
+                    <td>Full</td>
+                    <td>Free key</td>
+                  </tr>
+                  <tr>
+                    <td>Alpha Vantage</td>
+                    <td>~25 calls/day</td>
+                    <td>Full</td>
+                    <td>Free key</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="muted">Suggestion: prove the loop on Yahoo, then switch to TwelveData or similar for better volume-sensitive metrics.</p>
+            </div>
+          </section>
+
+          <section id="architecture" class="doc-section">
+            <h2>System architecture</h2>
+            <div class="article-body">
+              <p>MVP uses <strong>monorepo + three tiers</strong>: Web (Next.js) ↔ API (FastAPI) ↔ Core (pure Python analytics package).</p>
+              <pre class="doc-pre">┌─────────────────────────────────────────────┐
+│              Next.js Frontend                │
+│  Chart · Zones · Strategy · Timeline · AI  │
+│  i18n · Settings · Watchlist                 │
+└────────────────────┬────────────────────────┘
+                     │ REST API + SSE
+┌────────────────────▼────────────────────────┐
+│              FastAPI Backend                │
+│  Analysis Engine (Pure Python call)        │
+│  Strategy Layer: Playbook | 0DTE | Custom   │
+│  Provider Layer: Yahoo | TwelveData | …    │
+└─────────────────────────────────────────────┘</pre>
+              <h3>Directory layout (summary)</h3>
+              <pre class="doc-pre">KLineLens/
+├── apps/web/          # Next.js
+├── apps/api/          # FastAPI: routes / providers / cache
+├── packages/core/     # Pure Python: features, structure, behavior, …
+├── docs/
+├── infra/             # Docker, etc.
+├── MASTER_SPEC.md
+└── README.md</pre>
+            </div>
+          </section>
+
+          <section id="dataflow" class="doc-section">
+            <h2>Data flow, cache, and state (MVP)</h2>
+            <div class="article-body">
+              <h3>Typical detail-page requests</h3>
+              <ol>
+                <li><code>GET /v1/bars</code>: TTL cache hit skips downstream; miss pulls bars from the provider.</li>
+                <li><code>POST /v1/analyze</code>: Core <code>analyze()</code> returns structure/behavior/timeline/playbook reports for the UI panels.</li>
+              </ol>
+              <h3>Auto refresh</h3>
+              <p>Frontend re-issues <code>POST /analyze</code> about every 60s; bars may be cached while timeline state compares successive reports server-side to decide whether to emit events.</p>
+              <h3>Storage notes (from architecture doc)</h3>
+              <ul>
+                <li>Bars: in-process TTL cache in the API (e.g. 60s).</li>
+                <li>Timeline state: MVP in-memory dict (lost on restart); future Redis/DB.</li>
+                <li>Signal evaluations: persisted to <code>apps/api/data/klinelens.db</code> SQLite.</li>
+                <li>Frontend evidence/timeline: localStorage keyed by trading day.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="milestones" class="doc-section">
+            <h2>Milestones &amp; MVP acceptance</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Phase</th>
+                    <th>Contents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>M0</td>
+                    <td>Repo bootstrap, web/api/core skeleton, environment wiring</td>
+                  </tr>
+                  <tr>
+                    <td>M1</td>
+                    <td>Providers, GET /v1/bars, caching and error handling</td>
+                  </tr>
+                  <tr>
+                    <td>M2</td>
+                    <td>Swing, zones, regime, breakout state machine</td>
+                  </tr>
+                  <tr>
+                    <td>M3</td>
+                    <td>Behavior probabilities, evidence bundles, stateful timeline, playbook templates</td>
+                  </tr>
+                  <tr>
+                    <td>M4</td>
+                    <td>Terminal UI, big search to <code>/t/{ticker}</code>, language setting, 60s refresh</td>
+                  </tr>
+                  <tr>
+                    <td>M5</td>
+                    <td>Extended-hours context, 0DTE module, strategy type picker (Playbook / 0DTE)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3>MVP acceptance checklist</h3>
+              <ul>
+                <li>Home ticker search navigates to the detail page.</li>
+                <li>1m candles with zones/signals visible.</li>
+                <li>Behavior probabilities, evidence, timeline, playbook panels visible.</li>
+                <li>Language setting applies globally.</li>
+                <li><code>docker compose up</code> brings up a working stack.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="strategies" class="doc-section">
+            <h2>Pluggable strategies &amp; extensions</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Strategy type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Playbook</td>
+                    <td>Structure-conditioned entries, targets, stops, R:R</td>
+                  </tr>
+                  <tr>
+                    <td>0DTE</td>
+                    <td>Same-day state-machine plan</td>
+                  </tr>
+                  <tr>
+                    <td>Custom</td>
+                    <td>Subclass BaseStrategy, implement <code>analyze(snapshot) → StrategySignal</code>, register in settings to appear in UI</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>
+                Interfaces, state-machine patterns, frontend wiring, and tests live in
+                <code>CUSTOM_STRATEGY.md</code> and <code>ENGINE_SPEC.md</code>.
+              </p>
+            </div>
+          </section>
+
+          <section id="quickstart" class="doc-section">
+            <h2>Quick start (Docker)</h2>
+            <div class="article-body">
+              <p>Prereq: <strong>Docker Desktop</strong> installed and running.</p>
+              <pre class="doc-pre">git clone https://github.com/songzhiyuan98/KLineLens.git
+cd KLineLens
+cp .env.example .env
+# Edit .env: PROVIDER, API keys, CACHE_TTL, API_PORT, WEB_PORT, etc.
+
+docker compose up -d --build
+docker compose ps</pre>
+              <p>Open <code>http://localhost:3000</code> and enter a ticker (e.g. TSLA, QQQ, SPY).</p>
+              <pre class="doc-pre">docker compose down          # stop
+git pull && docker compose up -d --build   # update</pre>
+              <h3>Local dev (no Docker)</h3>
+              <pre class="doc-pre"># Terminal 1
+cd apps/api && pip install -r requirements.txt
+uvicorn src.main:app --reload --port 8000
+
+# Terminal 2
+cd apps/web && npm install && npm run dev</pre>
+              <p>Environment variables: <code>docs/CONFIG.md</code>; deployment: <code>docs/DEPLOYMENT.md</code>.</p>
+            </div>
+          </section>
+
+          <section id="docs" class="doc-section">
+            <h2>Documentation index (in repo)</h2>
+            <div class="article-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Document</th>
+                    <th>Contents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>ENGINE_SPEC.md</code></td>
+                    <td>Core algorithms</td>
+                  </tr>
+                  <tr>
+                    <td><code>CUSTOM_STRATEGY.md</code></td>
+                    <td>Custom strategy development</td>
+                  </tr>
+                  <tr>
+                    <td><code>API.md</code></td>
+                    <td>REST API</td>
+                  </tr>
+                  <tr>
+                    <td><code>PROVIDER.md</code></td>
+                    <td>Adding data providers</td>
+                  </tr>
+                  <tr>
+                    <td><code>LLM_SPEC.md</code></td>
+                    <td>AI integration</td>
+                  </tr>
+                  <tr>
+                    <td><code>SIM_TRADER_SPEC.md</code></td>
+                    <td>0DTE state-machine specification</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="contributing" class="doc-section">
+            <h2>Contributing</h2>
+            <div class="article-body">
+              <p>PRs welcome: bugs, features, providers, docs, tests, UI, <strong>custom strategies</strong>. Check Issues first; open a discussion issue for large changes.</p>
+              <ul>
+                <li>Branches: <code>feature/…</code>, <code>fix/…</code>, <code>docs/…</code></li>
+                <li>Commits: Conventional Commits (<code>feat:</code>, <code>fix:</code>, etc.)</li>
+                <li>New provider: implement <code>MarketDataProvider</code>, register factory, update <code>.env.example</code> and <code>docs/PROVIDER.md</code>, add tests</li>
+                <li>Standards: Python type hints + docstrings; explicit TS types; avoid magic numbers; solid errors and tests</li>
+              </ul>
+              <p>Full guide: <code>CONTRIBUTING.md</code> and <code>CLAUDE.md</code>.</p>
+            </div>
+          </section>
+
+          <section id="roadmap" class="doc-section">
+            <h2>Roadmap (public)</h2>
+            <div class="article-body">
+              <ul>
+                <li>v0.8 — Extended hours, 0DTE, custom strategies</li>
+                <li>v0.7 — Responsive layout, multilingual</li>
+                <li>v0.6 — Terminal-style UI, AI commentary</li>
+                <li>v1.0 — WebSocket streaming, signal backtests</li>
+                <li>v1.1 — Dark mode, mobile</li>
+                <li>v2.0 — Multi-timeframe linkage, options chain integration</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="license" class="doc-section">
+            <h2>License &amp; disclaimer</h2>
+            <div class="article-body">
+              <p><strong>License:</strong> MIT—personal or commercial use allowed; retain license notices.</p>
+              <blockquote>
+                <p style="margin: 0">
+                  For education and information only. The tool applies technical analysis to price/volume data and <strong>is not investment advice</strong>. Past performance does not guarantee future results. Do your own research and accept trading risk.
+                </p>
+              </blockquote>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href="../index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98/KLineLens" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>
