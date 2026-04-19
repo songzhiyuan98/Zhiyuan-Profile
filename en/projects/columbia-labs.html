@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Columbia LABS overview: MEDICINE subpage (peer review, UX, traffic visibility, download control); June 2025 Sleep Chart; 2026 TeaChart, AI4Women, Guidebook."
+    />
+    <title>Columbia LABS · Internship &amp; delivery · Overview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="/en/index.html#work">Projects</a>
+          <a href="/en/index.html#lab-recent">Recent work</a>
+          <a href="/en/index.html#research">Research</a>
+          <a href="/en/index.html#writing">Notes</a>
+          <a class="lang-switch" href="/projects/columbia-labs.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="/en/index.html#lab-recent">← Home · Recent work</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Columbia LABS sections">
+        <a class="doc-version-switch__btn is-active" href="/en/projects/columbia-labs.html">Overview</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-medicine.html">MEDICINE</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-sleepchart-portal.html">Sleep Chart</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-teachart.html">TeaChart</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-ai4women.html">AI4Women</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-guidebook.html">Guidebook</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Positioning</a>
+            <a href="#streams">Workstreams (chronological)</a>
+            <a href="#timeline">Timeline</a>
+            <a href="#live-links">Live URLs</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Columbia LABS · 2025–2026 · Engineering notes · Not a paper</p>
+            <h1 class="article-title">LABS web: internship and platform delivery</h1>
+            <div class="article-body">
+              <p>
+                My engineering delivery and upkeep on the public Columbia <strong>LABS</strong> portal—in plain terms, <strong>shipping the web pieces the lab needs for peer review and publication</strong>.
+                <strong>MEDICINE</strong> (through ~<strong>Jan 2025</strong>): home/index, interaction, visitor traffic visibility, and download control are on the
+                <a href="/en/projects/columbia-labs-medicine.html">MEDICINE subpage</a>.
+                <strong>MUTATE</strong>: no separate page here; only this overview and the live URLs below.
+                <strong>June 2025</strong>: first <strong>Sleep Chart</strong> build.
+                <strong>2026</strong>: <strong>Feb</strong> <strong>AI4Women</strong>, <strong>Mar</strong> <strong>TeaChart</strong>, <strong>Apr</strong> onward <strong>Guidebook</strong> plus follow-on <strong>Sleep Chart</strong> work.
+                The next section lists workstreams by track; exact months sit in the timeline. Subpages expand the story; <strong>no credentials or private paths.</strong>
+              </p>
+            </div>
+          </header>
+
+          <section id="streams" class="doc-section">
+            <h2>Workstreams (chronological)</h2>
+            <p class="article-meta">Order: MEDICINE (<a href="/en/projects/columbia-labs-medicine.html">subpage</a>) / MUTATE → Sleep Chart → TeaChart → AI4Women → Guidebook. MUTATE stays on this overview + live URLs only.</p>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <a href="/en/projects/columbia-labs-medicine.html"><strong>MEDICINE portal</strong></a> (through ~<strong>Jan 2025</strong>) — <strong>peer-review–oriented</strong> interaction/IA, visitor/traffic visibility (“visitor map”), and <strong>download control</strong> (security, privacy, availability, access policy), wired to public result surfaces such as GWAS summary-statistics views. See subpage. <strong>MUTATE</strong>: home/index and alignment with <strong>Portals</strong> and sibling nav/chrome (no subpage here—overview and “Public URLs” below).
+                </li>
+                <li>
+                  <a href="/en/projects/columbia-labs-sleepchart-portal.html"><strong>Sleep Chart portal (first build)</strong></a>
+                  (<strong>June 2025</strong>) — subsite + GWAS page, asset handoff after tooling change, temporary navbar hide, PR and
+                  <code>research.html</code> merge conflicts.
+                </li>
+                <li>
+                  <a href="/en/projects/columbia-labs-teachart.html"><strong>TeaChart portal</strong></a>
+                  (<strong>Mar 2026</strong>) — portal shell similar in spirit to
+                  Sleep Chart; GAM/multi-omic modules (BAG, proteomics, metabolomics, IDPs) rolled in as files landed; purple chrome aligned
+                  with sibling portals such as MUTATE.
+                </li>
+                <li>
+                  <a href="/en/projects/columbia-labs-ai4women.html"><strong>AI4Women landing page</strong></a>
+                  (<strong>Feb 2026</strong>) — single-page stats showcase;
+                  distinct IA/visuals emphasizing women in AI; initially kept off the main Portal entry per PI; mobile and PR cadence on subpage.
+                </li>
+                <li>
+                  <a href="/en/projects/columbia-labs-guidebook.html"><strong>Guidebook &amp; access</strong></a>
+                  (<strong>Apr 2026</strong>) — invite-based signup, admin
+                  review, Firebase + Netlify; peer-review workflows; later Sleep Chart <strong>GWAS download</strong> maintenance (distinct from the 2025 first build).
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="timeline" class="doc-section">
+            <h2>Timeline (high level)</h2>
+            <div class="article-body">
+              <ul>
+                <li><strong>~Jan 2025:</strong> MEDICINE-side upkeep concludes (see <a href="/en/projects/columbia-labs-medicine.html">MEDICINE subpage</a>); MUTATE timing not split out on this page.</li>
+                <li><strong>June 2025:</strong> First Sleep Chart subsite and GWAS page (see Sleep Chart subpage).</li>
+                <li><strong>Feb 2026:</strong> AI4Women page from briefs to PR and PI polish.</li>
+                <li><strong>Mar 2026:</strong> TeaChart portal build-out as GWAS/omics tables arrived.</li>
+                <li><strong>Apr 2026:</strong> Guidebook access; Sleep Chart portal maintenance such as GWAS downloads (see Guidebook page).</li>
+              </ul>
+              <p>Details and resume bullets live on each subpage.</p>
+            </div>
+          </section>
+
+          <section id="live-links" class="doc-section">
+            <h2>Public URLs (LABS production)</h2>
+            <div class="article-body">
+              <p>Public links to LABS surfaces I helped ship or maintain (content may change on the PI side):</p>
+              <ul>
+                <li>
+                  <strong>LABS home:</strong>
+                  <a href="https://labs-laboratory.com" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com</a>
+                </li>
+                <li>
+                  <strong>AI4WOMEN:</strong>
+                  <a href="https://labs-laboratory.com/ai4women/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/ai4women/</a>
+                </li>
+                <li>
+                  <strong>TeaChart:</strong>
+                  <a href="https://labs-laboratory.com/teachart/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/teachart/</a>
+                </li>
+                <li>
+                  <strong>Guidebook:</strong>
+                  <a href="https://labs-laboratory.com/guidebook/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/guidebook/</a>
+                </li>
+                <li>
+                  <strong>MEDICINE (multi-organ portal):</strong>
+                  <a href="https://labs-laboratory.com/medicine/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/medicine/</a>
+                  <br />
+                  <span class="article-meta">Example trait page (public GWAS / summary-statistics UI served alongside download/access policies):</span>
+                  <a
+                    href="https://labs-laboratory.com/medicine/lv_cardiac_output_f24104_2_0"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >https://labs-laboratory.com/medicine/lv_cardiac_output_f24104_2_0</a>
+                </li>
+                <li>
+                  <strong>MUTATE:</strong>
+                  <a href="https://labs-laboratory.com/mutate/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/mutate/</a>
+                </li>
+                <li>
+                  <strong>Sleep Chart:</strong>
+                  <a href="https://labs-laboratory.com/sleepchart/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/sleepchart/</a>
+                </li>
+                <li>
+                  <strong>Site-wide visitor stats component:</strong>
+                  <a
+                    href="https://labs-laboratory.com/component/visitor-stats.html?pageId=%2F"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >https://labs-laboratory.com/component/visitor-stats.html?pageId=%2F</a>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a href="/en/index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

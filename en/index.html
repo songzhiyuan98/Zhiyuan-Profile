@@ -11,7 +11,6 @@
       href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <!-- 根路径 / 经 Vercel rewrite 指向本页时，样式用站点绝对路径，避免相对路径解析到错误目录 -->
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
@@ -20,8 +19,10 @@
         <a class="site-top__name" href="/en/index.html">Zhiyuan Song</a>
         <div class="site-top__links">
           <a href="/en/index.html#work">Projects</a>
+          <a href="/en/index.html#lab-recent">Recent work</a>
           <a href="/en/index.html#research">Research</a>
           <a href="/en/index.html#writing">Notes</a>
+          <a href="/en/index.html#work-archive">Earlier</a>
           <a class="lang-switch" href="/index.html" hreflang="zh-Hans">中文</a>
           <a class="btn-dark" href="mailto:songzhiyuan98@gmail.com">Contact</a>
         </div>
@@ -31,7 +32,7 @@
     <section class="hero">
       <h1>Zhiyuan Song</h1>
       <p class="hero__sub">
-        Recent work, progress, research, and reflections from notes—collected here.
+        Personal projects, work, collaborations, research, and notes—collected here.
       </p>
     </section>
 
@@ -39,113 +40,69 @@
 
     <section class="section" id="work">
       <div class="section__head">
-        <h2>Projects</h2>
-        <span class="section__kicker">Projects</span>
+        <h2>Recent projects</h2>
+        <span class="section__kicker">Last calendar year</span>
       </div>
+      <p class="section__lede">Personal builds from the latest full calendar year. Older entries are at the bottom under “Earlier projects.”</p>
       <div class="section__year-group">
         <h3 class="section__year-label" id="work-2026">2026</h3>
         <div class="card-grid">
+          <a class="card" href="/en/projects/redistricting-news-harvester.html">
+            <span class="card__kicker">Claude Code · Economics of education · 2026-04</span>
+            <h3>Redistricting News Harvester</h3>
+            <p>Economics PhD collab: redistricting news URLs into research CSV; orchestrator + subagents, query matrix, resumable JSONL. Highlights and specs on project page; USC group adoption.</p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
           <a class="card" href="/en/projects/investment-skill-architecture-v3.html">
             <span class="card__kicker">Skill · Multi-agent · v3 · In testing</span>
             <h3>Investment Skill Architecture</h3>
-            <p>
-              A decision-support Skill for a personal common-stock book: <strong>implemented</strong> and in
-              <strong>day-to-day testing</strong>. v3 folds the chief advisor into the main process, pairs Market Context with eight
-              on-disk ticker briefs, adds a silent yfinance data path, and keeps Quick/Focused/Full output contracts. The linked page is a
-              condensed architecture spec, not financial advice.
-            </p>
+            <p>Decision-support Skill for a personal stock book: v3 main process, tickers, and market context; on-site doc is a spec, not advice.</p>
             <span class="card__cta">Read project docs →</span>
           </a>
           <a class="card" href="/en/projects/tsla-options-war-room.html">
             <span class="card__kicker">Skill · Options · 2026-04</span>
             <h3>TSLA Options War Room</h3>
-            <p>
-              Claude Code Skill for short-dated TSLA options: local quote snapshots and trade logs,
-              committee-style multi-agent review with a single user-facing voice. Rules for DTE,
-              timeframe, and position discipline (incl. QQQ context).
-            </p>
+            <p>Short-dated TSLA options Skill: local snapshots, trade logs, committee-style review, one user-facing voice.</p>
             <span class="card__cta">Read project docs →</span>
           </a>
           <a class="card" href="/en/projects/vpct-vpip-controller.html">
             <span class="card__kicker">iOS · SwiftUI · 2026 · App Store in review</span>
             <h3>VPCT – VPIP Controller</h3>
-            <p>
-              iOS poker companion: live VPIP / tilt, layered detectors, and a “cooldown only on danger”
-              policy. SwiftUI + SwiftData; guests can start sessions; signed-in users sync stats and
-              career data.
-            </p>
+            <p>iOS poker companion: VPIP/tilt, layered detectors, cooldown policy; SwiftUI + SwiftData.</p>
             <span class="card__cta">Read project docs →</span>
           </a>
           <a class="card" href="/en/projects/klinelens.html">
             <span class="card__kicker">Open source · Docker · since 2026-01</span>
             <h3>KLineLens</h3>
-            <p>
-              Open-source K-line structure terminal: multi-timeframe market structure, pluggable data
-              sources and strategies, built-in 0DTE state machine. MIT; Next.js + FastAPI + Python
-              core; self-host with Docker.
-            </p>
+            <p>K-line structure terminal: multi-timeframe, pluggable data, 0DTE state machine; Next.js + FastAPI, Docker.</p>
             <span class="card__cta">Read project docs →</span>
           </a>
           <a class="card" href="/en/projects/novel-studio.html">
             <span class="card__kicker">Multi-agent · MVP · hybrid RAG · 2026-01</span>
             <h3>Novel Studio</h3>
-            <p>
-              Multi-agent desk for serialized fiction: deterministic orchestration, multi-model workers,
-              canon and blueprint loop. Hybrid RAG: MVP centers L0 scene cards; L1 semantic retrieval
-              stacks after gates pass.
-            </p>
+            <p>Serialized-fiction multi-agent desk: orchestration, workers, canon loop; hybrid RAG gated by scene cards.</p>
             <span class="card__cta">Read project docs →</span>
           </a>
         </div>
       </div>
-      <div class="section__year-group">
-        <h3 class="section__year-label" id="work-2025">2025</h3>
-        <div class="card-grid">
-          <a class="card" href="/en/projects/study-assistant.html">
-            <span class="card__kicker">Monorepo · Next.js · pgvector · 2025-09</span>
-            <h3>AI Study Assistant</h3>
-            <p>
-              Textbook-oriented monorepo: document parsing and chunking, pgvector semantic retrieval,
-              OpenAI summaries and flashcards. Fastify API + BullMQ workers; mock exams and audit
-              roadmap, MIT.
-            </p>
-            <span class="card__cta">Read project docs →</span>
-          </a>
-          <a class="card" href="/en/projects/talentsync.html">
-            <span class="card__kicker">Fullstack · AI application · 2025-03</span>
-            <h3>TalentSync</h3>
-            <p>
-              Full-stack AI job flow: resume–JD matching, cover letters and PDFs, roles and application
-              status. React + Express + MongoDB; Stripe subscriptions and Google OAuth; main path runnable
-              online.
-            </p>
-            <span class="card__cta">Read project docs →</span>
-          </a>
-          <a class="card" href="/en/projects/personal-website-template.html">
-            <span class="card__kicker">Next.js · Portfolio · MIT · 2025-01</span>
-            <h3>Portfolio Website Template</h3>
-            <p>
-              Next.js open portfolio template: job seeker and scholar variants, modular blocks, skill
-              icons and timelines. TypeScript + Tailwind, MIT, Vercel deploy; repo maintained in public.
-            </p>
-            <span class="card__cta">Read project docs →</span>
-          </a>
-        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="lab-recent">
+      <div class="section__head">
+        <h2>Recent work</h2>
+        <span class="section__kicker">Recent lab work</span>
       </div>
-      <div class="section__year-group">
-        <h3 class="section__year-label" id="work-2024">2024</h3>
-        <div class="card-grid">
-          <a class="card" href="/en/projects/animehub.html">
-            <span class="card__kicker">React · Express · MongoDB · 2024</span>
-            <h3>AnimeHub</h3>
-            <p>
-              First full-stack anime community: Jikan fetch and cache, ratings and comments, rich-text
-              posts and tags, Socket notifications and profile. React 18 + Redux + MUI; Express +
-              MongoDB + JWT, MIT.
-            </p>
-            <span class="card__cta">Read project docs →</span>
-          </a>
-        </div>
+      <div class="card-grid">
+        <article class="card">
+          <span class="card__kicker">Columbia LABS · Site · Internship · 2025–2026</span>
+          <h3><a class="card__heading-link" href="/en/projects/columbia-labs.html">Columbia LABS internship work</a></h3>
+          <p>
+            Recent engineering on the Columbia LABS public site: MEDICINE wrap-up, MUTATE, Sleep Chart, TeaChart, AI4Women, Guidebook as milestones (<a href="/en/projects/columbia-labs-medicine.html">MEDICINE note</a>). Overview and timeline in the docs.
+          </p>
+          <a class="card__cta" href="/en/projects/columbia-labs.html">Open overview →</a>
+        </article>
       </div>
     </section>
 
@@ -160,20 +117,13 @@
         <a class="card" href="/en/projects/research-sleep-charts.html">
           <span class="card__kicker">Accepted at Nature · Preprint Aug 2025</span>
           <h3>Sleep chart · multi-organ aging clocks</h3>
-          <p>
-            UK Biobank / MULTI: sleep vs 23 organ–omics aging clocks, genetics, survival, LLD pathways;
-            Sleep Chart portal and PMC full text.
-          </p>
+          <p>UK Biobank / MULTI: sleep vs organ–omics clocks, genetics, survival; charts and full text on the summary page.</p>
           <span class="card__cta">Read summary →</span>
         </a>
         <a class="card" href="/en/projects/research-mribag.html">
           <span class="card__kicker">Nature Medicine · Open access · Oct 2025</span>
           <h3>MRI multi-organ biological age (MRIBAG)</h3>
-          <p>
-            Seven MRI organ age gaps: proteomics, metabolomics, GWAS, druggable targets, disease and
-            mortality risk, and A4 cognition stratification; full text via Nature Medicine open-access
-            link.
-          </p>
+          <p>MRI organ age gaps, omics, GWAS, risk, A4 cognition; full text via Nature Medicine OA.</p>
           <span class="card__cta">Read summary →</span>
         </a>
         <div class="card card--placeholder">
@@ -195,17 +145,56 @@
         <a class="card" href="/en/projects/writing-agent-skill-constraints.html">
           <span class="card__kicker">Agent · Skill · Engineering · 2026-04</span>
           <h3>Agent skills: constraints over scripted workflows</h3>
-          <p>
-            Prefer shaping <strong>agent skills</strong> with <strong>constraints and boundaries</strong>
-            (safety, tool permissions, output shape, when to stop) over hard-coding prescribed paths and
-            workflows, which tend to fail when real requests diverge.
-          </p>
+          <p>Prefer constraints over hard-coded workflows when shaping agent skills.</p>
           <span class="card__cta">Read full article →</span>
         </a>
         <div class="card card--placeholder">
           <span class="card__kicker">Placeholder</span>
           <h3>Next note</h3>
           <p>More posts will follow here.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="work-archive">
+      <div class="section__head">
+        <h2>Earlier projects</h2>
+        <span class="section__kicker">Archive</span>
+      </div>
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2025">2025</h3>
+        <div class="card-grid">
+          <a class="card" href="/en/projects/study-assistant.html">
+            <span class="card__kicker">Monorepo · Next.js · pgvector · 2025-09</span>
+            <h3>AI Study Assistant</h3>
+            <p>Textbook monorepo: chunking, pgvector retrieval, OpenAI summaries and flashcards; Fastify + BullMQ.</p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+          <a class="card" href="/en/projects/talentsync.html">
+            <span class="card__kicker">Fullstack · AI application · 2025-03</span>
+            <h3>TalentSync</h3>
+            <p>AI job flow: resume–JD match, cover letters, application status; React + Express + MongoDB.</p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+          <a class="card" href="/en/projects/personal-website-template.html">
+            <span class="card__kicker">Next.js · Portfolio · MIT · 2025-01</span>
+            <h3>Portfolio Website Template</h3>
+            <p>Open Next.js portfolio variants; TypeScript + Tailwind, Vercel deploy.</p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
+        </div>
+      </div>
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2024">2024</h3>
+        <div class="card-grid">
+          <a class="card" href="/en/projects/animehub.html">
+            <span class="card__kicker">React · Express · MongoDB · 2024</span>
+            <h3>AnimeHub</h3>
+            <p>First full-stack anime community: Jikan, ratings, posts, sockets; React + Express + MongoDB.</p>
+            <span class="card__cta">Read project docs →</span>
+          </a>
         </div>
       </div>
     </section>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Redistricting News Harvester: Claude Code orchestrator, parallel subagents, query matrix, JSONL resume, wide CSV with English metadata; USC lab adoption."
+    />
+    <title>Redistricting News Harvester · Project</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="/en/index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="/en/index.html#work">Projects</a>
+          <a href="/en/index.html#lab-recent">Recent work</a>
+          <a href="/en/index.html#research">Research</a>
+          <a href="/en/index.html#writing">Notes</a>
+          <a class="lang-switch" href="/projects/redistricting-news-harvester.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="/en/index.html#work">← Home · Projects</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Context</a>
+            <a href="#highlights">Highlights</a>
+            <a href="#details">Technical details</a>
+            <a href="#architecture">Architecture &amp; phases</a>
+            <a href="#deliverable">Deliverable &amp; roles</a>
+            <a href="#adoption">Adoption</a>
+            <a href="#resume">Resume bullets</a>
+            <a href="#note">Note</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Claude Code · economics of education · Apr 2026</p>
+            <h1 class="article-title">Redistricting News Harvester</h1>
+            <p class="article-meta" style="margin-bottom: 14px">News URL harvest for school-district redistricting events → research CSV (collaboration)</p>
+            <div class="article-body">
+              <p>
+                Built around April 2026 with a PhD student in the economics of education: a <strong>resumable</strong> pipeline that, for U.S.
+                K–12 districts, collects <strong>public news URLs and basic metadata</strong> on redistricting, attendance-zone, and related
+                events (no full-article scrape, no policy evaluation) and merges them into their event table for empirical work. Logic lives
+                mainly in Markdown prompts; Python stdlib handles JSONL merge and CSV pivot. Inside Claude Code, an <strong>orchestrator</strong>
+                session dispatches <strong>per–cache-key subagents</strong> for batched web search and structured JSON output.
+              </p>
+            </div>
+          </header>
+
+          <section id="highlights" class="doc-section">
+            <h2>Highlights</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <strong>Research-shaped I/O:</strong> input is a poolable events table (NCES district id, LEA name, state, event year, event
+                  type, …); output is a wide, analysis-ready CSV with <strong>one row per accepted article</strong>, not a loose bag of links.
+                </li>
+                <li>
+                  <strong>Cost / redundancy control:</strong> Web search runs once per <code>(district, event_year)</code> cache key; multiple
+                  E/M/H rows share the same link set.
+                </li>
+                <li>
+                  <strong>Resumable batching:</strong> append-only JSONL, completed-key log, progress log; optional partial merge on
+                  interrupt—suited to long Claude Code sessions and multi-day runs.
+                </li>
+                <li>
+                  <strong>Rules in prompts:</strong> query matrix, filter pipeline, stop conditions, and HARD RULES live in
+                  <code>prompts/subagent.md</code> to curb satisficing (e.g. stopping before all base queries run).
+                </li>
+                <li>
+                  <strong>English downstream fields:</strong> per link: publisher <code>source</code>, title, date, one-sentence English
+                  <code>coverage_summary</code>—easy for mixed-language teams and manuscripts.
+                </li>
+                <li>
+                  <strong>Adoption:</strong> after pilot use, the collaborator rolled the same workflow out to their USC research group for
+                  similar harvest-to-CSV tasks with strong feedback.
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="details" class="doc-section">
+            <h2>Technical details</h2>
+            <div class="article-body">
+              <h3>Scale &amp; inputs</h3>
+              <p>
+                Typical input CSV: on the order of <strong>652</strong> event rows and <strong>31</strong> columns;
+                <code>district</code> (NCES LEA id) + <code>event_year</code> form the cache key—about <strong>485</strong> unique keys (duplicate
+                rows for E/M/H levels, etc.). Search consumes cleaned <code>lea_name</code>, <code>state_location</code>, <code>event_type</code>
+                (e.g. fixed vs opening); other research columns pass through to the output.
+              </p>
+              <h3>Output shape</h3>
+              <p>
+                Final table: <strong>one row per accepted article</strong>—all original columns preserved in order, plus event-level fields
+                (e.g. <code>link_count</code>, <code>stop_reason</code>, incomplete / uncertain-date flags) and article-level fields
+                (<code>article_index</code>, <code>url</code>, <code>source</code>, <code>title</code>, <code>published_date</code>,
+                <code>source_query</code>, <code>coverage_summary</code>). Appended text fields are <strong>English</strong>. Zero-hit events
+                still produce one row with empty article fields. Authoritative column count (~<strong>42</strong>) is defined in the collaborator’s
+                <code>spec.md</code>.
+              </p>
+              <h3>Query matrix (summary)</h3>
+              <p>
+                For short name <code>D</code>, state <code>S</code>, year <code>Y</code>, type <code>T</code>, the subagent runs a fixed
+                sequence of web queries (redistricting, attendance zone, rezoning, school boundary change, …). When <code>T</code> indicates an
+                opening-style event, an extra “new school” query is included. After base queries, a small set of <strong>extension</strong>
+                queries may run only when intermediate link counts and marginal yield justify the long tail—exact gating is in spec.
+              </p>
+              <h3>Filter pipeline (summary)</h3>
+              <p>
+                URL normalize and dedupe across queries; <strong>keep published_date ≤ 2022-12-31</strong> to match the research window;
+                relevance requires district name plus boundary-related terms in title or snippet. Uncertain dates are counted, not silently
+                dropped. In batch mode, relevance is judged primarily from search titles/snippets to avoid per-URL full fetch.
+              </p>
+              <h3>Stop reasons &amp; quality bar</h3>
+              <p>
+                Subagents must emit a valid <code>stop_reason</code> from a small enumerated set. Design targets <strong>up to ~10</strong>
+                accepted links per key; <strong>4</strong> is a completeness floor, <strong>not</strong> an excuse to skip query types. HARD
+                RULES in the subagent prompt enforce “run the full base matrix” and forbid early stop on link count alone.
+              </p>
+              <h3>Artifacts &amp; scripts</h3>
+              <p>
+                Runtime writes <code>state/results.jsonl</code>, <code>state/completed_keys.txt</code>, <code>state/progress.log</code>; batch
+                steps may stage <code>state/partial/*.json</code> before merge. A stdlib Python script joins JSONL back to the source CSV for the
+                final wide file.
+              </p>
+            </div>
+          </section>
+
+          <section id="architecture" class="doc-section">
+            <h2>Architecture &amp; phases</h2>
+            <div class="article-body">
+              <p>
+                <strong>Orchestrator</strong> (main Claude Code session, entry: GUIDE): optional <strong>single-event test mode</strong>—one
+                synchronous subagent with a verbose trace for human sanity-check—then <strong>batch mode</strong>—skip completed keys, group by
+                cache key, dispatch parallel subagents per batch, append JSONL, merge partials, log progress, run CSV conversion at the end.
+              </p>
+              <p>
+                No separate “validator agent”: compliance is enforced via subagent HARD RULES and a strict JSON schema. CSV writing is
+                centralized after batch merge.
+              </p>
+            </div>
+          </section>
+
+          <section id="deliverable" class="doc-section">
+            <h2>Deliverable &amp; roles</h2>
+            <div class="article-body">
+              <p>
+                Self-contained tree: <code>GUIDE.md</code> (resume procedure), <code>spec.md</code>, <code>prompts/orchestrator.md</code>,
+                <code>prompts/subagent.md</code>, dispatch templates, <code>scripts/jsonl_to_csv.py</code> (+ merge helpers), sample inputs,
+                <code>state/</code> and <code>outputs/</code> conventions. Requires Claude Code + Python 3.9+.
+              </p>
+              <p>
+                My focus: <strong>prompt system &amp; HARD RULES</strong>, <strong>batch dispatch templates</strong>, cache-key dedupe
+                strategy, JSON/CSV contract alignment, and test→batch handoff. Collaborator owns research questions, event table, and domain
+                acceptance boundaries.
+              </p>
+            </div>
+          </section>
+
+          <section id="adoption" class="doc-section">
+            <h2>Adoption</h2>
+            <div class="article-body">
+              <p>
+                After validating on their project, the collaborator rolled the same workflow out to their USC research group; members reuse
+                it for similar harvest-to-CSV work with strong feedback. This page is a public capability summary—no private data paths or
+                undisclosed samples.
+              </p>
+            </div>
+          </section>
+
+          <section id="resume" class="doc-section">
+            <h2>Resume bullets</h2>
+            <div class="article-body">
+              <blockquote>
+                <p>
+                  Co-designed a Claude Code–driven research pipeline for an economics-of-education PhD project: an orchestrator dispatches parallel
+                  WebSearch subagents per (district, year) cache key with a fixed query matrix and filter pipeline; append-only JSONL state for
+                  resume; Python stdlib merges to a one-row-per-article CSV with English metadata and coverage summaries. Rolled out to the
+                  collaborator’s USC research group for similar harvest workflows.
+                </p>
+              </blockquote>
+              <p><strong>中文要点</strong></p>
+              <p>教育经济学合作、Claude Code 编排器与子代理、缓存键去重、JSONL 可续跑、查询矩阵与硬规则、英文摘要字段、USC 组内推广。</p>
+            </div>
+          </section>
+
+          <section id="note" class="doc-section">
+            <h2>Note</h2>
+            <div class="article-body">
+              <p>
+                Full code and data remain with the collaborator; no public repo link here. If the spec evolves, their <code>spec.md</code> is
+                authoritative.
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a href="/en/index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

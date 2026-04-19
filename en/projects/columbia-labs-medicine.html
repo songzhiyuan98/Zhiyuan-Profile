@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Columbia LABS MEDICINE multi-organ portal: peer-review–oriented UX/IA, visitor traffic visibility, download/access control; through ~Jan 2025."
+    />
+    <title>Columbia LABS · MEDICINE portal · Recent work</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="/en/index.html#work">Projects</a>
+          <a href="/en/index.html#lab-recent">Recent work</a>
+          <a href="/en/index.html#research">Research</a>
+          <a href="/en/index.html#writing">Notes</a>
+          <a class="lang-switch" href="/projects/columbia-labs-medicine.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="/en/projects/columbia-labs.html">← Columbia LABS overview</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Columbia LABS sections">
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs.html">Overview</a>
+        <a class="doc-version-switch__btn is-active" href="/en/projects/columbia-labs-medicine.html">MEDICINE</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-sleepchart-portal.html">Sleep Chart</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-teachart.html">TeaChart</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-ai4women.html">AI4Women</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-guidebook.html">Guidebook</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Positioning and peer review</a>
+            <a href="#hci">Interaction and IA</a>
+            <a href="#visitor">Traffic visibility</a>
+            <a href="#download">Download and access control</a>
+            <a href="#live">Live URLs</a>
+            <a href="#bullets">Resume bullets</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Columbia LABS · MEDICINE · Through ~Jan 2025</p>
+            <h1 class="article-title">MEDICINE portal: engineering for peer review</h1>
+            <div class="article-body">
+              <p>
+                <strong>MEDICINE</strong> is a public <strong>multi-organ knowledge portal</strong> on the Columbia <strong>LABS</strong> site. My
+                involvement on that track wound down around <strong>January 2025</strong>. Like the rest of this site’s LABS write-ups, the work
+                below is framed around <strong>supporting peer review and lab collaboration</strong>—helping reviewers and partners navigate
+                plots, summary statistics, and downloads on controlled paths—not consumer growth marketing.
+              </p>
+              <p>
+                Scope in one pass: <strong>human–computer interaction and information architecture</strong> for review workflows,
+                <strong>visitor / traffic “map”</strong>-style visibility, and a <strong>download control</strong> layer (security, privacy,
+                availability, access policy). <strong>No credentials or private implementation detail here.</strong>
+              </p>
+            </div>
+          </header>
+
+          <section id="hci" class="doc-section">
+            <h2>Interaction design and portal IA</h2>
+            <div class="article-body">
+              <p>
+                For <strong>peer review and internal QA</strong>, the portal needs predictable navigation across organs, traits, and omics
+                modules into result pages (e.g., GWAS summary statistics, QQ / Manhattan blocks). Chrome stays aligned with the main site’s
+                <strong>Portals</strong> entry and sibling subsites so reviewers moving between portals keep a consistent mental model.
+              </p>
+            </div>
+          </section>
+
+          <section id="visitor" class="doc-section">
+            <h2>Traffic visibility (“visitor map”)</h2>
+            <div class="article-body">
+              <p>
+                I helped ship <strong>site- and page-level traffic visibility</strong> so the team could see how public pages were read—where
+                “map” means <strong>charting traffic and page-level attention</strong> around review windows. The lab exposes a visitor-stats
+                component; a public example (PI-controlled) is:
+              </p>
+              <p>
+                <a href="https://labs-laboratory.com/component/visitor-stats.html?pageId=%2F" target="_blank" rel="noopener noreferrer"
+                  >https://labs-laboratory.com/component/visitor-stats.html?pageId=%2F</a
+                >
+              </p>
+            </div>
+          </section>
+
+          <section id="download" class="doc-section">
+            <h2>Download control system</h2>
+            <div class="article-body">
+              <p>
+                I designed and iterated the <strong>download &amp; access</strong> system: under <strong>security and privacy</strong>
+                constraints, manage <strong>availability</strong> and <strong>access control</strong> for research artifacts (e.g., summary
+                statistics) so review and collaboration happen within agreed boundaries, consistent with what result pages show. Governance
+                details stay with the lab; this page stays high level.
+              </p>
+              <p>
+                Example public <strong>result surface</strong> (trait page tied to the same download story):
+                <a href="https://labs-laboratory.com/medicine/lv_cardiac_output_f24104_2_0" target="_blank" rel="noopener noreferrer"
+                  >https://labs-laboratory.com/medicine/lv_cardiac_output_f24104_2_0</a
+                >
+              </p>
+            </div>
+          </section>
+
+          <section id="live" class="doc-section">
+            <h2>Live URLs</h2>
+            <div class="article-body">
+              <p>
+                <strong>MEDICINE portal:</strong>
+                <a href="https://labs-laboratory.com/medicine/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/medicine/</a>
+              </p>
+              <p>
+                <strong>MUTATE</strong> (sibling portal; see overview on this site):
+                <a href="https://labs-laboratory.com/mutate/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/mutate/</a>
+              </p>
+            </div>
+          </section>
+
+          <section id="bullets" class="doc-section">
+            <h2>Resume bullets</h2>
+            <div class="article-body">
+              <p><strong>English</strong></p>
+              <blockquote>
+                <p>
+                  Contributed to the MEDICINE multi-organ portal on the Columbia LABS site—HCI-style navigation and IA for peer-review
+                  workflows, visitor/traffic visibility, and a download/access control layer balancing security, privacy, and controlled
+                  availability of research outputs—aligned with lab peer-review cadence through ~Jan 2025.
+                </p>
+              </blockquote>
+              <p><strong>中文要点</strong></p>
+              <p>MEDICINE 门户、同行评审语境、人体交互系统、访问量地图、下载控制系统、约 2025-01 告一段落。</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a href="/en/index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

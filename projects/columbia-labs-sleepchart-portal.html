@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="2025-06 Columbia LABS：Sleep Chart 子站首版、GWAS 页与素材对接、导航临时隐藏策略、PR 与 research.html 冲突处理、部署路径。"
+    />
+    <title>Columbia LABS · Sleep Chart 门户（2025-06）· 近期工作</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#lab-recent">近期工作</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/columbia-labs-sleepchart-portal.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="/projects/columbia-labs.html">← Columbia LABS 总览</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Columbia LABS 文档分册">
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs.html">总览</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-medicine.html">MEDICINE</a>
+        <a class="doc-version-switch__btn is-active" href="/projects/columbia-labs-sleepchart-portal.html">Sleep Chart</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-teachart.html">TeaChart</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-ai4women.html">AI4Women</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-guidebook.html">Guidebook</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">背景</a>
+            <a href="#deliverables">交付内容</a>
+            <a href="#assets">协作与素材</a>
+            <a href="#launch">上线与导航策略</a>
+            <a href="#merge">合并与冲突</a>
+            <a href="#bullets">简历表述参考</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Columbia LABS · Sleep Chart · 2025-06</p>
+            <h1 class="article-title">Sleep Chart 子站：首版门户交付</h1>
+            <div class="article-body">
+              <p>
+                <strong>2025 年 6 月</strong>，在实验室主站迭代节奏下完成 <strong>Sleep Chart</strong> 子站/门户的<strong>首版可用交付</strong>：接好数据与页面结构、完成
+                <strong>GWAS</strong> 相关页面与展示链路，并在当日晚些时候与导师对齐「当晚收工 + 后续由导师投论文」的时间预期。这与后来在
+                <strong>2026 年</strong>做的 <strong>GWAS 下载能力修复</strong>、<strong>Guidebook</strong> 等条目<strong>分属不同阶段</strong>，在时间线上前后衔接但技术议题不完全相同。
+              </p>
+              <p>
+                <strong>线上站点（公开）：</strong>
+                <a href="https://labs-laboratory.com/sleepchart/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/sleepchart/</a>
+              </p>
+            </div>
+          </header>
+
+          <section id="deliverables" class="doc-section">
+            <h2>交付内容（摘要）</h2>
+            <div class="article-body">
+              <ul>
+                <li>门户整体接近收尾：在约定时间内把数据与页面串到「可评审」状态。</li>
+                <li><strong>GWAS</strong> 模块页面与导师验收（截屏/走查确认）。</li>
+                <li>部署后可经站点子路径访问 Sleep Chart（公开入口形态随主站托管方式调整，以根路径子站为主，而非强行依赖 <code>…/index.html</code> 的长 URL）。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="assets" class="doc-section">
+            <h2>协作与素材</h2>
+            <div class="article-body">
+              <p>
+                团队此前使用的内部协作渠道发生变更（成本原因关闭部分服务），沟通迁移到邮件等渠道。导视与品牌素材（例如 <strong>GWAS / sleep</strong> 图标准件）需由导师重新下发；本人在无法从旧渠道取回资源时主动索取，将
+                SVG 等资源接回仓库再继续联调，避免页面留白或错误占位。
+              </p>
+            </div>
+          </section>
+
+          <section id="launch" class="doc-section">
+            <h2>上线与导航策略</h2>
+            <div class="article-body">
+              <p>
+                按导师在当时会议中的决定：<strong>主站导航栏上的 Sleep Chart 入口先隐藏</strong>（以注释代码等方式实现），子站仍可通过 URL
+                访问与验收；待内容与合作方节奏允许后再恢复公开入口。该策略服务于「先可部署、再逐步公开」的发布节奏。
+              </p>
+            </div>
+          </section>
+
+          <section id="merge" class="doc-section">
+            <h2>合并与冲突</h2>
+            <div class="article-body">
+              <p>
+                提交 PR 后，主分支并行改动导致 <strong><code>research.html</code></strong> 等文件出现合并冲突；由本人在本地<strong>先同步主分支再解决冲突</strong>后更新
+                PR，再由导师审批合并。这与后来各季度的门户迭代中「导师常在 <code>main</code> 上细改」的工作方式一致。
+              </p>
+            </div>
+          </section>
+
+          <section id="bullets" class="doc-section">
+            <h2>简历表述参考</h2>
+            <div class="article-body">
+              <p><strong>English</strong></p>
+              <blockquote>
+                <p>
+                  Shipped the first production-ready build of the Sleep Chart subsite on the LABS portal (June 2025), including the GWAS-facing
+                  page and end-to-end review with the PI; restaged brand assets after internal comms tools changed; temporarily hid the Sleep
+                  Chart navbar entry per release policy while keeping the subsite reachable by URL; resolved merge conflicts (e.g.,
+                  <code>research.html</code>) by rebasing on <code>main</code> before merge.
+                </p>
+              </blockquote>
+              <p><strong>中文要点</strong></p>
+              <p>Sleep Chart 首版门户、GWAS 页、素材补链、导航隐藏策略、PR 与冲突处理；与 2026 年 Guidebook/GWAS 下载修复区分。</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

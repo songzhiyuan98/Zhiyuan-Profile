@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Redistricting News Harvester：教育经济学研究用 Claude Code 编排器与子代理检索学区划界新闻，JSONL 可续跑、宽表 CSV；查询矩阵、过滤规则、USC 组内采用。"
+    />
+    <title>Redistricting News Harvester · 项目文档</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#lab-recent">近期工作</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/redistricting-news-harvester.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="../index.html#work">← 返回首页 · 项目</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">背景与目标</a>
+            <a href="#highlights">亮点汇总</a>
+            <a href="#details">技术细节</a>
+            <a href="#architecture">架构与阶段</a>
+            <a href="#deliverable">交付物与分工</a>
+            <a href="#adoption">采用与推广</a>
+            <a href="#resume">简历表述参考</a>
+            <a href="#note">说明</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Claude Code · 教育经济学研究 · 2026-04</p>
+            <h1 class="article-title">Redistricting News Harvester</h1>
+            <p class="article-meta" style="margin-bottom: 14px">学区划界相关新闻检索与 CSV 汇总（协作项目）</p>
+            <div class="article-body">
+              <p>
+                2026 年 4 月前后，为一位从事教育经济学方向的博士生合作搭建的一套<strong>可复现、可续跑</strong>的检索流水线：面向美国学区
+                K–12 划界、出勤边界、新校开办等事件，从公开网络收集<strong>新闻链接与基础元数据</strong>（不抓全文、不做政策评价），再合并进研究用事件表，供后续实证分析。实现上，业务规则主要写在
+                Markdown 提示词里，Python 仅用标准库做 JSONL 合并与 CSV 展开；在 Claude Code 内由<strong>编排器主会话</strong>调度<strong>按缓存键分派的子代理</strong>完成批量 Web 检索与结构化输出。
+              </p>
+            </div>
+          </header>
+
+          <section id="highlights" class="doc-section">
+            <h2>亮点汇总</h2>
+            <div class="article-body">
+              <ul>
+                <li>
+                  <strong>研究场景对齐：</strong>输入为可池化事件表（学区 NCES ID、校名、州、事件年、事件类型等），输出为「事件 × 文章」展开后的宽表，直接进统计软件，而不是零散链接列表。
+                </li>
+                <li>
+                  <strong>成本与冗余控制：</strong>以 <code>(district, event_year)</code> 为缓存键检索一次，多行 E/M/H 等级共享同一批链接，显著减少重复搜索调用。
+                </li>
+                <li>
+                  <strong>可续跑批处理：</strong>结果写入追加式 JSONL、已完成键列表与进度日志；中断后可合并 partial 再继续，适合长会话与多天分批跑完。
+                </li>
+                <li>
+                  <strong>规则前置：</strong>查询矩阵、过滤管线、停止条件与「硬规则」写在 <code>prompts/subagent.md</code>，减少子代理中途偷懒（例如未跑满基础查询就停）。
+                </li>
+                <li>
+                  <strong>英文下游字段：</strong>每条链接附 <code>source</code>、标题、日期、以及一句英文 <code>coverage_summary</code>，便于跨国团队与审稿材料统一语言。
+                </li>
+                <li>
+                  <strong>落地推广：</strong>合作方使用后，同一套工作流已推广至 USC 所在研究组，组内用于同类检索—汇总任务，反馈积极。
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="details" class="doc-section">
+            <h2>技术细节</h2>
+            <div class="article-body">
+              <h3>数据规模与输入</h3>
+              <p>
+                典型输入为含约 <strong>652</strong> 条事件行、<strong>31</strong> 列的 CSV；其中 <code>district</code>（NCES LEA ID）与
+                <code>event_year</code> 组成缓存键，约 <strong>485</strong> 个唯一键（同一学区同年多行代表 E/M/H 等级等）。检索侧消费字段包括清理后的
+                <code>lea_name</code>、<code>state_location</code>、<code>event_type</code>（如 fixed / opening 等）；其余研究字段在输出中原样保留。
+              </p>
+              <h3>输出形态</h3>
+              <p>
+                终表为「<strong>每条接受的新闻一行</strong>」：原始 31 列保留顺序，再追加事件级字段（如 <code>link_count</code>、<code>stop_reason</code>、不完整与日期不确定计数等）与文章级字段（<code>article_index</code>、<code>url</code>、<code>source</code>、<code>title</code>、<code>published_date</code>、<code>source_query</code>、<code>coverage_summary</code>）。追加文本字段均为<strong>英文</strong>。若无任何命中，事件仍保留一行，文章列为空。设计规格中以合计约 <strong>42</strong> 列描述该宽表（以协作方仓库内 <code>spec.md</code> 为准）。
+              </p>
+              <h3>查询矩阵（概要）</h3>
+              <p>
+                对学区短名 <code>D</code>、州 <code>S</code>、事件年 <code>Y</code>、类型 <code>T</code>，子代理按固定顺序执行多组 Web 检索查询（例如含
+                redistricting、attendance zone、rezoning、school boundary change 等）；当 <code>T</code> 表示新校开办类时，追加与 new school 相关的组合查询。在基础查询跑完后，仅在「已接受链接数处于中段且长尾仍有信号」等条件下，才允许执行少量扩展查询（年份窗口、plan、同义词等）——具体条件与顺序以 spec 为准。
+              </p>
+              <h3>过滤管线（概要）</h3>
+              <p>
+                对候选 URL：规范化与去参、跨查询去重；<strong>日期截断为不晚于 2022-12-31</strong>（与研究工作者的样本窗口一致）；相关性要求学区名与划界语义关键词出现在标题或摘要中。日期缺失时可计数标记，而非静默丢弃整条事件。批量模式下以检索摘要为主做相关性判断，避免对每链全文抓取。
+              </p>
+              <h3>停止理由与质量门槛</h3>
+              <p>
+                子代理输出需带合法 <code>stop_reason</code>；设计上以「尽量接近 10 条可接受链接」为目标，<strong>4 条为下限参考而非提前收工借口</strong>；须跑完规定的基础查询矩阵，禁止因「已经够四条」而跳过查询类型。这些以 HARD RULES 形式写在子代理提示词中。
+              </p>
+              <h3>中间态与脚本</h3>
+              <p>
+                运行过程写入 <code>state/results.jsonl</code>（每键一行 JSON）、<code>state/completed_keys.txt</code>、<code>state/progress.log</code>；批内可先落 <code>state/partial/</code> 再合并。最终由标准库 Python 脚本将 JSONL 与原始 CSV 对齐生成终表。
+              </p>
+            </div>
+          </section>
+
+          <section id="architecture" class="doc-section">
+            <h2>架构与阶段</h2>
+            <div class="article-body">
+              <p>
+                <strong>编排器</strong>（主 Claude Code 会话，入口为 GUIDE）：先可进入<strong>单事件测试模式</strong>——同步派一个子代理、打开完整轨迹，便于人肉验收检索是否「偷懒」；通过后进入<strong>批量模式</strong>——按未完成缓存键分批并行派子代理、合并 JSON、刷进度，全部结束后跑 CSV 转换。
+              </p>
+              <p>
+                <strong>子代理</strong>通过 Agent 工具按模板注入变量；批量时多路并行，并行度受会话时长与计划限制需分段执行。不设独立「校验 Agent」：合规性主要靠子代理提示词内的硬规则与 JSON schema 约束。
+              </p>
+            </div>
+          </section>
+
+          <section id="deliverable" class="doc-section">
+            <h2>交付物与分工</h2>
+            <div class="article-body">
+              <p>
+                自包含目录：<code>GUIDE.md</code>（续跑说明）、<code>spec.md</code>（规格）、<code>prompts/orchestrator.md</code>、<code>prompts/subagent.md</code>、调度模板、<code>scripts/jsonl_to_csv.py</code> 及合并辅助脚本、示例输入与 <code>state/</code>、<code>outputs/</code> 约定路径。合作方在本地安装 Claude Code 与 Python 3.9+ 即可按文档操作。
+              </p>
+              <p>
+                本人侧重：<strong>提示词体系与硬规则</strong>、<strong>批调度模板</strong>、缓存键与去重策略、JSON 与 CSV 契约对齐、以及测试模式与批量模式的衔接；对方提供研究问题、事件表与领域判定边界。
+              </p>
+            </div>
+          </section>
+
+          <section id="adoption" class="doc-section">
+            <h2>采用与推广</h2>
+            <div class="article-body">
+              <p>
+                合作方在课题中验证流程后，将同一套工作流推广至南加州大学（USC）所在研究组；组内成员沿用该流水线做同类「检索—结构化—汇总 CSV」任务，整体反响好。本页不包含对方内部数据路径、仓库地址或未公开样本细节。
+              </p>
+            </div>
+          </section>
+
+          <section id="resume" class="doc-section">
+            <h2>简历表述参考</h2>
+            <div class="article-body">
+              <p><strong>English（可拆成多条 bullet）</strong></p>
+              <blockquote>
+                <p>
+                  Co-designed a Claude Code–driven research pipeline for an economics-of-education PhD project: an orchestrator dispatches
+                  parallel WebSearch subagents per (district, year) cache key with a fixed query matrix and filter pipeline; append-only JSONL
+                  state for resume; Python stdlib merges to a one-row-per-article CSV with English metadata and coverage summaries. Rolled out
+                  to the collaborator’s USC research group for similar harvest workflows.
+                </p>
+              </blockquote>
+              <p><strong>中文要点</strong></p>
+              <p>教育经济学合作、Claude Code 编排器与子代理、缓存键去重、JSONL 可续跑、查询矩阵与硬规则、英文摘要字段、USC 组内推广。</p>
+            </div>
+          </section>
+
+          <section id="note" class="doc-section">
+            <h2>说明</h2>
+            <div class="article-body">
+              <p>
+                完整代码与数据在协作方侧维护；本页不附公开仓库链接。规格若有迭代，以对方仓库内 <code>spec.md</code> 为权威版本。
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

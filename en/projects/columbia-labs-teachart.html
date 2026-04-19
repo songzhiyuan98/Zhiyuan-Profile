@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Columbia LABS TeaChart portal: tea intake vs BAG, proteomics, metabolomics, IDPs; GAM-style summaries; Mar 2026 PR cadence."
+    />
+    <title>Columbia LABS · TeaChart portal · Recent work</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="/en/index.html#work">Projects</a>
+          <a href="/en/index.html#lab-recent">Recent work</a>
+          <a href="/en/index.html#research">Research</a>
+          <a href="/en/index.html#writing">Notes</a>
+          <a class="lang-switch" href="/projects/columbia-labs-teachart.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="/en/projects/columbia-labs.html">← Columbia LABS overview</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Columbia LABS sections">
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs.html">Overview</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-medicine.html">MEDICINE</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-sleepchart-portal.html">Sleep Chart</a>
+        <a class="doc-version-switch__btn is-active" href="/en/projects/columbia-labs-teachart.html">TeaChart</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-ai4women.html">AI4Women</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-guidebook.html">Guidebook</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Context</a>
+            <a href="#scope">Pages and modules</a>
+            <a href="#delivery">Collaboration</a>
+            <a href="#bullets">Resume bullets</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Columbia LABS · TeaChart · Mar 2026</p>
+            <h1 class="article-title">TeaChart analysis portal</h1>
+            <div class="article-body">
+              <p>
+                <strong>TeaChart</strong> extends the LABS site with a portal for tea intake versus <strong>BAG</strong>, <strong>proteomics</strong>,
+                <strong>metabolomics</strong>, <strong>IDPs</strong>, and related outputs. Modeling mirrors the team’s <strong>Sleep Chart</strong> paper-style settings (e.g., GAM summaries). The PI needed pages
+                <strong>browseable early</strong> and easy to refresh as tables landed during peer review.
+              </p>
+              <p>
+                GWAS subpages were iterated by the PI first; then shared data drops (internal paths not listed here) fed section updates. Home highlights <strong>significant organs</strong> and uses a <strong>purple</strong> system background aligned with sibling portals such as <strong>MUTATE</strong>.
+              </p>
+              <p>
+                <strong>Live site:</strong>
+                <a href="https://labs-laboratory.com/teachart/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/teachart/</a>
+              </p>
+            </div>
+          </header>
+
+          <section id="scope" class="doc-section">
+            <h2>Pages and modules</h2>
+            <div class="article-body">
+              <ul>
+                <li>Home refresh: organ highlights and chrome consistent with the chosen sibling portal.</li>
+                <li>Section rollouts for <strong>BAG</strong> and <strong>proteomics</strong> first; <strong>metabolomics</strong> and <strong>IDPs</strong> as files arrived.</li>
+                <li>Wire primary TSVs and summary tables into readable charts/downloads (details co-evolved with manuscript figures).</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="delivery" class="doc-section">
+            <h2>Collaboration and merges</h2>
+            <div class="article-body">
+              <p>
+                Work happened on a feature branch; <code>main</code> changed frequently—<strong>pull before PR</strong>. Turnaround tracked peer-review urgency across a few days. Administrative email tasks ran in parallel and are out of scope here.
+              </p>
+            </div>
+          </section>
+
+          <section id="bullets" class="doc-section">
+            <h2>Resume-ready summary</h2>
+            <div class="article-body">
+              <blockquote>
+                <p>
+                  Extended the LABS public portal with a TeaChart subsite for tea intake vs multi-omic outcomes (BAG, proteomics,
+                  metabolomics, IDPs), aligning layout and theming with sibling portals (e.g., shared purple system chrome) and wiring
+                  GAM/summary tables delivered over team data shares; iterated under peer-review timelines with branch/PR workflow while the
+                  PI updated upstream GWAS pages.
+                </p>
+              </blockquote>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a href="/en/index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

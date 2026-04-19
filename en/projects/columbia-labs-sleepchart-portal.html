@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="June 2025 Columbia LABS: first Sleep Chart subsite, GWAS page, asset handoff after chat tool change, temporary navbar hide, PR and research.html merge conflict."
+    />
+    <title>Columbia LABS · Sleep Chart portal (June 2025) · Recent work</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="/en/index.html#work">Projects</a>
+          <a href="/en/index.html#lab-recent">Recent work</a>
+          <a href="/en/index.html#research">Research</a>
+          <a href="/en/index.html#writing">Notes</a>
+          <a class="lang-switch" href="/projects/columbia-labs-sleepchart-portal.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="/en/projects/columbia-labs.html">← Columbia LABS overview</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Columbia LABS sections">
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs.html">Overview</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-medicine.html">MEDICINE</a>
+        <a class="doc-version-switch__btn is-active" href="/en/projects/columbia-labs-sleepchart-portal.html">Sleep Chart</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-teachart.html">TeaChart</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-ai4women.html">AI4Women</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-guidebook.html">Guidebook</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Context</a>
+            <a href="#deliverables">What shipped</a>
+            <a href="#assets">Comms and assets</a>
+            <a href="#launch">Launch and nav</a>
+            <a href="#merge">Merge conflicts</a>
+            <a href="#bullets">Resume bullets</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Columbia LABS · Sleep Chart · June 2025</p>
+            <h1 class="article-title">Sleep Chart subsite: first portal delivery</h1>
+            <div class="article-body">
+              <p>
+                In <strong>June 2025</strong> I delivered the <strong>first production-ready build</strong> of the <strong>Sleep Chart</strong> subsite on the LABS portal—wiring data and pages to a reviewable state, shipping the <strong>GWAS</strong>-facing page, and aligning on a same-day wrap with the PI’s plan to submit the paper afterward. This is distinct from later <strong>2026</strong> work such as <strong>GWAS download fixes</strong> and <strong>Guidebook</strong>; it precedes them on the calendar but is not the same task.
+              </p>
+              <p>
+                <strong>Live site:</strong>
+                <a href="https://labs-laboratory.com/sleepchart/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/sleepchart/</a>
+              </p>
+            </div>
+          </header>
+
+          <section id="deliverables" class="doc-section">
+            <h2>What shipped</h2>
+            <div class="article-body">
+              <ul>
+                <li>Portal nearly complete within the agreed window; data and pages connected for PI review.</li>
+                <li>GWAS page built and validated via screenshots/walkthrough.</li>
+                <li>Deployed so the subsite is reachable under the site’s normal path pattern (preferring a clean <code>/sleepchart</code>-style URL over forcing <code>…/index.html</code>).</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="assets" class="doc-section">
+            <h2>Comms and assets</h2>
+            <div class="article-body">
+              <p>
+                Internal tooling shifted (prior chat stack retired for cost). I re-requested brand/SVG assets from the PI when old links were unavailable, then re-integrated them so the portal did not ship with broken placeholders.
+              </p>
+            </div>
+          </section>
+
+          <section id="launch" class="doc-section">
+            <h2>Launch and navigation</h2>
+            <div class="article-body">
+              <p>
+                Per the PI’s call: <strong>hide the Sleep Chart entry in the main navbar for now</strong> (e.g., comment out the line), while the subsite remained reachable by direct URL for QA—re-enabling public nav later when content was ready.
+              </p>
+            </div>
+          </section>
+
+          <section id="merge" class="doc-section">
+            <h2>Merge workflow</h2>
+            <div class="article-body">
+              <p>
+                After opening a PR, parallel edits on <code>main</code> caused conflicts (notably <code>research.html</code>). I pulled latest, resolved on my branch, and updated the PR for approval—same pattern as later portal work where the PI edits <code>main</code> frequently.
+              </p>
+            </div>
+          </section>
+
+          <section id="bullets" class="doc-section">
+            <h2>Resume-ready summary</h2>
+            <div class="article-body">
+              <blockquote>
+                <p>
+                  Shipped the first production-ready build of the Sleep Chart subsite on the LABS portal (June 2025), including the GWAS-facing
+                  page and end-to-end review with the PI; restaged brand assets after internal comms tools changed; temporarily hid the Sleep
+                  Chart navbar entry per release policy while keeping the subsite reachable by URL; resolved merge conflicts (e.g.,
+                  <code>research.html</code>) by rebasing on <code>main</code> before merge.
+                </p>
+              </blockquote>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a href="/en/index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>

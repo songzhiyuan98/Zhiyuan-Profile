@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Columbia LABS TeaChart 门户：茶摄入与 BAG/蛋白/代谢/IDP 等多模块展示；GAM 与 Sleep Chart 论文设定类似；2026-03 迭代与 PR。"
+    />
+    <title>Columbia LABS · TeaChart 门户 · 近期工作</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#lab-recent">近期工作</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/columbia-labs-teachart.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="/projects/columbia-labs.html">← Columbia LABS 总览</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Columbia LABS 文档分册">
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs.html">总览</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-medicine.html">MEDICINE</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-sleepchart-portal.html">Sleep Chart</a>
+        <a class="doc-version-switch__btn is-active" href="/projects/columbia-labs-teachart.html">TeaChart</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-ai4women.html">AI4Women</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-guidebook.html">Guidebook</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">背景</a>
+            <a href="#scope">页面与数据模块</a>
+            <a href="#delivery">协作与合并</a>
+            <a href="#bullets">简历表述参考</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Columbia LABS · TeaChart · 2026-03</p>
+            <h1 class="article-title">TeaChart 分析门户</h1>
+            <div class="article-body">
+              <p>
+                <strong>TeaChart</strong> 是在 LABS 主站下扩展的分析向门户，用于展示茶摄入与<strong>生物年龄（BAG）</strong>、<strong>蛋白组</strong>、<strong>代谢组</strong>、<strong>IDP</strong>等多模态结果；统计与建模设定与团队既有
+                <strong>Sleep Chart</strong> 论文工作流相近（如 GAM 等），需在审稿材料推进过程中<strong>尽快可浏览、可替换图表与摘要统计</strong>。
+              </p>
+              <p>
+                导师侧先完成部分 GWAS 子页，再下发门户搭建任务与<strong>团队共享数据目录</strong>中的结果表（具体文件名与路径属内部资产，本页不列出）。首页需突出<strong>显著器官</strong>等汇总信息，整体背景色与<strong>MUTATE</strong> 等兄弟门户的紫色基调对齐，以保持 LABS 子站家族感。
+              </p>
+              <p>
+                <strong>线上站点（公开）：</strong>
+                <a href="https://labs-laboratory.com/teachart/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/teachart/</a>
+              </p>
+            </div>
+          </header>
+
+          <section id="scope" class="doc-section">
+            <h2>页面与数据模块（工程视角）</h2>
+            <div class="article-body">
+              <ul>
+                <li>更新门户 Home：显著器官展示、全站背景与导航视觉与指定兄弟门户一致。</li>
+                <li>按数据就绪顺序迭代 <strong>BAG</strong>、<strong>Proteomics</strong> 等板块；随后接入 <strong>Metabolomics</strong>、<strong>IDP</strong> 等模块（结果文件分批到达时滚动更新）。</li>
+                <li>对接 TSV 类主结果表与摘要统计表，在页面层做可读可视化与下载入口（具体列名与图表类型随导师稿调整）。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="delivery" class="doc-section">
+            <h2>协作与合并</h2>
+            <div class="article-body">
+              <p>
+                开发在本地分支进行；主分支由导师持续改动，合并前需 <strong>先拉取主分支</strong> 再提 PR。时间节点与审稿进度挂钩，在数日内收敛到可评审的 PR。邮件与行政流程（如签字）与门户开发并行，不在此页展开。
+              </p>
+            </div>
+          </section>
+
+          <section id="bullets" class="doc-section">
+            <h2>简历表述参考</h2>
+            <div class="article-body">
+              <p><strong>English</strong></p>
+              <blockquote>
+                <p>
+                  Extended the LABS public portal with a TeaChart subsite for tea intake vs multi-omic outcomes (BAG, proteomics,
+                  metabolomics, IDPs), aligning layout and theming with sibling portals (e.g., shared purple system chrome) and wiring
+                  GAM/summary tables delivered over team data shares; iterated under peer-review timelines with branch/PR workflow while the
+                  PI updated upstream GWAS pages.
+                </p>
+              </blockquote>
+              <p><strong>中文要点</strong></p>
+              <p>TeaChart 子门户、多模块组学页、与 MUTATE 系视觉一致、TSV/GAM 结果接入、审稿节点前 PR、与主分支同步策略。</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

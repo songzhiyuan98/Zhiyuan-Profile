@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="哥伦比亚大学实验室 2026 年 4 月：Guidebook 身份认证与访问控制、邀请审核、Firebase 与 Netlify；Nature Medicine 审稿协作；Sleep Chart GWAS 下载修复。"
+    />
+    <title>Columbia LABS · Guidebook 与平台交付 · 短期工作</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="../index.html#work">项目</a>
+          <a href="../index.html#lab-recent">近期工作</a>
+          <a href="../index.html#research">研究</a>
+          <a href="../index.html#writing">随笔</a>
+          <a class="lang-switch" href="/en/projects/columbia-labs-guidebook.html" hreflang="en">English</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="/projects/columbia-labs.html">← Columbia LABS 总览</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Columbia LABS 文档分册">
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs.html">总览</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-medicine.html">MEDICINE</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-sleepchart-portal.html">Sleep Chart</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-teachart.html">TeaChart</a>
+        <a class="doc-version-switch__btn" href="/projects/columbia-labs-ai4women.html">AI4Women</a>
+        <a class="doc-version-switch__btn is-active" href="/projects/columbia-labs-guidebook.html">Guidebook</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <p class="doc-toc__label">目录</p>
+          <nav>
+            <a href="#overview">背景与定位</a>
+            <a href="#scope">交付范围</a>
+            <a href="#validation">测试与可靠性</a>
+            <a href="#sleepchart">Sleep Chart 维护</a>
+            <a href="#deployment">部署与协作</a>
+            <a href="#bullets">简历表述参考</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">哥伦比亚大学实验室 · 2026-04 · Guidebook 与平台工程</p>
+            <h1 class="article-title">Guidebook 与科研平台访问交付</h1>
+            <div class="article-body">
+              <p>
+                本条交付主要集中在 <strong>2026 年 4 月</strong>：在哥大实验室参与期间，负责将 <strong>Guidebook</strong> 模块从需求推进到可交付状态；在审稿与协作节奏下，为生物医学研究平台提供<strong>受控访问</strong>（身份认证、基于角色的权限、邀请制注册与管理员审核），并完成与部署相关的配置交接。同期修复了
+                <strong>Sleep Chart</strong> 门户中与 GWAS 数据下载相关的问题。
+              </p>
+              <p>
+                实验室侧有稿件处于 <strong>Nature Medicine</strong> 等同行评审流程，相关系统需在明确时间节点内可用于内审与协作；本人在此背景下完成端到端验证与 PR 交付，并与导师同步 Netlify 环境变量、管理员与
+                Firebase 后台使用方式（<strong>不含任何账号口令或验证码细节</strong>，此类信息仅通过私密渠道传递）。
+              </p>
+              <p>
+                <strong>2025 年 6 月</strong>的 Sleep Chart 子站<strong>首版门户</strong>（GWAS 页、导航策略、合并冲突等）见独立子页：<a href="/projects/columbia-labs-sleepchart-portal.html">Sleep Chart 门户（2025-06）</a>；本条侧重
+                <strong>2026 年 4 月</strong>前后与 Guidebook 同周期推进的门户<strong>维护能力</strong>（如 GWAS 数据下载）。
+              </p>
+              <p>
+                <strong>Guidebook 线上入口（公开）：</strong>
+                <a href="https://labs-laboratory.com/guidebook/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/guidebook/</a>
+              </p>
+            </div>
+          </header>
+
+          <section id="scope" class="doc-section">
+            <h2>交付范围（工程）</h2>
+            <div class="article-body">
+              <ul>
+                <li>带身份认证的前后端流程设计与实现，支撑合作者对内部文档与资源的受控访问。</li>
+                <li>邀请制注册、管理员审核 / 拒绝、账号生命周期；拒绝后可凭新邀请重新走通验证。</li>
+                <li>集成 <strong>Firebase Authentication</strong>；部署于 <strong>Netlify</strong>，采用环境变量管理配置。</li>
+                <li>协助创建用于后端通信的组织邮箱并完成验证流程（具体凭证不公开）。</li>
+                <li>文档化部署所需环境变量与合并前与主分支同步（避免与主站改动冲突）。</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="validation" class="doc-section">
+            <h2>测试与可靠性</h2>
+            <div class="article-body">
+              <p>在交付前对完整路径进行验证，包括但不限于：</p>
+              <ul>
+                <li>注册、待审核、通过、拒绝等状态；</li>
+                <li>拒绝后通过新邀请链接再次完成验证；</li>
+                <li>管理员侧禁用访问等操作界面可用性。</li>
+              </ul>
+              <p>目标是在真实使用方式下确认系统可用，而非仅「功能写完」。</p>
+            </div>
+          </section>
+
+          <section id="sleepchart" class="doc-section">
+            <h2>Sleep Chart 门户</h2>
+            <div class="article-body">
+              <p>修复与 GWAS 数据下载相关的功能问题，保障分析流程在门户侧可顺利完成（与团队主站其他改动协调，先 <code>git pull</code> 再提 PR）。</p>
+            </div>
+          </section>
+
+          <section id="deployment" class="doc-section">
+            <h2>部署与协作</h2>
+            <div class="article-body">
+              <p>
+                通过 PR 合并改动；向导师邮件说明 Netlify 新增环境变量清单；管理员入口与 Firebase 控制台的使用在实验室内通过私密渠道说明。<strong>本页不列出任何密码、手机号或一次性验证码。</strong>
+              </p>
+            </div>
+          </section>
+
+          <section id="bullets" class="doc-section">
+            <h2>简历 / 申请表述参考</h2>
+            <div class="article-body">
+              <p><strong>English（PhD / SDE 向）</strong></p>
+              <blockquote>
+                <p>
+                  Led the design, implementation, and handoff of an authenticated Guidebook module for a biomedical research platform,
+                  supporting controlled access during active peer review (including <em>Nature Medicine</em>-related workflows). Architected
+                  invite-based onboarding, admin review/rejection flows, and user lifecycle management with Firebase Authentication;
+                  deployed via Netlify with environment-based configuration. Ran end-to-end workflow validation (registration, approval,
+                  rejection, re-invitation). Fixed Sleep Chart portal GWAS download issues and coordinated merges with upstream site
+                  changes.
+                </p>
+              </blockquote>
+              <p><strong>中文要点</strong></p>
+              <p>
+                主导 Guidebook 从设计到交付：邀请制、审核流、权限与账号生命周期；Firebase + Netlify；在审稿节点前完成端到端验证；修复 Sleep Chart GWAS 下载并与主仓库协作合并。
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="页脚导航">
+          <a href="../index.html">首页</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../js/article-toc.js"></script>
+  </body>
+</html>

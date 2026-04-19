@@ -19,8 +19,10 @@
         <a class="site-top__name" href="index.html">Zhiyuan Song</a>
         <div class="site-top__links">
           <a href="#work">项目</a>
+          <a href="#lab-recent">近期工作</a>
           <a href="#research">研究</a>
           <a href="#writing">随笔</a>
+          <a href="#work-archive">以往项目</a>
           <a class="lang-switch" href="/en/" hreflang="en">English</a>
           <a class="btn-dark" href="mailto:songzhiyuan98@gmail.com">联系我</a>
         </div>
@@ -30,7 +32,7 @@
     <section class="hero">
       <h1>Zhiyuan Song</h1>
       <p class="hero__sub">
-        收录近期工作、进度、研究与笔记里的感悟等。
+        收录个人项目、工作内容、合作研究与随笔里的记录。
       </p>
     </section>
 
@@ -38,110 +40,69 @@
 
     <section class="section" id="work">
       <div class="section__head">
-        <h2>项目</h2>
-        <span class="section__kicker">Projects</span>
+        <h2>近期项目</h2>
+        <span class="section__kicker">Recent projects</span>
       </div>
-      <!--
-        首页区块顺序：项目（求职）→ 研究（背书）→ 随笔（观点与品牌）。
-        年份分组：2026 → 2025 → 2024，组内自新到旧。CTA：项目区「阅读项目文档」；研究区「阅读摘要」；随笔区「阅读全文」。
-        卡片描述：定位一句 + 技术/形态一句，与 kicker 少重复；卡片标题（h3）统一为英文。
-      -->
+      <p class="section__lede">以下为最近一个日历年内的个人项目；更早条目见页底「以往项目」。</p>
       <div class="section__year-group">
         <h3 class="section__year-label" id="work-2026">2026</h3>
         <div class="card-grid">
+          <a class="card" href="projects/redistricting-news-harvester.html">
+            <span class="card__kicker">Claude Code · 教育经济学 · 2026-04</span>
+            <h3>Redistricting News Harvester</h3>
+            <p>教育经济学博士协作：学区划界事件与新闻链汇总 CSV；编排器与子代理、查询矩阵与可续跑 JSONL。亮点与细节见项目页；USC 研究组已推广使用。</p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
           <a class="card" href="projects/investment-skill-architecture-v3.html">
             <span class="card__kicker">Skill · Multi-agent · v3 · 测试使用中</span>
             <h3>Investment Skill Architecture</h3>
-            <p>
-              面向个人正股账户的决策类 Skill：<strong>已实现</strong>，正在个人流程中<strong>测试与日常使用</strong>。v3
-              将首席顾问并入主进程、Market Context 与八只 Ticker 文件协同、静默 yfinance 数据层与 Quick/Focused/Full
-              分级输出契约；首页文档为架构浓缩版，非投资建议。
-            </p>
+            <p>个人正股决策类 Skill，v3 主进程 + 多 ticker 与市场上下文；站内文档为架构摘要，非投资建议。</p>
             <span class="card__cta">阅读项目文档 →</span>
           </a>
           <a class="card" href="projects/tsla-options-war-room.html">
             <span class="card__kicker">Skill · 期权 · 2026-04</span>
             <h3>TSLA Options War Room</h3>
-            <p>
-              Claude Code Skill，面向 TSLA 短期期权：本地行情快照与交易日志，多角色投委会式复盘但对用户单一出口。规则化
-              DTE、时间框架与仓位纪律（含 QQQ 语境）。
-            </p>
+            <p>TSLA 短期期权 Skill：本地快照与交易日志，多角色复盘、单一用户出口与仓位纪律。</p>
             <span class="card__cta">阅读项目文档 →</span>
           </a>
           <a class="card" href="projects/vpct-vpip-controller.html">
             <span class="card__kicker">iOS · SwiftUI · 2026 · App Store 审核中</span>
             <h3>VPCT – VPIP Controller</h3>
-            <p>
-              iOS 牌局辅助：实时 VPIP / tilt、多层检测器与「仅 danger 进冷静期」策略。SwiftUI + SwiftData，Guest
-              可开局，登录后同步统计与生涯数据。
-            </p>
+            <p>iOS 牌桌辅助：VPIP/tilt、分层检测与冷静期策略；SwiftUI + SwiftData，Guest 可开局。</p>
             <span class="card__cta">阅读项目文档 →</span>
           </a>
           <a class="card" href="projects/klinelens.html">
             <span class="card__kicker">开源 · Docker · 自 2026-01</span>
             <h3>KLineLens</h3>
-            <p>
-              开源 K 线结构终端：多周期市场结构、可插拔数据源与策略、内置 0DTE 状态机。MIT；Next.js + FastAPI
-              + Python Core，Docker 自托管。
-            </p>
+            <p>K 线结构终端：多周期、可插拔数据源与 0DTE 状态机；Next.js + FastAPI，Docker 自托管。</p>
             <span class="card__cta">阅读项目文档 →</span>
           </a>
           <a class="card" href="projects/novel-studio.html">
             <span class="card__kicker">Multi-agent · MVP · hybrid RAG · 2026-01</span>
             <h3>Novel Studio</h3>
-            <p>
-              网文连载多 Agent 工作台：确定性编排、多模型 Worker、正典与蓝图闭环。Hybrid RAG：MVP 以 L0
-              场景卡为主，L1 语义检索在门禁通过后叠加。
-            </p>
+            <p>网文连载多 Agent：编排、多模型、正典与蓝图；Hybrid RAG 以场景卡门禁为先。</p>
             <span class="card__cta">阅读项目文档 →</span>
           </a>
         </div>
       </div>
-      <div class="section__year-group">
-        <h3 class="section__year-label" id="work-2025">2025</h3>
-        <div class="card-grid">
-          <a class="card" href="projects/study-assistant.html">
-            <span class="card__kicker">Monorepo · Next.js · pgvector · 2025-09</span>
-            <h3>AI Study Assistant</h3>
-            <p>
-              教材向 Monorepo：文档解析与分段、pgvector 语义检索、OpenAI 生成总结与闪卡等。Fastify API + BullMQ
-              Worker；模拟考试与审计合规在路线图中，MIT。
-            </p>
-            <span class="card__cta">阅读项目文档 →</span>
-          </a>
-          <a class="card" href="projects/talentsync.html">
-            <span class="card__kicker">Fullstack · AI application · 2025-03</span>
-            <h3>TalentSync</h3>
-            <p>
-              全栈 AI 求职流：简历–JD 匹配、求职信与 PDF、职位与投递状态。React + Express + MongoDB；Stripe
-              订阅与 Google OAuth，线上可跑通主流程。
-            </p>
-            <span class="card__cta">阅读项目文档 →</span>
-          </a>
-          <a class="card" href="projects/personal-website-template.html">
-            <span class="card__kicker">Next.js · Portfolio · MIT · 2025-01</span>
-            <h3>Portfolio Website Template</h3>
-            <p>
-              Next.js 开源个人站模板：求职者版与学者版，模块化版块、技能图标与时间线。TypeScript + Tailwind，MIT，Vercel
-              部署；仓库公开维护。
-            </p>
-            <span class="card__cta">阅读项目文档 →</span>
-          </a>
-        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="lab-recent">
+      <div class="section__head">
+        <h2>近期工作</h2>
+        <span class="section__kicker">Recent lab work</span>
       </div>
-      <div class="section__year-group">
-        <h3 class="section__year-label" id="work-2024">2024</h3>
-        <div class="card-grid">
-          <a class="card" href="projects/animehub.html">
-            <span class="card__kicker">React · Express · MongoDB · 2024</span>
-            <h3>AnimeHub</h3>
-            <p>
-              首个全栈番剧社区：Jikan 拉取与缓存、评分评论、帖子富文本与标签、Socket
-              通知与个人中心。React 18 + Redux + MUI；Express + MongoDB + JWT，MIT。
-            </p>
-            <span class="card__cta">阅读项目文档 →</span>
-          </a>
-        </div>
+      <div class="card-grid">
+        <article class="card">
+          <span class="card__kicker">Columbia LABS · 科研站点 · 实习 · 2025–2026</span>
+          <h3><a class="card__heading-link" href="projects/columbia-labs.html">哥大 LABS 实习内容</a></h3>
+          <p>
+            最近在哥大 LABS 公共站点上做实习向工程：MEDICINE 一段收尾与 MUTATE、Sleep Chart、TeaChart、AI4Women、Guidebook 等按节点推进（<a href="projects/columbia-labs-medicine.html">MEDICINE 子页</a>）。总览与时间线见文档。
+          </p>
+          <a class="card__cta" href="projects/columbia-labs.html">打开总览与子页 →</a>
+        </article>
       </div>
     </section>
 
@@ -152,24 +113,17 @@
         <h2>研究</h2>
         <span class="section__kicker">Research</span>
       </div>
-      <!-- 研究卡片：kicker 与描述中文；标题（h3）英文，与项目区一致 -->
       <div class="card-grid">
         <a class="card" href="projects/research-sleep-charts.html">
           <span class="card__kicker">已被 Nature 接收 · 预印本 2025-08</span>
           <h3>Sleep chart · multi-organ aging clocks</h3>
-          <p>
-            UK Biobank / MULTI：睡眠时长与 23 个器官–组学衰老钟、遗传与生存、晚年抑郁路径；Sleep Chart
-            交互门户与 PMC 全文。
-          </p>
+          <p>UK Biobank / MULTI：睡眠与多器官衰老钟、遗传与生存路径；Sleep Chart 浏览与论文全文见摘要页。</p>
           <span class="card__cta">阅读摘要 →</span>
         </a>
         <a class="card" href="projects/research-mribag.html">
           <span class="card__kicker">Nature Medicine · 开放获取 · 2025-10</span>
           <h3>MRI multi-organ biological age (MRIBAG)</h3>
-          <p>
-            七类 MRI 器官年龄差：蛋白组、代谢组、GWAS、可成药靶点、疾病与死亡风险及 A4 试验认知分层；正文见
-            Nature Medicine 开放获取链接。
-          </p>
+          <p>MRI 多器官年龄差与组学、GWAS、风险与 A4 认知分层；正文见 Nature Medicine 开放获取。</p>
           <span class="card__cta">阅读摘要 →</span>
         </a>
         <div class="card card--placeholder">
@@ -191,16 +145,56 @@
         <a class="card" href="projects/writing-agent-skill-constraints.html">
           <span class="card__kicker">Agent · Skill · Engineering · 2026-04</span>
           <h3>Agent skills: constraints over scripted workflows</h3>
-          <p>
-            更看好用<strong>约束与边界</strong>（安全、工具权限、输出形状、何时必须停手）去塑形 Agent
-            Skill，而不是把「规定路径 + 固定工作流」写死；后者容易在真实需求变化时整体失效。
-          </p>
+          <p>倾向用约束与边界塑形 Agent Skill，而不是写死固定工作流。</p>
           <span class="card__cta">阅读全文 →</span>
         </a>
         <div class="card card--placeholder">
           <span class="card__kicker">Placeholder</span>
           <h3>Next note</h3>
           <p>后续文章将接在此处。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section" id="work-archive">
+      <div class="section__head">
+        <h2>以往项目</h2>
+        <span class="section__kicker">Earlier projects</span>
+      </div>
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2025">2025</h3>
+        <div class="card-grid">
+          <a class="card" href="projects/study-assistant.html">
+            <span class="card__kicker">Monorepo · Next.js · pgvector · 2025-09</span>
+            <h3>AI Study Assistant</h3>
+            <p>教材 Monorepo：分段、向量检索、OpenAI 总结与闪卡；Fastify + BullMQ。</p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+          <a class="card" href="projects/talentsync.html">
+            <span class="card__kicker">Fullstack · AI application · 2025-03</span>
+            <h3>TalentSync</h3>
+            <p>AI 求职流：简历匹配、求职信与投递状态；React + Express + MongoDB。</p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+          <a class="card" href="projects/personal-website-template.html">
+            <span class="card__kicker">Next.js · Portfolio · MIT · 2025-01</span>
+            <h3>Portfolio Website Template</h3>
+            <p>Next.js 开源个人站双模板；TypeScript + Tailwind，Vercel 部署。</p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
+        </div>
+      </div>
+      <div class="section__year-group">
+        <h3 class="section__year-label" id="work-2024">2024</h3>
+        <div class="card-grid">
+          <a class="card" href="projects/animehub.html">
+            <span class="card__kicker">React · Express · MongoDB · 2024</span>
+            <h3>AnimeHub</h3>
+            <p>番剧社区全栈首秀：Jikan、评分评论、帖与通知；React + Express + MongoDB。</p>
+            <span class="card__cta">阅读项目文档 →</span>
+          </a>
         </div>
       </div>
     </section>

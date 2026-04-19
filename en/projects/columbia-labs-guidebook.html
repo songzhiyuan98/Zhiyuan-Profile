@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="April 2026, Columbia lab: Guidebook auth and access control, invite/admin review, Firebase and Netlify; peer review; Sleep Chart GWAS download fix."
+    />
+    <title>Columbia LABS · Guidebook delivery · Recent lab work</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <div class="site-top">
+      <div class="site-top__inner">
+        <a class="site-top__name" href="../index.html">Zhiyuan Song</a>
+        <div class="site-top__links">
+          <a href="/en/index.html#work">Projects</a>
+          <a href="/en/index.html#lab-recent">Recent work</a>
+          <a href="/en/index.html#research">Research</a>
+          <a href="/en/index.html#writing">Notes</a>
+          <a class="lang-switch" href="/projects/columbia-labs-guidebook.html" hreflang="zh-Hans">中文</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-doc">
+      <div class="doc-back">
+        <a href="/en/projects/columbia-labs.html">← Columbia LABS overview</a>
+      </div>
+      <div class="doc-version-switch" aria-label="Columbia LABS sections">
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs.html">Overview</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-medicine.html">MEDICINE</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-sleepchart-portal.html">Sleep Chart</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-teachart.html">TeaChart</a>
+        <a class="doc-version-switch__btn" href="/en/projects/columbia-labs-ai4women.html">AI4Women</a>
+        <a class="doc-version-switch__btn is-active" href="/en/projects/columbia-labs-guidebook.html">Guidebook</a>
+      </div>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="Table of contents">
+          <p class="doc-toc__label">Contents</p>
+          <nav>
+            <a href="#overview">Context</a>
+            <a href="#scope">Scope</a>
+            <a href="#validation">Validation</a>
+            <a href="#sleepchart">Sleep Chart</a>
+            <a href="#deployment">Deployment</a>
+            <a href="#bullets">Resume bullets</a>
+          </nav>
+        </aside>
+
+        <div class="doc-content">
+          <header class="doc-header" id="overview">
+            <p class="article-meta">Columbia lab · Apr 2026 · Guidebook &amp; platform engineering</p>
+            <h1 class="article-title">Guidebook and platform access delivery</h1>
+            <div class="article-body">
+              <p>
+                This track shipped mainly in <strong>April 2026</strong>. I owned the <strong>Guidebook</strong> module end to end—from requirements to
+                something we could ship—<strong>controlled access</strong> to internal documentation and resources for collaborators,
+                including authentication, role-based access, invite-based onboarding, and admin review. In parallel I fixed
+                <strong>Sleep Chart</strong> portal issues around GWAS downloads.
+              </p>
+              <p>
+                The group had manuscripts in peer review (including workflows tied to a <strong>Nature Medicine</strong> submission), so the
+                platform needed to be usable on a deadline. I validated full user journeys, opened PRs, and coordinated Netlify env vars and
+                admin/Firebase usage with the PI over private channels—<strong>no passwords, phone numbers, or one-time codes appear on this
+                page</strong>.
+              </p>
+              <p>
+                The <strong>June 2025</strong> <strong>first Sleep Chart portal</strong> build (GWAS UI, nav policy, merge fixes) lives on its own page:
+                <a href="/en/projects/columbia-labs-sleepchart-portal.html">Sleep Chart portal (June 2025)</a>. This page emphasizes
+                <strong>April 2026</strong>-era <strong>maintenance</strong> (e.g., GWAS download path) alongside Guidebook.
+              </p>
+              <p>
+                <strong>Guidebook (live):</strong>
+                <a href="https://labs-laboratory.com/guidebook/" target="_blank" rel="noopener noreferrer">https://labs-laboratory.com/guidebook/</a>
+              </p>
+            </div>
+          </header>
+
+          <section id="scope" class="doc-section">
+            <h2>Engineering scope</h2>
+            <div class="article-body">
+              <ul>
+                <li>Authenticated flows for a research portal: who can see what, and how access is granted or revoked.</li>
+                <li>Invite-based registration with admin approve/reject and account lifecycle; rejected users can re-verify via a new invite.</li>
+                <li><strong>Firebase Authentication</strong>; <strong>Netlify</strong> deployment with environment-based configuration.</li>
+                <li>Helped stand up an org mailbox for backend use and complete provider verification (details private).</li>
+                <li>Documented env vars for deployment; synced with the main site via <code>git pull</code> before PRs to avoid conflicts.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="validation" class="doc-section">
+            <h2>Validation</h2>
+            <div class="article-body">
+              <p>End-to-end checks before handoff, including registration, pending review, approval, rejection, and re-invitation paths, plus admin flows such as disabling access.</p>
+            </div>
+          </section>
+
+          <section id="sleepchart" class="doc-section">
+            <h2>Sleep Chart portal</h2>
+            <div class="article-body">
+              <p>Fixed GWAS download behavior so downstream analysis could run reliably through the portal.</p>
+            </div>
+          </section>
+
+          <section id="deployment" class="doc-section">
+            <h2>Deployment and collaboration</h2>
+            <div class="article-body">
+              <p>Changes landed via PR; Netlify env var lists shared privately with the PI. <strong>This page lists no credentials.</strong></p>
+            </div>
+          </section>
+
+          <section id="bullets" class="doc-section">
+            <h2>Resume-ready summary</h2>
+            <div class="article-body">
+              <blockquote>
+                <p>
+                  Led the design, implementation, and handoff of an authenticated Guidebook module for a biomedical research platform,
+                  supporting controlled access during active peer review (including <em>Nature Medicine</em>-related workflows). Architected
+                  invite-based onboarding, admin review/rejection flows, and user lifecycle management with Firebase Authentication;
+                  deployed via Netlify with environment-based configuration. Ran end-to-end workflow validation (registration, approval,
+                  rejection, re-invitation). Fixed Sleep Chart portal GWAS download issues and coordinated merges with upstream site
+                  changes.
+                </p>
+              </blockquote>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <p class="site-footer__copy">© 2026 Zhiyuan Song. All rights reserved.</p>
+        <nav class="site-footer__links" aria-label="Footer">
+          <a href="/en/index.html">Home</a>
+          <a href="https://github.com/songzhiyuan98" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../../js/article-toc.js"></script>
+  </body>
+</html>
